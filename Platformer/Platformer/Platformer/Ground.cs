@@ -3,10 +3,6 @@ using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Platformer
 {
@@ -14,26 +10,29 @@ namespace Platformer
     {
         public Body Body { get; private set; }
 
-        private Texture2D texture;
+        private Texture2D groundTexture;
 
         public Ground(World world, Texture2D texture, Vector2 position)
         {
-            this.texture = texture;
+            this.groundTexture = texture;
 
-            // Create a body for our projectile
+            // Create a body for the ground
             Body = BodyFactory.CreateRectangle(world,
-                ConvertUnits.ToSimUnits(texture.Width * 2),
-                ConvertUnits.ToSimUnits(texture.Height), 1f, position);
+                ConvertUnits.ToSimUnits(groundTexture.Width),
+                ConvertUnits.ToSimUnits(groundTexture.Height), 1f, position);
+            Body.IsStatic = true;
+            Body.Restitution = 0.3f;
+            Body.Friction = 0.5f;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(texture,
-                ConvertUnits.ToDisplayUnits(Body.Position) + new Vector2(texture.Width / 2, 0),
+            spriteBatch.Draw(groundTexture,
+                ConvertUnits.ToDisplayUnits(Body.Position) + new Vector2(groundTexture.Width / 2, 0),
                 null,
                 Color.White,
                 Body.Rotation,
-                new Vector2(texture.Width / 2, texture.Height / 2),  // origin
+                new Vector2(groundTexture.Width / 2, groundTexture.Height / 2),  // origin  / middle point
                 1f,
                 SpriteEffects.None,
                 0f);
