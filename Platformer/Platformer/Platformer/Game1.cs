@@ -1,5 +1,6 @@
 using FarseerPhysics;
 using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -19,9 +20,14 @@ namespace Platformer
         private Character character;
         private Ground ground;
         private List<Ground> grounds;
+        private Goal goal;
 
-        private KeyboardState oldKeyState;
-        private MouseState lastMouseState;
+        private KeyboardState jumpOldKeyState;
+
+        public bool isStone = false;
+        private Texture2D stoneSprite;
+        private Body stoneBody;
+        private Vector2 stoneOrigin;
 
         public static float HalfScreenWidth { get; private set; }
 
@@ -64,6 +70,11 @@ namespace Platformer
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            stoneSprite = Content.Load<Texture2D>(@"images/kirbyStone");
+            stoneBody = BodyFactory.CreateBody(world);
+            stoneOrigin = new Vector2(ConvertUnits.ToSimUnits(stoneSprite.Width / 2),
+                ConvertUnits.ToSimUnits(stoneSprite.Height / 2));
+
             CreateGameComponents();
         }
         #endregion
@@ -73,6 +84,7 @@ namespace Platformer
         {
             world.Clear();
             grounds = new List<Ground>();
+            HalfScreenWidth = graphics.GraphicsDevice.Viewport.Width / 2;
 
             Texture2D texture;
             Vector2 location;
@@ -82,24 +94,42 @@ namespace Platformer
             for (int i = 0; i < 10; i++) //number of lines
             {
                 string line = worldFile.ReadLine();
-                for (int k = 0; k < 16; k++) //length of each line
+                for (int k = 0; k < 30; k++) //length of each line
                 {
                     char piece = line[k];
                     if (piece == ' ')
-                    {
-
-                    }
+                    {}
+                    // yellow ground
                     else if (piece == '#')
                     {
                         texture = Content.Load<Texture2D>(@"images\yellowGround");
-                        location = new Vector2((float)k / 2, (float)i / 2 + ConvertUnits.ToSimUnits(25f));
+                        location = new Vector2((float)k / 2, (float)i / 2);
                         ground = new Ground(world, texture, location);
                         grounds.Add(ground);
                     }
+
+                    // grassy ground
+                    else if (piece == '^')
+                    {
+                        texture = Content.Load<Texture2D>(@"images\grassyGround");
+                        location = new Vector2((float)k / 2, (float)i / 2);
+                        ground = new Ground(world, texture, location);
+                        grounds.Add(ground);
+                    }
+
+                    // goal
+                    else if (piece == 'G')
+                    {
+                        texture = Content.Load<Texture2D>(@"images\goal");
+                        location = new Vector2((float)k / 2, (float)i / 2);
+                        goal = new Goal(world, texture, location);
+                    }
+
+                    // player/character
                     else if (piece == 'P')
                     {
                         texture = Content.Load<Texture2D>(@"images\kirby");
-                        location = new Vector2((float)(k / 2) + ConvertUnits.ToSimUnits(25f), (float)(i / 2));
+                        location = new Vector2((float)k / 2, (float)i / 2);
                         characterInitPos = location;
                         character = new Character(world, texture, location);
                     }
@@ -108,8 +138,8 @@ namespace Platformer
 
             // Setup the camera
             Camera.Current.StartTracking(character.Body);
-            //Camera.Current.CenterPointTarget = ConvertUnits.ToDisplayUnits(
-                //target.Body.Position.X);
+            Camera.Current.CenterPointTarget = ConvertUnits.ToDisplayUnits(
+                goal.Body.Position.X);
         }
         #endregion
 
@@ -124,40 +154,36 @@ namespace Platformer
         }
         #endregion
 
-        #region HandleMouseInput
-        private void HandleMouseInput()
-        {
-            MouseState mouseState = Mouse.GetState();
-
-            // Check for initial right click
-            if (lastMouseState.RightButton == ButtonState.Released &&
-                mouseState.RightButton == ButtonState.Pressed)
-            {
-                CreateGameComponents();
-            }
-
-            lastMouseState = mouseState;
-        }
-        #endregion
-
         #region HandleKeyboard
         private void HandleKeyboard()
         {
             KeyboardState state = Keyboard.GetState();
 
+            //move left
             if(state.IsKeyDown(Keys.Left))
             {
-                character.Body.ApplyTorque(-0.1f);
+                character.Body.ApplyTorque(-0.01f);
             }
 
+            //move right
             if (state.IsKeyDown(Keys.Right))
             {
-                character.Body.ApplyTorque(0.1f);
+                character.Body.ApplyTorque(0.01f);
             }
 
-            if ((state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space)) || (state.IsKeyDown(Keys.Up) && oldKeyState.IsKeyUp(Keys.Up)))
+            //jump
+            if ((state.IsKeyDown(Keys.Space) && jumpOldKeyState.IsKeyUp(Keys.Space)) || (state.IsKeyDown(Keys.Up) && jumpOldKeyState.IsKeyUp(Keys.Up)))
             {
                 character.Jump();
+            }
+
+            //stone
+            if (state.IsKeyDown(Keys.Down) || state.IsKeyDown(Keys.S))
+            {
+                isStone = true;
+                character.Body.ResetDynamics();
+                character.Body.Rotation = 0;
+                character.Body.ApplyForce(new Vector2(0, 5));
             }
 
             //reset character
@@ -168,7 +194,7 @@ namespace Platformer
                 character.Body.Position = characterInitPos;
             }
 
-            oldKeyState = state;
+            jumpOldKeyState = state;
         }
         #endregion
 
@@ -180,7 +206,6 @@ namespace Platformer
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            HandleMouseInput();
             HandleKeyboard();
 
             world.Step((float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f);
@@ -204,7 +229,21 @@ namespace Platformer
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
                 null, Camera.Current.TransformationMatrix);
 
-            character.Draw(spriteBatch);
+            goal.Draw(spriteBatch);
+            if(isStone)
+            {
+                spriteBatch.Draw(stoneSprite, 
+                    ConvertUnits.ToDisplayUnits(character.Body.Position), 
+                    null, Color.White, 0, 
+                    stoneOrigin, 
+                    1f, SpriteEffects.None, 0f);
+            }
+            else
+            {
+                character.Draw(spriteBatch);
+            }
+            isStone = false;
+            
             foreach(Ground g in grounds)
             {
                 g.Draw(spriteBatch);

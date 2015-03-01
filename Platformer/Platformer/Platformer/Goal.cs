@@ -6,33 +6,32 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Platformer
 {
-    class Ground
+    class Goal
     {
         public Body Body { get; private set; }
 
-        private Texture2D groundTexture;
+        private Texture2D goalTexture;
 
-        public Ground(World world, Texture2D texture, Vector2 position)
+        public Goal(World world, Texture2D texture, Vector2 position)
         {
-            this.groundTexture = texture;
+            this.goalTexture = texture;
 
             // Create a body for the ground
             Body = BodyFactory.CreateRectangle(world,
-                ConvertUnits.ToSimUnits(groundTexture.Width),
-                ConvertUnits.ToSimUnits(groundTexture.Height), 1f, position);
+                ConvertUnits.ToSimUnits(goalTexture.Width),
+                ConvertUnits.ToSimUnits(goalTexture.Height), 1f, position);
             Body.IsStatic = true;
-            Body.Restitution = 0f;
-            Body.Friction = 100000f;
+            Body.IsSensor = true;
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(groundTexture,
+            spriteBatch.Draw(goalTexture,
                 ConvertUnits.ToDisplayUnits(Body.Position),
                 null,
                 Color.White,
                 Body.Rotation,
-                new Vector2(groundTexture.Width / 2, groundTexture.Height / 2),  // origin  / middle point
+                new Vector2(goalTexture.Width / 2, goalTexture.Height / 2),  // origin  / middle point
                 1f,
                 SpriteEffects.None,
                 0f);
