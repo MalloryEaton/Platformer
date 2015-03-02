@@ -15,8 +15,9 @@ namespace Platformer
 
         public Vector2 Origin;
 
-        private DateTime previousJump = DateTime.Now;   // time at which we previously jumped
-        private const float jumpInterval = 1.0f;        // in seconds
+        //private DateTime previousJump = DateTime.Now;   // time at which we previously jumped
+        //private const float jumpInterval = 1.0f;        // in seconds
+        private int jumpNum = 0;
         private Vector2 jumpForce = new Vector2(0, -0.05f); // applied force when jumping
 
         public Character(World world, Texture2D texture, Vector2 position)
@@ -38,11 +39,12 @@ namespace Platformer
 
         public void Jump()
         {
-            if ((DateTime.Now - previousJump).TotalSeconds >= jumpInterval)
-            {
-                Body.ApplyLinearImpulse(ref jumpForce);
-                previousJump = DateTime.Now;
-            }
+            //if ((DateTime.Now - previousJump).TotalSeconds >= jumpInterval)
+            //{
+            //    Body.ApplyLinearImpulse(ref jumpForce);
+            //    previousJump = DateTime.Now;
+            //}
+            Body.ApplyLinearImpulse(ref jumpForce);
         }
 
         public void Draw(SpriteBatch spriteBatch)

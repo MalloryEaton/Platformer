@@ -21,6 +21,8 @@ namespace Platformer
         private Ground ground;
         private List<Ground> grounds;
         private Goal goal;
+        private Pit pit;
+        private List<Pit> pits;
 
         private KeyboardState jumpOldKeyState;
 
@@ -79,11 +81,45 @@ namespace Platformer
         }
         #endregion
 
+        #region UnloadContent
+        /// <summary>
+        /// UnloadContent will be called once per game and is the place to unload
+        /// all content.
+        /// </summary>
+        protected override void UnloadContent()
+        {
+            // TODO: Unload any non ContentManager content here
+        }
+        #endregion
+
+        #region ResetCharacter
+        private void ResetCharacter()
+        {
+            character.Body.ResetDynamics();
+            character.Body.Rotation = 0;
+            character.Body.Position = characterInitPos;
+        }
+        #endregion
+
+        #region Character_Falls
+        bool Character_Falls(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+        {
+            if (fixtureB.Body.UserData == "pit")
+            {
+                // reset the character
+                ResetCharacter();
+            }
+
+            return true;
+        }
+        #endregion
+
         #region CreateGameComponents (contains reading from file)
         private void CreateGameComponents()
         {
             world.Clear();
             grounds = new List<Ground>();
+            pits = new List<Pit>();
             HalfScreenWidth = graphics.GraphicsDevice.Viewport.Width / 2;
 
             Texture2D texture;
@@ -91,14 +127,14 @@ namespace Platformer
 
             //read in the file
             System.IO.StreamReader worldFile = new System.IO.StreamReader("level1.txt");
-            for (int i = 0; i < 10; i++) //number of lines
+            for (int i = 0; i < 11; i++) //number of lines
             {
                 string line = worldFile.ReadLine();
-                for (int k = 0; k < 30; k++) //length of each line
+                for (int k = 0; k < 35; k++) //length of each line
                 {
                     char piece = line[k];
                     if (piece == ' ')
-                    {}
+                    { }
                     // yellow ground
                     else if (piece == '#')
                     {
@@ -115,6 +151,24 @@ namespace Platformer
                         location = new Vector2((float)k / 2, (float)i / 2);
                         ground = new Ground(world, texture, location);
                         grounds.Add(ground);
+                    }
+
+                    // platform
+                    else if (piece == 't')
+                    {
+                        texture = Content.Load<Texture2D>(@"images\transparentGround");
+                        location = new Vector2((float)k / 2, (float)i / 2);
+                        ground = new Ground(world, texture, location);
+                        grounds.Add(ground);
+                    }
+
+                    // pit
+                    else if (piece == '_')
+                    {
+                        texture = Content.Load<Texture2D>(@"images\pitSensor");
+                        location = new Vector2((float)k / 2, (float)i / 2);
+                        pit = new Pit(world, texture, location);
+                        pits.Add(pit);
                     }
 
                     // goal
@@ -140,17 +194,9 @@ namespace Platformer
             Camera.Current.StartTracking(character.Body);
             Camera.Current.CenterPointTarget = ConvertUnits.ToDisplayUnits(
                 goal.Body.Position.X);
-        }
-        #endregion
 
-        #region UnloadContent
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// all content.
-        /// </summary>
-        protected override void UnloadContent()
-        {
-            // TODO: Unload any non ContentManager content here
+            // event listeners
+            character.Body.OnCollision += Character_Falls;
         }
         #endregion
 
@@ -189,9 +235,7 @@ namespace Platformer
             //reset character
             if (state.IsKeyDown(Keys.R))
             {
-                character.Body.ResetDynamics();
-                character.Body.Rotation = 0;
-                character.Body.Position = characterInitPos;
+                ResetCharacter();
             }
 
             jumpOldKeyState = state;
@@ -229,11 +273,14 @@ namespace Platformer
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
                 null, Camera.Current.TransformationMatrix);
 
+            //draw goal
             goal.Draw(spriteBatch);
+
+            //draw character
             if(isStone)
             {
-                spriteBatch.Draw(stoneSprite, 
-                    ConvertUnits.ToDisplayUnits(character.Body.Position), 
+                spriteBatch.Draw(stoneSprite,
+                    ConvertUnits.ToDisplayUnits(character.Body.Position - stoneOrigin), 
                     null, Color.White, 0, 
                     stoneOrigin, 
                     1f, SpriteEffects.None, 0f);
@@ -244,9 +291,16 @@ namespace Platformer
             }
             isStone = false;
             
+            //draw grounds
             foreach(Ground g in grounds)
             {
                 g.Draw(spriteBatch);
+            }
+
+            //draw pit
+            foreach(Pit p in pits)
+            {
+                p.Draw(spriteBatch);
             }
 
             spriteBatch.End();
