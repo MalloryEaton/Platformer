@@ -114,6 +114,19 @@ namespace Platformer
         }
         #endregion
 
+        #region Character_Reaches_Goal
+        bool Character_Reaches_Goal(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+        {
+            if (fixtureB.Body.UserData == "goal")
+            {
+                // reset the character
+                ResetCharacter();
+            }
+
+            return true;
+        }
+        #endregion
+
         #region CreateGameComponents (contains reading from file)
         private void CreateGameComponents()
         {
@@ -197,6 +210,7 @@ namespace Platformer
 
             // event listeners
             character.Body.OnCollision += Character_Falls;
+            character.Body.OnCollision += Character_Reaches_Goal;
         }
         #endregion
 
