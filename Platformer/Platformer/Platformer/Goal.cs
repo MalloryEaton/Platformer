@@ -21,7 +21,7 @@ namespace Platformer
                 ConvertUnits.ToSimUnits(goalTexture.Width),
                 ConvertUnits.ToSimUnits(goalTexture.Height), 1f, position);
             Body.IsStatic = true;
-            //Body.IsSensor = true;
+            Body.IsSensor = true;
             Body.UserData = "goal";
         }
 

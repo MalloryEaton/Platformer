@@ -34,6 +34,7 @@ namespace Platformer
         public static float HalfScreenWidth { get; private set; }
 
         private Vector2 characterInitPos;
+        private int currentLevel = 1;
 
         #region Game1
         public Game1()
@@ -138,12 +139,14 @@ namespace Platformer
             Texture2D texture;
             Vector2 location;
 
+
+            string level = "level" + currentLevel + ".txt";
             //read in the file
-            System.IO.StreamReader worldFile = new System.IO.StreamReader("level1.txt");
+            System.IO.StreamReader worldFile = new System.IO.StreamReader(level);
             for (int i = 0; i < 11; i++) //number of lines
             {
                 string line = worldFile.ReadLine();
-                for (int k = 0; k < 35; k++) //length of each line
+                for (int k = 0; k < 40; k++) //length of each line
                 {
                     char piece = line[k];
                     if (piece == ' ')
@@ -220,15 +223,17 @@ namespace Platformer
             KeyboardState state = Keyboard.GetState();
 
             //move left
-            if(state.IsKeyDown(Keys.Left))
+            if(state.IsKeyDown(Keys.Left) && !isStone)
             {
                 character.Body.ApplyTorque(-0.01f);
+                //character.Body.Position -= new Vector2(0.05f, 0f);
             }
 
             //move right
-            if (state.IsKeyDown(Keys.Right))
+            if (state.IsKeyDown(Keys.Right) && !isStone)
             {
                 character.Body.ApplyTorque(0.01f);
+                //character.Body.Position += new Vector2(0.05f, 0f);
             }
 
             //jump
@@ -238,12 +243,18 @@ namespace Platformer
             }
 
             //stone
-            if (state.IsKeyDown(Keys.Down) || state.IsKeyDown(Keys.S))
+            if (state.IsKeyDown(Keys.Down))
             {
                 isStone = true;
                 character.Body.ResetDynamics();
                 character.Body.Rotation = 0;
                 character.Body.ApplyForce(new Vector2(0, 5));
+            }
+
+            //is not stone
+            if (state.IsKeyUp(Keys.Down))
+            {
+                isStone = false;
             }
 
             //reset character
@@ -303,7 +314,7 @@ namespace Platformer
             {
                 character.Draw(spriteBatch);
             }
-            isStone = false;
+            //isStone = false;
             
             //draw grounds
             foreach(Ground g in grounds)

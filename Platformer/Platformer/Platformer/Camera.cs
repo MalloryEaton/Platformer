@@ -60,11 +60,11 @@ namespace Platformer
             trackingBody = null;
         }
 
-        public Vector2 ScreenToSimulation(Vector2 mousePosition)
-        {
-            Vector2 simMousePosition = Vector2.Transform(mousePosition,
-                Matrix.Invert(TransformationMatrix));
-            return ConvertUnits.ToSimUnits(simMousePosition);
-        }
+        //public Vector2 ScreenToSimulation(Vector2 mousePosition)
+        //{
+        //    Vector2 simMousePosition = Vector2.Transform(mousePosition,
+        //        Matrix.Invert(TransformationMatrix));
+        //    return ConvertUnits.ToSimUnits(simMousePosition);
+        //}
     }
 }
