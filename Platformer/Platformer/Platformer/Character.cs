@@ -39,7 +39,15 @@ namespace Platformer
 
             Body.BodyType = BodyType.Dynamic;
             Body.Restitution = 0f;
-            Body.Friction = 1f;
+            if (Game1.currentLevel == 2)
+            {
+                Body.Friction = 0.1f;
+            }
+            else
+            {
+                Body.Friction = 1f;
+            }
+            
         }
 
         public void Jump()

@@ -37,7 +37,7 @@ namespace Platformer
         public static float HalfScreenWidth { get; private set; }
 
         private Vector2 characterInitPos;
-        private int currentLevel = 1;
+        public static int currentLevel = 1;
 
         #region Game1
         public Game1()
