@@ -307,20 +307,6 @@ namespace Platformer
             //draw goal
             goal.Draw(spriteBatch);
 
-            //draw character
-            if(isStone)
-            {
-                spriteBatch.Draw(stoneSprite,
-                    ConvertUnits.ToDisplayUnits(character.Body.Position - stoneOrigin), 
-                    null, Color.White, 0, 
-                    stoneOrigin, 
-                    1f, SpriteEffects.None, 0f);
-            }
-            else
-            {
-                character.Draw(spriteBatch);
-            }
-
             //draw borders
             foreach (Border b in borders)
             {
@@ -337,6 +323,20 @@ namespace Platformer
             foreach(Pit p in pits)
             {
                 p.Draw(spriteBatch);
+            }
+
+            //draw character
+            if (isStone)
+            {
+                spriteBatch.Draw(stoneSprite,
+                    ConvertUnits.ToDisplayUnits(character.Body.Position - stoneOrigin),
+                    null, Color.White, 0,
+                    stoneOrigin,
+                    1f, SpriteEffects.None, 0f);
+            }
+            else
+            {
+                character.Draw(spriteBatch);
             }
 
             spriteBatch.End();
