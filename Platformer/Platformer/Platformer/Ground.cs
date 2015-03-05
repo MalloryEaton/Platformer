@@ -22,7 +22,7 @@ namespace Platformer
                 ConvertUnits.ToSimUnits(groundTexture.Height), 1f, position);
             Body.IsStatic = true;
             Body.Restitution = 0f;
-            Body.Friction = 100000f;
+            Body.Friction = 1f;
         }
 
         public void Draw(SpriteBatch spriteBatch)

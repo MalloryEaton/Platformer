@@ -4,6 +4,7 @@ using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 using System.Collections.Generic;
 
 namespace Platformer
@@ -143,10 +144,13 @@ namespace Platformer
             string level = "level" + currentLevel + ".txt";
             //read in the file
             System.IO.StreamReader worldFile = new System.IO.StreamReader(level);
-            for (int i = 0; i < 11; i++) //number of lines
+            string numberOfLines = worldFile.ReadLine();
+            string lengthOfLine = worldFile.ReadLine();
+
+            for (int i = 0; i < Convert.ToInt32(numberOfLines); i++)
             {
                 string line = worldFile.ReadLine();
-                for (int k = 0; k < 40; k++) //length of each line
+                for (int k = 0; k < Convert.ToInt32(lengthOfLine); k++)
                 {
                     char piece = line[k];
                     if (piece == ' ')
@@ -225,14 +229,14 @@ namespace Platformer
             //move left
             if(state.IsKeyDown(Keys.Left) && !isStone)
             {
-                character.Body.ApplyTorque(-0.01f);
+                character.Body.ApplyTorque(-0.05f);
                 //character.Body.Position -= new Vector2(0.05f, 0f);
             }
 
             //move right
             if (state.IsKeyDown(Keys.Right) && !isStone)
             {
-                character.Body.ApplyTorque(0.01f);
+                character.Body.ApplyTorque(0.05f);
                 //character.Body.Position += new Vector2(0.05f, 0f);
             }
 
@@ -248,7 +252,7 @@ namespace Platformer
                 isStone = true;
                 character.Body.ResetDynamics();
                 character.Body.Rotation = 0;
-                character.Body.ApplyForce(new Vector2(0, 5));
+                character.Body.ApplyForce(new Vector2(0, 30f));
             }
 
             //is not stone

@@ -15,10 +15,12 @@ namespace Platformer
 
         public Vector2 Origin;
 
+        public int lives;
+
         //private DateTime previousJump = DateTime.Now;   // time at which we previously jumped
         //private const float jumpInterval = 1.0f;        // in seconds
         //private int jumpNum = 0;
-        private Vector2 jumpForce = new Vector2(0, -0.05f); // applied force when jumping
+        private Vector2 jumpForce = new Vector2(0, -0.3f); // applied force when jumping
 
         public Character(World world, Texture2D texture, Vector2 position)
         {
@@ -27,7 +29,7 @@ namespace Platformer
             //create a body for the character
             Body = BodyFactory.CreateCircle(world,
                 ConvertUnits.ToSimUnits(characterTexture.Width / 2),
-                ConvertUnits.ToSimUnits(characterTexture.Height / 2), position);
+                1f, position);
 
             Origin = new Vector2(ConvertUnits.ToSimUnits(characterTexture.Width / 2),
                 ConvertUnits.ToSimUnits(characterTexture.Height / 2));
@@ -37,7 +39,7 @@ namespace Platformer
 
             Body.BodyType = BodyType.Dynamic;
             Body.Restitution = 0f;
-            Body.Friction = 1000000f;
+            Body.Friction = 1f;
         }
 
         public void Jump()
