@@ -37,12 +37,11 @@ namespace Platformer
 
                 // If tracking body is not located in the center
                 // of the view (half screen width + current offset)
-                if (ConvertUnits.ToDisplayUnits(trackingBody.Position.X) !=
-                    halfScreenWidth + offsetX)
+                if (ConvertUnits.ToDisplayUnits(trackingBody.Position.X) != halfScreenWidth + offsetX)
                 {
                     offsetX = MathHelper.Clamp(
-                        ConvertUnits.ToDisplayUnits(trackingBody.Position.X) -
-                        halfScreenWidth, 0, CenterPointTarget - halfScreenWidth);
+                        ConvertUnits.ToDisplayUnits(trackingBody.Position.X) - halfScreenWidth, 
+                        0, CenterPointTarget - halfScreenWidth);
                 }
             }
 
@@ -59,12 +58,5 @@ namespace Platformer
         {
             trackingBody = null;
         }
-
-        //public Vector2 ScreenToSimulation(Vector2 mousePosition)
-        //{
-        //    Vector2 simMousePosition = Vector2.Transform(mousePosition,
-        //        Matrix.Invert(TransformationMatrix));
-        //    return ConvertUnits.ToSimUnits(simMousePosition);
-        //}
     }
 }

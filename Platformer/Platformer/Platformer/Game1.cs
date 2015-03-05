@@ -21,6 +21,8 @@ namespace Platformer
         private Character character;
         private Ground ground;
         private List<Ground> grounds;
+        private Border border;
+        private List<Border> borders;
         private Goal goal;
         private Pit pit;
         private List<Pit> pits;
@@ -135,11 +137,11 @@ namespace Platformer
             world.Clear();
             grounds = new List<Ground>();
             pits = new List<Pit>();
+            borders = new List<Border>();
             HalfScreenWidth = graphics.GraphicsDevice.Viewport.Width / 2;
 
             Texture2D texture;
             Vector2 location;
-
 
             string level = "level" + currentLevel + ".txt";
             //read in the file
@@ -155,13 +157,13 @@ namespace Platformer
                     char piece = line[k];
                     if (piece == ' ')
                     { }
-                    // yellow ground
+                    // borders
                     else if (piece == '#')
                     {
                         texture = Content.Load<Texture2D>(@"images\yellowGround");
                         location = new Vector2((float)k / 2, (float)i / 2);
-                        ground = new Ground(world, texture, location);
-                        grounds.Add(ground);
+                        border = new Border(world, texture, location);
+                        borders.Add(border);
                     }
 
                     // grassy ground
@@ -318,7 +320,12 @@ namespace Platformer
             {
                 character.Draw(spriteBatch);
             }
-            //isStone = false;
+
+            //draw borders
+            foreach (Border b in borders)
+            {
+                b.Draw(spriteBatch);
+            }
             
             //draw grounds
             foreach(Ground g in grounds)
