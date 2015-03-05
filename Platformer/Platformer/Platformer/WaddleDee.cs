@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Platformer
 {
-    class Burt
+    class WaddleDee
     {
         // Texture stuff
         Point frameSize = new Point(46, 40);

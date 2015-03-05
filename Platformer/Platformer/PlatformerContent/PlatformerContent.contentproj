@@ -91,15 +91,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="images\topBorder.png">
-      <Name>topBorder</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="images\sideBorder.png">
-      <Name>sideBorder</Name>
+    <Compile Include="images\burt.png">
+      <Name>burt</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
