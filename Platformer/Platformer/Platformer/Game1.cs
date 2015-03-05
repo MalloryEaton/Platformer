@@ -123,8 +123,15 @@ namespace Platformer
         {
             if (fixtureB.Body.UserData == "goal")
             {
-                // reset the character
-                ResetCharacter();
+                currentLevel++;
+                if (currentLevel > 2)
+                {
+                    ResetCharacter();
+                }
+                else
+                {
+                    CreateGameComponents();
+                }
             }
 
             return true;
@@ -135,10 +142,27 @@ namespace Platformer
         private void CreateGameComponents()
         {
             world.Clear();
+            HalfScreenWidth = graphics.GraphicsDevice.Viewport.Width / 2;
+
+            ReadInLevels();
+
+            // Setup the camera
+            Camera.Current.StartTracking(character.Body);
+            Camera.Current.CenterPointTarget = ConvertUnits.ToDisplayUnits(
+                goal.Body.Position.X);
+
+            // event listeners
+            character.Body.OnCollision += Character_Falls;
+            character.Body.OnCollision += Character_Reaches_Goal;
+        }
+        #endregion
+
+        #region ReadInLevels
+        private void ReadInLevels()
+        {
             grounds = new List<Ground>();
             pits = new List<Pit>();
             borders = new List<Border>();
-            HalfScreenWidth = graphics.GraphicsDevice.Viewport.Width / 2;
 
             Texture2D texture;
             Vector2 location;
@@ -157,19 +181,58 @@ namespace Platformer
                     char piece = line[k];
                     if (piece == ' ')
                     { }
+
                     // borders
                     else if (piece == '#')
                     {
-                        texture = Content.Load<Texture2D>(@"images\yellowGround");
+                        string img = "";
+                        switch (currentLevel)
+                        {
+                            case 1:
+                                {
+                                    img = "images\\yellowGround";
+                                }
+                                break;
+                            case 2:
+                                {
+                                    img = "images\\iceBorder";
+                                }
+                                break;
+                            //case 3:
+                            //    {
+
+                            //    }
+                            //    break;
+                        }
+                        texture = Content.Load<Texture2D>(img);
                         location = new Vector2((float)k / 2, (float)i / 2);
                         border = new Border(world, texture, location);
                         borders.Add(border);
                     }
 
-                    // grassy ground
+                    // ground
                     else if (piece == '^')
                     {
-                        texture = Content.Load<Texture2D>(@"images\grassyGround");
+                        string img = "";
+                        switch (currentLevel)
+                        {
+                            case 1:
+                                {
+                                    img = "images\\grassyGround";
+                                }
+                                break;
+                            case 2:
+                                {
+                                    img = "images\\iceGround";
+                                }
+                                break;
+                            //case 3:
+                            //    {
+
+                            //    }
+                            //    break;
+                        }
+                        texture = Content.Load<Texture2D>(img);
                         location = new Vector2((float)k / 2, (float)i / 2);
                         ground = new Ground(world, texture, location);
                         grounds.Add(ground);
@@ -178,7 +241,26 @@ namespace Platformer
                     // platform
                     else if (piece == 't')
                     {
-                        texture = Content.Load<Texture2D>(@"images\transparentGround");
+                        string img = "";
+                        switch (currentLevel)
+                        {
+                            case 1:
+                                {
+                                    img = "images\\transparentGround";
+                                }
+                                break;
+                            case 2:
+                                {
+                                    img = "images\\icePlatform";
+                                }
+                                break;
+                            //case 3:
+                            //    {
+
+                            //    }
+                            //    break;
+                        }
+                        texture = Content.Load<Texture2D>(img);
                         location = new Vector2((float)k / 2, (float)i / 2);
                         ground = new Ground(world, texture, location);
                         grounds.Add(ground);
@@ -211,15 +293,6 @@ namespace Platformer
                     }
                 }
             }
-
-            // Setup the camera
-            Camera.Current.StartTracking(character.Body);
-            Camera.Current.CenterPointTarget = ConvertUnits.ToDisplayUnits(
-                goal.Body.Position.X);
-
-            // event listeners
-            character.Body.OnCollision += Character_Falls;
-            character.Body.OnCollision += Character_Reaches_Goal;
         }
         #endregion
 
