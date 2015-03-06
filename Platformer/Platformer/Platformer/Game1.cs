@@ -196,7 +196,7 @@ namespace Platformer
                         {
                             case 1:
                                 {
-                                    img = "images\\yellowGround";
+                                    img = "images\\sideBorder";
                                 }
                                 break;
                             case 2:
@@ -239,6 +239,24 @@ namespace Platformer
                             //    break;
                         }
                         texture = Content.Load<Texture2D>(img);
+                        location = new Vector2((float)k / 2, (float)i / 2);
+                        ground = new Ground(world, texture, location);
+                        grounds.Add(ground);
+                    }
+
+                    // yellow ground
+                    else if (piece == 'Y')
+                    {
+                        texture = Content.Load<Texture2D>("images\\yellowGround");
+                        location = new Vector2((float)k / 2, (float)i / 2);
+                        ground = new Ground(world, texture, location);
+                        grounds.Add(ground);
+                    }
+
+                    // orange ground
+                    else if (piece == 'O')
+                    {
+                        texture = Content.Load<Texture2D>("images\\orangeGround");
                         location = new Vector2((float)k / 2, (float)i / 2);
                         ground = new Ground(world, texture, location);
                         grounds.Add(ground);
@@ -426,6 +444,7 @@ namespace Platformer
         }
         #endregion
 
+        #region DrawBackground
         private void DrawBackground()
         {
             int screenWidth = GraphicsDevice.Viewport.Width;
@@ -440,5 +459,6 @@ namespace Platformer
                 spriteBatch.Draw(background2, screen, Color.White);
             }
         }
+        #endregion
     }
 }

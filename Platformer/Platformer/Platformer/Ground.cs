@@ -19,12 +19,12 @@ namespace Platformer
             // Create a body for the ground
             Body = BodyFactory.CreateRectangle(world,
                 ConvertUnits.ToSimUnits(groundTexture.Width),
-                ConvertUnits.ToSimUnits(groundTexture.Height - 4), 1f, position);
+                ConvertUnits.ToSimUnits(groundTexture.Height - 5), 1f, position);
             Body.IsStatic = true;
             Body.Restitution = 0f;
             if (Game1.currentLevel == 2)
             {
-                Body.Friction = 0.1f;
+                Body.Friction = 0.05f;
             }
             else
             {
