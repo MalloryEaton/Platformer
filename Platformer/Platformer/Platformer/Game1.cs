@@ -34,6 +34,9 @@ namespace Platformer
         private Body stoneBody;
         private Vector2 stoneOrigin;
 
+        private Texture2D background1;
+        private Texture2D background2;
+
         public static float HalfScreenWidth { get; private set; }
 
         private Vector2 characterInitPos;
@@ -80,6 +83,9 @@ namespace Platformer
             stoneBody = BodyFactory.CreateBody(world);
             stoneOrigin = new Vector2(ConvertUnits.ToSimUnits(stoneSprite.Width / 2),
                 ConvertUnits.ToSimUnits(stoneSprite.Height / 2));
+
+            background1 = Content.Load<Texture2D>(@"images/grassBackground");
+            background2 = Content.Load<Texture2D>(@"images/iceBackground");
 
             CreateGameComponents();
         }
@@ -377,6 +383,8 @@ namespace Platformer
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
                 null, Camera.Current.TransformationMatrix);
 
+            DrawBackground();
+
             //draw goal
             goal.Draw(spriteBatch);
 
@@ -417,5 +425,20 @@ namespace Platformer
             base.Draw(gameTime);
         }
         #endregion
+
+        private void DrawBackground()
+        {
+            int screenWidth = GraphicsDevice.Viewport.Width;
+            int screenHeight = GraphicsDevice.Viewport.Height;
+            Rectangle screen = new Rectangle(0, 0, 3000, screenHeight);
+            if (currentLevel == 1)
+            {
+                spriteBatch.Draw(background1, screen, Color.White);
+            }
+            else if(currentLevel >= 2)
+            {
+                spriteBatch.Draw(background2, screen, Color.White);
+            }
+        }
     }
 }

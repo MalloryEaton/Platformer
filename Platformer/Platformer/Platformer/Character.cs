@@ -17,9 +17,6 @@ namespace Platformer
 
         public int lives;
 
-        //private DateTime previousJump = DateTime.Now;   // time at which we previously jumped
-        //private const float jumpInterval = 1.0f;        // in seconds
-        //private int jumpNum = 0;
         private Vector2 jumpForce = new Vector2(0, -0.3f); // applied force when jumping
 
         public Character(World world, Texture2D texture, Vector2 position)
@@ -39,14 +36,7 @@ namespace Platformer
 
             Body.BodyType = BodyType.Dynamic;
             Body.Restitution = 0f;
-            if (Game1.currentLevel == 2)
-            {
-                Body.Friction = 0.1f;
-            }
-            else
-            {
-                Body.Friction = 1f;
-            }
+            Body.Friction = 1f;
             
         }
 
