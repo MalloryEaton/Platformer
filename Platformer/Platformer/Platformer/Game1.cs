@@ -2,6 +2,7 @@ using FarseerPhysics;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -26,6 +27,8 @@ namespace Platformer
         private Goal goal;
         private Pit pit;
         private List<Pit> pits;
+        private Barrier barrier;
+        private List<Barrier> barriers;
 
         private KeyboardState jumpOldKeyState;
 
@@ -36,6 +39,9 @@ namespace Platformer
 
         private Texture2D background1;
         private Texture2D background2;
+
+        private SoundEffect jump;
+        private SoundEffect grassLandMusic;
 
         public static float HalfScreenWidth { get; private set; }
 
@@ -88,6 +94,12 @@ namespace Platformer
             background2 = Content.Load<Texture2D>(@"images/iceBackground");
 
             CreateGameComponents();
+
+            jump = Content.Load<SoundEffect>(@"sounds/jump");
+            grassLandMusic = Content.Load<SoundEffect>(@"sounds/level1");
+            SoundEffectInstance instance = grassLandMusic.CreateInstance();
+            instance.IsLooped = true;
+            grassLandMusic.Play();
         }
         #endregion
 
@@ -169,6 +181,7 @@ namespace Platformer
             grounds = new List<Ground>();
             pits = new List<Pit>();
             borders = new List<Border>();
+            barriers = new List<Barrier>();
 
             Texture2D texture;
             Vector2 location;
@@ -307,6 +320,15 @@ namespace Platformer
                         goal = new Goal(world, texture, location);
                     }
 
+                    // barrier
+                    else if (piece == 'b')
+                    {
+                        texture = Content.Load<Texture2D>("images\\barrier");
+                        location = new Vector2((float)k / 2, (float)i / 2);
+                        barrier = new Barrier(world, texture, location);
+                        barriers.Add(barrier);
+                    }
+
                     // player/character
                     else if (piece == 'P')
                     {
@@ -343,6 +365,7 @@ namespace Platformer
             if ((state.IsKeyDown(Keys.Space) && jumpOldKeyState.IsKeyUp(Keys.Space)) || (state.IsKeyDown(Keys.Up) && jumpOldKeyState.IsKeyUp(Keys.Up)))
             {
                 character.Jump();
+                jump.Play();
             }
 
             //stone
@@ -418,10 +441,16 @@ namespace Platformer
                 g.Draw(spriteBatch);
             }
 
-            //draw pit
+            //draw pits
             foreach(Pit p in pits)
             {
                 p.Draw(spriteBatch);
+            }
+
+            //draw barriers
+            foreach(Barrier b in barriers)
+            {
+                b.Draw(spriteBatch);
             }
 
             //draw character

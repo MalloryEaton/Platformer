@@ -37,7 +37,9 @@ namespace Platformer
             Body.BodyType = BodyType.Dynamic;
             Body.Restitution = 0f;
             Body.Friction = 1f;
-            
+
+            Body.CollisionCategories = Category.Cat1;
+            Body.CollidesWith = Category.Cat1;
         }
 
         public void Jump()

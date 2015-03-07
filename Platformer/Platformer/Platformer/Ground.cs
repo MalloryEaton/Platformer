@@ -30,6 +30,8 @@ namespace Platformer
             {
                 Body.Friction = 1f;
             }
+            Body.CollisionCategories = Category.Cat1;
+            Body.CollidesWith = Category.Cat1;
         }
 
         public void Draw(SpriteBatch spriteBatch)

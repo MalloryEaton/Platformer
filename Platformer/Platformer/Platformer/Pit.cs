@@ -23,6 +23,8 @@ namespace Platformer
             Body.IsStatic = true;
             //body.IsSensor = true;
             Body.UserData = "pit";
+            Body.CollisionCategories = Category.Cat1;
+            Body.CollidesWith = Category.Cat1;
         }
 
         public void Draw(SpriteBatch spriteBatch)
