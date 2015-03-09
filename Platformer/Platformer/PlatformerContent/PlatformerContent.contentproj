@@ -86,9 +86,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="levels\level1.txt">
+    <Content Include="levels\level1.txt">
       <Name>level1</Name>
-    </None>
+      <Processor>PassThroughProcessor</Processor>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="images\burt.png">

@@ -30,7 +30,7 @@ namespace Platformer
         private Barrier barrier;
         private List<Barrier> barriers;
 
-        private KeyboardState jumpOldKeyState;
+        private KeyboardState oldKeyState;
 
         public bool isStone = false;
         private Texture2D stoneSprite;
@@ -92,6 +92,8 @@ namespace Platformer
 
             background1 = Content.Load<Texture2D>(@"images/grassBackground");
             background2 = Content.Load<Texture2D>(@"images/iceBackground");
+
+
 
             CreateGameComponents();
 
@@ -185,10 +187,10 @@ namespace Platformer
 
             Texture2D texture;
             Vector2 location;
-
+            
             string level = "level" + currentLevel + ".txt";
             //read in the file
-            System.IO.StreamReader worldFile = new System.IO.StreamReader(level);
+            System.IO.StreamReader worldFile = new System.IO.StreamReader(Content.RootDirectory + @"/levels/" + level);
             string numberOfLines = worldFile.ReadLine();
             string lengthOfLine = worldFile.ReadLine();
 
@@ -348,21 +350,32 @@ namespace Platformer
             KeyboardState state = Keyboard.GetState();
 
             //move left
-            if(state.IsKeyDown(Keys.Left) && !isStone)
+            if(state.IsKeyDown(Keys.Left) && oldKeyState.IsKeyUp(Keys.Left) && !isStone)
             {
-                character.Body.ApplyTorque(-0.05f);
+                //character.Body.ApplyTorque(-0.05f);
                 //character.Body.Position -= new Vector2(0.05f, 0f);
+                if (character.Taps > -2)
+                {
+                    character.Body.ApplyForce(new Vector2(-15f, 0f));
+                    character.Taps -= 1;
+                }
+                
             }
 
             //move right
-            if (state.IsKeyDown(Keys.Right) && !isStone)
+            if (state.IsKeyDown(Keys.Right) && oldKeyState.IsKeyUp(Keys.Right) && !isStone)
             {
-                character.Body.ApplyTorque(0.05f);
+                //character.Body.ApplyTorque(0.05f);
                 //character.Body.Position += new Vector2(0.05f, 0f);
+                if (character.Taps < 2)
+                {
+                    character.Body.ApplyForce(new Vector2(15f, 0f));
+                    character.Taps += 1;
+                }
             }
 
             //jump
-            if ((state.IsKeyDown(Keys.Space) && jumpOldKeyState.IsKeyUp(Keys.Space)) || (state.IsKeyDown(Keys.Up) && jumpOldKeyState.IsKeyUp(Keys.Up)))
+            if ((state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space)) || (state.IsKeyDown(Keys.Up) && oldKeyState.IsKeyUp(Keys.Up)))
             {
                 character.Jump();
                 jump.Play();
@@ -375,6 +388,7 @@ namespace Platformer
                 character.Body.ResetDynamics();
                 character.Body.Rotation = 0;
                 character.Body.ApplyForce(new Vector2(0, 30f));
+                character.Taps = 0;
             }
 
             //is not stone
@@ -389,7 +403,7 @@ namespace Platformer
                 ResetCharacter();
             }
 
-            jumpOldKeyState = state;
+            oldKeyState = state;
         }
         #endregion
 

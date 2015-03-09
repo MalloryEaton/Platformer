@@ -17,12 +17,30 @@ namespace Platformer
 
         public int lives;
 
+        private int taps;
+        public int Taps 
+        { 
+            get
+            {
+                return taps;
+            }
+            set 
+            {
+                if(value > 2)
+                    taps = 2;
+                else if (value < -2)
+                    taps = -2;
+                else
+                    taps = value;
+            } 
+        }
+
         private Vector2 jumpForce = new Vector2(0, -0.3f); // applied force when jumping
 
         public Character(World world, Texture2D texture, Vector2 position)
         {
             this.characterTexture = texture;
-
+            taps = 0;
             //create a body for the character
             Body = BodyFactory.CreateCircle(world,
                 ConvertUnits.ToSimUnits(characterTexture.Width / 2),
