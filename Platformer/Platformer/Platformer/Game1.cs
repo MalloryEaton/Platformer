@@ -42,6 +42,8 @@ namespace Platformer
 
         private SoundEffect jump;
         private SoundEffect grassLandMusic;
+        SoundEffectInstance instance;
+        private SoundEffect attack;
 
         public static float HalfScreenWidth { get; private set; }
 
@@ -93,15 +95,14 @@ namespace Platformer
             background1 = Content.Load<Texture2D>(@"images/grassBackground");
             background2 = Content.Load<Texture2D>(@"images/iceBackground");
 
+            jump = Content.Load<SoundEffect>(@"sounds/jump");
+            grassLandMusic = Content.Load<SoundEffect>(@"sounds/grasslandMusic");
+            instance = grassLandMusic.CreateInstance();
+            instance.IsLooped = true;
 
+            attack = Content.Load<SoundEffect>(@"sounds/stone");
 
             CreateGameComponents();
-
-            jump = Content.Load<SoundEffect>(@"sounds/jump");
-            grassLandMusic = Content.Load<SoundEffect>(@"sounds/level1");
-            SoundEffectInstance instance = grassLandMusic.CreateInstance();
-            instance.IsLooped = true;
-            grassLandMusic.Play();
         }
         #endregion
 
@@ -158,7 +159,7 @@ namespace Platformer
         }
         #endregion
 
-        #region CreateGameComponents (contains reading from file)
+        #region CreateGameComponents
         private void CreateGameComponents()
         {
             world.Clear();
@@ -190,7 +191,7 @@ namespace Platformer
             
             string level = "level" + currentLevel + ".txt";
             //read in the file
-            System.IO.StreamReader worldFile = new System.IO.StreamReader(Content.RootDirectory + @"/levels/" + level);
+            System.IO.StreamReader worldFile = new System.IO.StreamReader(level);
             string numberOfLines = worldFile.ReadLine();
             string lengthOfLine = worldFile.ReadLine();
 
@@ -350,28 +351,28 @@ namespace Platformer
             KeyboardState state = Keyboard.GetState();
 
             //move left
-            if(state.IsKeyDown(Keys.Left) && oldKeyState.IsKeyUp(Keys.Left) && !isStone)
+            if(state.IsKeyDown(Keys.Left)&& !isStone)
             {
-                //character.Body.ApplyTorque(-0.05f);
+                character.Body.ApplyTorque(-0.05f);
                 //character.Body.Position -= new Vector2(0.05f, 0f);
-                if (character.Taps > -2)
-                {
-                    character.Body.ApplyForce(new Vector2(-15f, 0f));
-                    character.Taps -= 1;
-                }
+                //if (character.Taps > -2)
+                //{
+                //    character.Body.ApplyForce(new Vector2(-15f, 0f));
+                //    character.Taps -= 1;
+                //}
                 
             }
 
             //move right
-            if (state.IsKeyDown(Keys.Right) && oldKeyState.IsKeyUp(Keys.Right) && !isStone)
+            if (state.IsKeyDown(Keys.Right) && !isStone)
             {
-                //character.Body.ApplyTorque(0.05f);
+                character.Body.ApplyTorque(0.05f);
                 //character.Body.Position += new Vector2(0.05f, 0f);
-                if (character.Taps < 2)
-                {
-                    character.Body.ApplyForce(new Vector2(15f, 0f));
-                    character.Taps += 1;
-                }
+                //if (character.Taps < 2)
+                //{
+                //    character.Body.ApplyForce(new Vector2(15f, 0f));
+                //    character.Taps += 1;
+                //}
             }
 
             //jump
@@ -384,11 +385,15 @@ namespace Platformer
             //stone
             if (state.IsKeyDown(Keys.Down))
             {
+                if(!isStone)
+                {
+                    attack.Play();
+                }
                 isStone = true;
                 character.Body.ResetDynamics();
                 character.Body.Rotation = 0;
                 character.Body.ApplyForce(new Vector2(0, 30f));
-                character.Taps = 0;
+                //character.Taps = 0;
             }
 
             //is not stone
@@ -415,6 +420,11 @@ namespace Platformer
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            if (instance.State == SoundState.Stopped)
+            {
+                instance.Play();
+            }
+
             HandleKeyboard();
 
             world.Step((float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f);

@@ -86,11 +86,19 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="levels\level1.txt">
-      <Name>level1</Name>
-      <Processor>PassThroughProcessor</Processor>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <Content Include="levels\level2.txt">
+      <Name>level2</Name>
     </Content>
+    <Compile Include="sounds\stone.wav">
+      <Name>stone</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="sounds\grasslandMusic.wav">
+      <Name>grasslandMusic</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="images\burt.png">
@@ -163,11 +171,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="sounds\level1.wav">
+    <Content Include="levels\level1.txt">
       <Name>level1</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-    </Compile>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!--  To modify your build process, add your task inside one of the targets below and uncomment it. 

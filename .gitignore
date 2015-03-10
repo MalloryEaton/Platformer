@@ -184,3 +184,7 @@ FakesAssemblies/
 
 # Save the DLL
 !Platformer/Platformer/bin/x86/Debug/FarseerPhysics XNA.dll
+
+#Save the levels
+!Platformer/Platformer/bin/x86/Debug/level1.txt
+!Platformer/Platformer/bin/x86/Debug/level2.txt
