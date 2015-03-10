@@ -86,6 +86,21 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="images\sandBackground.png">
+      <Name>sandBackground</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="images\sandGround.png">
+      <Name>sandGround</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="images\sandPlatform.png">
+      <Name>sandPlatform</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
     <Content Include="levels\level2.txt">
       <Name>level2</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -100,6 +115,9 @@
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
+    <Content Include="levels\level3.txt">
+      <Name>level3</Name>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="images\burt.png">

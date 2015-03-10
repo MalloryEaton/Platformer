@@ -39,6 +39,7 @@ namespace Platformer
 
         private Texture2D background1;
         private Texture2D background2;
+        private Texture2D background3;
 
         private SoundEffect jump;
         private SoundEffect grassLandMusic;
@@ -94,6 +95,7 @@ namespace Platformer
 
             background1 = Content.Load<Texture2D>(@"images/grassBackground");
             background2 = Content.Load<Texture2D>(@"images/iceBackground");
+            background3 = Content.Load<Texture2D>(@"images/sandBackground");
 
             jump = Content.Load<SoundEffect>(@"sounds/jump");
             grassLandMusic = Content.Load<SoundEffect>(@"sounds/grasslandMusic");
@@ -145,7 +147,7 @@ namespace Platformer
             if (fixtureB.Body.UserData == "goal")
             {
                 currentLevel++;
-                if (currentLevel > 2)
+                if (currentLevel > 3)
                 {
                     ResetCharacter();
                 }
@@ -220,11 +222,11 @@ namespace Platformer
                                     img = "images\\iceBorder";
                                 }
                                 break;
-                            //case 3:
-                            //    {
-
-                            //    }
-                            //    break;
+                            case 3:
+                                {
+                                    img = "images\\sandGround";
+                                }
+                                break;
                         }
                         texture = Content.Load<Texture2D>(img);
                         location = new Vector2((float)k / 2, (float)i / 2);
@@ -248,11 +250,11 @@ namespace Platformer
                                     img = "images\\iceGround";
                                 }
                                 break;
-                            //case 3:
-                            //    {
-
-                            //    }
-                            //    break;
+                            case 3:
+                                {
+                                    img = "images\\sandGround";
+                                }
+                                break;
                         }
                         texture = Content.Load<Texture2D>(img);
                         location = new Vector2((float)k / 2, (float)i / 2);
@@ -294,11 +296,11 @@ namespace Platformer
                                     img = "images\\icePlatform";
                                 }
                                 break;
-                            //case 3:
-                            //    {
-
-                            //    }
-                            //    break;
+                            case 3:
+                                {
+                                    img = "images\\sandPlatform";
+                                }
+                                break;
                         }
                         texture = Content.Load<Texture2D>(img);
                         location = new Vector2((float)k / 2, (float)i / 2);
@@ -507,9 +509,13 @@ namespace Platformer
             {
                 spriteBatch.Draw(background1, screen, Color.White);
             }
-            else if(currentLevel >= 2)
+            else if(currentLevel == 2)
             {
                 spriteBatch.Draw(background2, screen, Color.White);
+            }
+            else if (currentLevel >= 3)
+            {
+                spriteBatch.Draw(background3, screen, Color.White);
             }
         }
         #endregion
