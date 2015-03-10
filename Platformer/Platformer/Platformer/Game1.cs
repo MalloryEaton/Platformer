@@ -18,6 +18,9 @@ namespace Platformer
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        public int screenWidth;
+        public int screenHeight;
+
         private World world;
         private Character character;
         private Ground ground;
@@ -41,6 +44,8 @@ namespace Platformer
         private Texture2D background2;
         private Texture2D background3;
 
+        private Texture2D victoryScreen;
+
         private SoundEffect jump;
         private SoundEffect grassLandMusic;
         SoundEffectInstance instance;
@@ -53,7 +58,10 @@ namespace Platformer
         public static int currentLevel = 1;
 
         private bool levelCleared = false;
-        private bool victoryScreen = false;
+        private bool victoryScreenIsPlaying = false;
+
+        //private GameTime time;
+        //private double elapsedSeconds;
 
         #region Game1
         public Game1()
@@ -92,6 +100,9 @@ namespace Platformer
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            screenWidth = GraphicsDevice.Viewport.Width;
+            screenHeight = GraphicsDevice.Viewport.Height;
+
             stoneSprite = Content.Load<Texture2D>(@"images/kirbyStone");
             stoneBody = BodyFactory.CreateBody(world);
             stoneOrigin = new Vector2(ConvertUnits.ToSimUnits(stoneSprite.Width / 2),
@@ -100,6 +111,8 @@ namespace Platformer
             background1 = Content.Load<Texture2D>(@"images/grassBackground");
             background2 = Content.Load<Texture2D>(@"images/iceBackground");
             background3 = Content.Load<Texture2D>(@"images/sandBackground");
+
+            victoryScreen = Content.Load<Texture2D>(@"images/victoryScreen");
 
             jump = Content.Load<SoundEffect>(@"sounds/jump");
             grassLandMusic = Content.Load<SoundEffect>(@"sounds/grasslandMusic");
@@ -151,8 +164,8 @@ namespace Platformer
         {
             if (fixtureB.Body.UserData == "goal")
             {
-                levelCleared = true;
-                victoryScreen = true;
+                ResetCharacter();
+                //levelCleared = true;
 
                 currentLevel++;
                 if (currentLevel > 3)
@@ -161,8 +174,6 @@ namespace Platformer
                 }
                 else
                 {
-                    
-                    levelCleared = false;
                     CreateGameComponents();
                 }
             }
@@ -414,6 +425,23 @@ namespace Platformer
                 isStone = false;
             }
 
+            //change levels
+            if (state.IsKeyDown(Keys.D1) && state.IsKeyDown(Keys.LeftShift))
+            {
+                currentLevel = 1;
+                CreateGameComponents();
+            }
+            if (state.IsKeyDown(Keys.D2) && state.IsKeyDown(Keys.LeftShift))
+            {
+                currentLevel = 2;
+                CreateGameComponents();
+            }
+            if (state.IsKeyDown(Keys.D3) && state.IsKeyDown(Keys.LeftShift))
+            {
+                currentLevel = 3;
+                CreateGameComponents();
+            }
+
             //reset character
             if (state.IsKeyDown(Keys.R))
             {
@@ -459,10 +487,16 @@ namespace Platformer
 
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
                 null, Camera.Current.TransformationMatrix);
-
-            DrawBackground();
-
-            DrawWorld();
+            
+            if (victoryScreenIsPlaying)
+            {
+                DrawVictoryScreen();
+            }
+            else
+            {
+                DrawBackground();
+                DrawWorld();
+            }
 
             spriteBatch.End();
 
@@ -473,8 +507,6 @@ namespace Platformer
         #region DrawBackground
         private void DrawBackground()
         {
-            int screenWidth = GraphicsDevice.Viewport.Width;
-            int screenHeight = GraphicsDevice.Viewport.Height;
             Rectangle screen = new Rectangle(0, 0, 3000, screenHeight);
             if (currentLevel == 1)
             {
@@ -534,6 +566,14 @@ namespace Platformer
             {
                 character.Draw(spriteBatch);
             }
+        }
+        #endregion
+
+        #region DrawVictoryScreen
+        private void DrawVictoryScreen()
+        {
+            Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
+            spriteBatch.Draw(victoryScreen, screen, Color.White);
         }
         #endregion
     }

@@ -101,6 +101,11 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
+    <Compile Include="images\victoryScreen.png">
+      <Name>victoryScreen</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
     <Content Include="levels\level2.txt">
       <Name>level2</Name>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
