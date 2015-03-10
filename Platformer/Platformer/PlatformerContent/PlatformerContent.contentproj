@@ -118,6 +118,11 @@
     <Content Include="levels\level3.txt">
       <Name>level3</Name>
     </Content>
+    <Compile Include="sounds\victory.wav">
+      <Name>victory</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="images\burt.png">

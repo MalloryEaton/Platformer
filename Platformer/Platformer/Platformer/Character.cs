@@ -49,8 +49,8 @@ namespace Platformer
             Origin = new Vector2(ConvertUnits.ToSimUnits(characterTexture.Width / 2),
                 ConvertUnits.ToSimUnits(characterTexture.Height / 2));
 
-            //Body.Rotation = 0;
-            //Body.FixedRotation = true;
+            Body.Rotation = 0;
+            Body.FixedRotation = true;
 
             Body.BodyType = BodyType.Dynamic;
             Body.Restitution = 0f;
@@ -58,6 +58,8 @@ namespace Platformer
 
             Body.CollisionCategories = Category.Cat1;
             Body.CollidesWith = Category.Cat1;
+
+            Body.SleepingAllowed = false;
         }
 
         public void Jump()

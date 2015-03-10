@@ -45,11 +45,15 @@ namespace Platformer
         private SoundEffect grassLandMusic;
         SoundEffectInstance instance;
         private SoundEffect attack;
+        private SoundEffect victory;
 
         public static float HalfScreenWidth { get; private set; }
 
         private Vector2 characterInitPos;
         public static int currentLevel = 1;
+
+        private bool levelCleared = false;
+        private bool victoryScreen = false;
 
         #region Game1
         public Game1()
@@ -103,6 +107,7 @@ namespace Platformer
             instance.IsLooped = true;
 
             attack = Content.Load<SoundEffect>(@"sounds/stone");
+            victory = Content.Load<SoundEffect>(@"sounds/victory");
 
             CreateGameComponents();
         }
@@ -146,6 +151,9 @@ namespace Platformer
         {
             if (fixtureB.Body.UserData == "goal")
             {
+                levelCleared = true;
+                victoryScreen = true;
+
                 currentLevel++;
                 if (currentLevel > 3)
                 {
@@ -153,6 +161,8 @@ namespace Platformer
                 }
                 else
                 {
+                    
+                    levelCleared = false;
                     CreateGameComponents();
                 }
             }
@@ -355,8 +365,8 @@ namespace Platformer
             //move left
             if(state.IsKeyDown(Keys.Left)&& !isStone)
             {
-                character.Body.ApplyTorque(-0.05f);
-                //character.Body.Position -= new Vector2(0.05f, 0f);
+                //character.Body.ApplyTorque(-0.05f);
+                character.Body.Position -= new Vector2(0.05f, 0f);
                 //if (character.Taps > -2)
                 //{
                 //    character.Body.ApplyForce(new Vector2(-15f, 0f));
@@ -368,8 +378,8 @@ namespace Platformer
             //move right
             if (state.IsKeyDown(Keys.Right) && !isStone)
             {
-                character.Body.ApplyTorque(0.05f);
-                //character.Body.Position += new Vector2(0.05f, 0f);
+                //character.Body.ApplyTorque(0.05f);
+                character.Body.Position += new Vector2(0.05f, 0f);
                 //if (character.Taps < 2)
                 //{
                 //    character.Body.ApplyForce(new Vector2(15f, 0f));
@@ -452,46 +462,7 @@ namespace Platformer
 
             DrawBackground();
 
-            //draw goal
-            goal.Draw(spriteBatch);
-
-            //draw borders
-            foreach (Border b in borders)
-            {
-                b.Draw(spriteBatch);
-            }
-            
-            //draw grounds
-            foreach(Ground g in grounds)
-            {
-                g.Draw(spriteBatch);
-            }
-
-            //draw pits
-            foreach(Pit p in pits)
-            {
-                p.Draw(spriteBatch);
-            }
-
-            //draw barriers
-            foreach(Barrier b in barriers)
-            {
-                b.Draw(spriteBatch);
-            }
-
-            //draw character
-            if (isStone)
-            {
-                spriteBatch.Draw(stoneSprite,
-                    ConvertUnits.ToDisplayUnits(character.Body.Position - stoneOrigin),
-                    null, Color.White, 0,
-                    stoneOrigin,
-                    1f, SpriteEffects.None, 0f);
-            }
-            else
-            {
-                character.Draw(spriteBatch);
-            }
+            DrawWorld();
 
             spriteBatch.End();
 
@@ -516,6 +487,52 @@ namespace Platformer
             else if (currentLevel >= 3)
             {
                 spriteBatch.Draw(background3, screen, Color.White);
+            }
+        }
+        #endregion
+
+        #region DrawWorld
+        private void DrawWorld()
+        {
+            //draw goal
+            goal.Draw(spriteBatch);
+
+            //draw borders
+            foreach (Border b in borders)
+            {
+                b.Draw(spriteBatch);
+            }
+
+            //draw grounds
+            foreach (Ground g in grounds)
+            {
+                g.Draw(spriteBatch);
+            }
+
+            //draw pits
+            foreach (Pit p in pits)
+            {
+                p.Draw(spriteBatch);
+            }
+
+            //draw barriers
+            foreach (Barrier b in barriers)
+            {
+                b.Draw(spriteBatch);
+            }
+
+            //draw character
+            if (isStone)
+            {
+                spriteBatch.Draw(stoneSprite,
+                    ConvertUnits.ToDisplayUnits(character.Body.Position - stoneOrigin),
+                    null, Color.White, 0,
+                    stoneOrigin,
+                    1f, SpriteEffects.None, 0f);
+            }
+            else
+            {
+                character.Draw(spriteBatch);
             }
         }
         #endregion

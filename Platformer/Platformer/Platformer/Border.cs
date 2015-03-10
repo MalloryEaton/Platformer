@@ -25,6 +25,8 @@ namespace Platformer
             Body.Friction = 0f;
             Body.CollisionCategories = Category.Cat1;
             Body.CollidesWith = Category.Cat1;
+
+            Body.SleepingAllowed = false;
         }
 
         public void Draw(SpriteBatch spriteBatch)
