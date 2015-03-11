@@ -75,6 +75,8 @@ namespace Platformer
 
         private Vector2 characterInitPos;
 
+        private bool isTomato = false;
+
         public static int currentLevel = 1;
 
         //victory screen
@@ -267,6 +269,8 @@ namespace Platformer
         #region ReadInLevels
         private void ReadInLevels()
         {
+            isTomato = false;
+
             grounds = new List<Ground>();
             pits = new List<Pit>();
             borders = new List<Border>();
@@ -424,6 +428,7 @@ namespace Platformer
                         texture = Content.Load<Texture2D>(@"images\tomato");
                         location = new Vector2((float)k / 2, (float)i / 2);
                         tomato = new MaximTomato(world, texture, location);
+                        isTomato = true;
                     }
 
                     // player/character
@@ -525,6 +530,22 @@ namespace Platformer
                 CreateGameComponents();
             }
 
+            //press enter
+            if (state.IsKeyDown(Keys.Enter) && victoryScreenIsPlaying)
+            {
+                victoryScreenIsPlaying = false;
+                levelCleared = false;
+                VSTimer = VSTIMER;
+                if (currentLevel <= 3)
+                {
+                    CreateGameComponents();
+                }
+                else
+                {
+                    ResetCharacter();
+                }
+            }
+
             //reset character
             if (state.IsKeyDown(Keys.R) && !victoryScreenIsPlaying)
             {
@@ -566,6 +587,7 @@ namespace Platformer
             //victory screen
             if(levelCleared)
             {
+                invincibleInstance.Stop();
                 level1Instance.Stop();
                 level2Instance.Stop();
                 level3Instance.Stop();
@@ -579,17 +601,7 @@ namespace Platformer
                 VSTimer -= VSElapsedTime;
                 if (VSTimer <= 0)
                 {
-                    victoryScreenIsPlaying = false;
-                    levelCleared = false;
-                    VSTimer = VSTIMER;
-                    if (currentLevel <= 3)
-                    {
-                        CreateGameComponents();
-                    }
-                    else
-                    {
-                        ResetCharacter();
-                    }
+                    victoryInstance.Stop();
                 }
             }
 
@@ -718,7 +730,7 @@ namespace Platformer
             }
 
             //draw tomato
-            if (tomato.IsAlive)
+            if (isTomato && tomato.IsAlive)
             {
                 tomato.Draw(spriteBatch);
             }
