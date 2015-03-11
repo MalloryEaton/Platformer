@@ -36,6 +36,8 @@ namespace Platformer
         private List<Pit> pits;
         private Barrier barrier;
         private List<Barrier> barriers;
+        private WaddleDee waddleDee;
+        private List<WaddleDee> waddleDees;
         private MaximTomato tomato;
 
         //keyboard handling
@@ -91,6 +93,9 @@ namespace Platformer
         private float ITimer = 10;
         private const float ITIMER = 10;
         private float IElapsedTime;
+
+        //? cheat
+        private bool cheatIsOn = false;
 
         #region Game1
         public Game1()
@@ -275,6 +280,7 @@ namespace Platformer
             pits = new List<Pit>();
             borders = new List<Border>();
             barriers = new List<Barrier>();
+            waddleDees = new List<WaddleDee>();
 
             Texture2D texture;
             Vector2 location;
@@ -431,6 +437,15 @@ namespace Platformer
                         isTomato = true;
                     }
 
+                    //waddleDee
+                    //else if (piece == 'W')
+                    //{
+                    //    texture = Content.Load<Texture2D>(@"images\waddleDee");
+                    //    location = new Vector2((float)k / 2, (float)i / 2);
+                    //    waddleDee = new WaddleDee(world, texture, location);
+                    //    waddleDees.Add(waddleDee);
+                    //}
+
                     // player/character
                     else if (piece == 'P')
                     {
@@ -533,6 +548,7 @@ namespace Platformer
             //press enter
             if (state.IsKeyDown(Keys.Enter) && victoryScreenIsPlaying)
             {
+                victoryInstance.Stop();
                 victoryScreenIsPlaying = false;
                 levelCleared = false;
                 VSTimer = VSTIMER;
@@ -552,6 +568,12 @@ namespace Platformer
                 ResetCharacter();
             }
 
+            // ? remove enemies
+            if (state.IsKeyDown(Keys.OemQuestion) && oldKeyState.IsKeyUp(Keys.OemQuestion))
+            {
+                cheatIsOn = true;
+                //remove enemies
+            }
             oldKeyState = state;
         }
         #endregion
@@ -734,6 +756,12 @@ namespace Platformer
             {
                 tomato.Draw(spriteBatch);
             }
+
+            //draw waddleDees
+            //foreach (WaddleDee w in waddleDees)
+            //{
+            //    w.Draw(spriteBatch);
+            //}
 
             //draw character
             if (isStone)
