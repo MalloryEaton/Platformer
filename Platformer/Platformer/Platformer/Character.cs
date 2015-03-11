@@ -12,6 +12,7 @@ namespace Platformer
         public Body Body { get; private set; }
 
         private Texture2D characterTexture;
+        public Texture2D invincibleTexture;
 
         public Vector2 Origin;
 
@@ -57,6 +58,18 @@ namespace Platformer
                 Color.White,
                 Body.Rotation,
                 new Vector2(characterTexture.Width / 2, characterTexture.Height / 2),  // origin
+                1f,
+                SpriteEffects.None,
+                0f);
+        }
+        public void DrawInvincible(SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(invincibleTexture,
+                ConvertUnits.ToDisplayUnits(Body.Position),
+                null,
+                Color.White,
+                Body.Rotation,
+                new Vector2(invincibleTexture.Width / 2, invincibleTexture.Height / 2),  // origin
                 1f,
                 SpriteEffects.None,
                 0f);

@@ -34,6 +34,7 @@ namespace Platformer
         private List<Pit> pits;
         private Barrier barrier;
         private List<Barrier> barriers;
+        private MaximTomato tomato;
 
         //keyboard handling
         private KeyboardState oldKeyState;
@@ -43,6 +44,10 @@ namespace Platformer
         private Texture2D stoneSprite;
         private Body stoneBody;
         private Vector2 stoneOrigin;
+
+        //invincible
+        private bool gotTomato = false;
+        private bool isInvincible = false;
 
         //backgrounds
         private Texture2D background1;
@@ -54,15 +59,17 @@ namespace Platformer
 
         //sound effects and music
         private SoundEffect jump;
+        private SoundEffect attack;
         private SoundEffect grassLandMusic;
         private SoundEffect iceLandMusic;
         private SoundEffect sandLandMusic;
         SoundEffectInstance level1Instance;
         SoundEffectInstance level2Instance;
         SoundEffectInstance level3Instance;
-        private SoundEffect attack;
         private SoundEffect victory;
         SoundEffectInstance victoryInstance;
+        private SoundEffect invincible;
+        SoundEffectInstance invincibleInstance;
 
         private Vector2 characterInitPos;
 
@@ -72,9 +79,14 @@ namespace Platformer
         private bool victoryScreenIsPlaying = false;
 
         //timer for victory screen
-        private float timer = 4;
-        private const float TIMER = 4;
-        private float elapsedTime;
+        private float VSTimer = 4;
+        private const float VSTIMER = 4;
+        private float VSElapsedTime;
+
+        //timer for invincibility
+        private float ITimer = 10;
+        private const float ITIMER = 10;
+        private float IElapsedTime;
 
         #region Game1
         public Game1()
@@ -137,19 +149,19 @@ namespace Platformer
             //music
             grassLandMusic = Content.Load<SoundEffect>(@"sounds/grassLandMusic");
             level1Instance = grassLandMusic.CreateInstance();
-            level1Instance.IsLooped = true;
 
             iceLandMusic = Content.Load<SoundEffect>(@"sounds/iceLandMusic");
             level2Instance = iceLandMusic.CreateInstance();
-            level2Instance.IsLooped = true;
 
             sandLandMusic = Content.Load<SoundEffect>(@"sounds/sandLandMusic");
             level3Instance = sandLandMusic.CreateInstance();
-            level3Instance.IsLooped = true;
            
             victory = Content.Load<SoundEffect>(@"sounds/victory");
             victoryInstance = victory.CreateInstance();
-            victoryInstance.IsLooped = false;
+
+            invincible = Content.Load<SoundEffect>(@"sounds/invincible");
+            invincibleInstance = invincible.CreateInstance();
+
 
             CreateGameComponents();
         }
@@ -180,7 +192,6 @@ namespace Platformer
         {
             if (fixtureB.Body.UserData == "pit")
             {
-                // reset the character
                 ResetCharacter();
             }
 
@@ -188,12 +199,12 @@ namespace Platformer
         }
         #endregion
 
-        #region Character_Reaches_Goal
-        bool Character_Reaches_Goal(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+        #region Character_Collision
+        bool Character_Collision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
+            //goal
             if (fixtureB.Body.UserData == "goal")
             {
-                //ResetCharacter();
                 if (currentLevel <= 2)
                 {
                     levelCleared = true;
@@ -207,6 +218,13 @@ namespace Platformer
                 {
                     CreateGameComponents();
                 }
+            }
+            
+            //tomato
+            else if (fixtureB.Body.UserData == "tomato")
+            {
+                gotTomato = true;
+                tomato.Destroy();
             }
 
             return true;
@@ -228,7 +246,7 @@ namespace Platformer
 
             // event listeners
             character.Body.OnCollision += Character_Falls;
-            character.Body.OnCollision += Character_Reaches_Goal;
+            character.Body.OnCollision += Character_Collision;
         }
         #endregion
 
@@ -386,6 +404,14 @@ namespace Platformer
                         barriers.Add(barrier);
                     }
 
+                    // tomato
+                    else if (piece == 'T')
+                    {
+                        texture = Content.Load<Texture2D>(@"images\tomato");
+                        location = new Vector2((float)k / 2, (float)i / 2);
+                        tomato = new MaximTomato(world, texture, location);
+                    }
+
                     // player/character
                     else if (piece == 'P')
                     {
@@ -393,6 +419,8 @@ namespace Platformer
                         location = new Vector2((float)k / 2, (float)i / 2);
                         characterInitPos = location;
                         character = new Character(world, texture, location);
+                        //invincible
+                        character.invincibleTexture = Content.Load<Texture2D>(@"images/kirbyInvincible");
                     }
                 }
             }
@@ -503,22 +531,25 @@ namespace Platformer
             //victory screen
             if(levelCleared)
             {
+                gotTomato = false;
+                isInvincible = false;
+
                 level1Instance.Stop();
                 level2Instance.Stop();
                 level3Instance.Stop();
                 
                 victoryScreenIsPlaying = true;
-                elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+                VSElapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
             if (victoryScreenIsPlaying)
             {
-                victoryInstance.Play(); 
-                timer -= elapsedTime;
-                if (timer <= 0)
+                victoryInstance.Play();
+                VSTimer -= VSElapsedTime;
+                if (VSTimer <= 0)
                 {
                     victoryScreenIsPlaying = false;
                     levelCleared = false;
-                    timer = TIMER;
+                    VSTimer = VSTIMER;
                     if (currentLevel <= 3)
                     {
                         CreateGameComponents();
@@ -527,6 +558,41 @@ namespace Platformer
                     {
                         ResetCharacter();
                     }
+                }
+            }
+
+            //invincible
+            if(gotTomato)
+            {
+                level1Instance.Pause();
+                level2Instance.Pause();
+                level3Instance.Pause();
+
+                isInvincible = true;
+                IElapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            if(isInvincible)
+            {
+                invincibleInstance.Play();
+                ITimer -= IElapsedTime;
+                if (ITimer <= 0)
+                {
+                    invincibleInstance.Stop();
+                    switch(currentLevel)
+                    {
+                        case 1:
+                            level1Instance.Resume();
+                            break;
+                        case 2:
+                            level2Instance.Resume();
+                            break;
+                        case 3:
+                            level3Instance.Resume();
+                            break;
+                    }
+                    isInvincible = false;
+                    gotTomato = false;
+                    ITimer = ITIMER;
                 }
             }
 
@@ -619,6 +685,12 @@ namespace Platformer
                 b.Draw(spriteBatch);
             }
 
+            //draw tomato
+            if (tomato.IsAlive)
+            {
+                tomato.Draw(spriteBatch);
+            }
+
             //draw character
             if (isStone)
             {
@@ -627,6 +699,10 @@ namespace Platformer
                     null, Color.White, 0,
                     stoneOrigin,
                     1f, SpriteEffects.None, 0f);
+            }
+            else if(isInvincible)
+            {
+                character.DrawInvincible(spriteBatch);
             }
             else
             {
