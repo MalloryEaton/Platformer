@@ -493,8 +493,8 @@ namespace Platformer
             }
 
             //jump
-            if ((state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space)) 
-                || (state.IsKeyDown(Keys.Up) && oldKeyState.IsKeyUp(Keys.Up))
+            if (((state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space)) 
+                || (state.IsKeyDown(Keys.Up) && oldKeyState.IsKeyUp(Keys.Up)))
                  && !victoryScreenIsPlaying && character.jumpNum < 5)
             {
                 character.jumpNum++;
