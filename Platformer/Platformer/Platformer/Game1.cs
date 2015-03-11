@@ -122,11 +122,11 @@ namespace Platformer
 
             jump = Content.Load<SoundEffect>(@"sounds/jump");
 
-            grassLandMusic = Content.Load<SoundEffect>(@"sounds/grasslandMusic");
+            grassLandMusic = Content.Load<SoundEffect>(@"sounds/grassLandMusic");
             level1Instance = grassLandMusic.CreateInstance();
             level1Instance.IsLooped = true;
 
-            iceLandMusic = Content.Load<SoundEffect>(@"sounds/icelandMusic");
+            iceLandMusic = Content.Load<SoundEffect>(@"sounds/iceLandMusic");
             level2Instance = iceLandMusic.CreateInstance();
             level2Instance.IsLooped = true;
 
