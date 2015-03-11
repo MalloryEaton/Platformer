@@ -20,7 +20,9 @@ namespace Platformer
 
         public int screenWidth;
         public int screenHeight;
+        public static float HalfScreenWidth { get; private set; }
 
+        //world objects
         private World world;
         private Character character;
         private Ground ground;
@@ -33,19 +35,24 @@ namespace Platformer
         private Barrier barrier;
         private List<Barrier> barriers;
 
+        //keyboard handling
         private KeyboardState oldKeyState;
 
+        //stone
         public bool isStone = false;
         private Texture2D stoneSprite;
         private Body stoneBody;
         private Vector2 stoneOrigin;
 
+        //backgrounds
         private Texture2D background1;
         private Texture2D background2;
         private Texture2D background3;
 
+        //victory Screen
         private Texture2D victoryScreen;
 
+        //sound effects and music
         private SoundEffect jump;
         private SoundEffect grassLandMusic;
         private SoundEffect iceLandMusic;
@@ -57,16 +64,16 @@ namespace Platformer
         private SoundEffect victory;
         SoundEffectInstance victoryInstance;
 
-        public static float HalfScreenWidth { get; private set; }
-
         private Vector2 characterInitPos;
+
         public static int currentLevel = 1;
 
         private bool levelCleared = false;
         private bool victoryScreenIsPlaying = false;
 
-        private float timer = 3;
-        private const float TIMER = 3;
+        //timer for victory screen
+        private float timer = 4;
+        private const float TIMER = 4;
         private float elapsedTime;
 
         #region Game1
@@ -106,22 +113,28 @@ namespace Platformer
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            //screen width and height
             screenWidth = GraphicsDevice.Viewport.Width;
             screenHeight = GraphicsDevice.Viewport.Height;
 
+            //stone
             stoneSprite = Content.Load<Texture2D>(@"images/kirbyStone");
             stoneBody = BodyFactory.CreateBody(world);
             stoneOrigin = new Vector2(ConvertUnits.ToSimUnits(stoneSprite.Width / 2),
                 ConvertUnits.ToSimUnits(stoneSprite.Height / 2));
 
+            //backgrounds
             background1 = Content.Load<Texture2D>(@"images/grassBackground");
             background2 = Content.Load<Texture2D>(@"images/iceBackground");
             background3 = Content.Load<Texture2D>(@"images/sandBackground");
 
             victoryScreen = Content.Load<Texture2D>(@"images/kirbyWin");
 
+            //sound effects
             jump = Content.Load<SoundEffect>(@"sounds/jump");
+            attack = Content.Load<SoundEffect>(@"sounds/stone");
 
+            //music
             grassLandMusic = Content.Load<SoundEffect>(@"sounds/grassLandMusic");
             level1Instance = grassLandMusic.CreateInstance();
             level1Instance.IsLooped = true;
@@ -133,10 +146,10 @@ namespace Platformer
             sandLandMusic = Content.Load<SoundEffect>(@"sounds/sandLandMusic");
             level3Instance = sandLandMusic.CreateInstance();
             level3Instance.IsLooped = true;
-
-            attack = Content.Load<SoundEffect>(@"sounds/stone");
+           
             victory = Content.Load<SoundEffect>(@"sounds/victory");
             victoryInstance = victory.CreateInstance();
+            victoryInstance.IsLooped = false;
 
             CreateGameComponents();
         }
@@ -392,39 +405,29 @@ namespace Platformer
             KeyboardState state = Keyboard.GetState();
 
             //move left
-            if(state.IsKeyDown(Keys.Left)&& !isStone)
+            if(state.IsKeyDown(Keys.Left) && !isStone && !victoryScreenIsPlaying)
             {
-                //character.Body.ApplyTorque(-0.05f);
                 character.Body.Position -= new Vector2(0.05f, 0f);
-                //if (character.Taps > -2)
-                //{
-                //    character.Body.ApplyForce(new Vector2(-15f, 0f));
-                //    character.Taps -= 1;
-                //}
                 
             }
 
             //move right
-            if (state.IsKeyDown(Keys.Right) && !isStone)
+            if (state.IsKeyDown(Keys.Right) && !isStone && !victoryScreenIsPlaying)
             {
-                //character.Body.ApplyTorque(0.05f);
                 character.Body.Position += new Vector2(0.05f, 0f);
-                //if (character.Taps < 2)
-                //{
-                //    character.Body.ApplyForce(new Vector2(15f, 0f));
-                //    character.Taps += 1;
-                //}
             }
 
             //jump
-            if ((state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space)) || (state.IsKeyDown(Keys.Up) && oldKeyState.IsKeyUp(Keys.Up)))
+            if ((state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space)) 
+                || (state.IsKeyDown(Keys.Up) && oldKeyState.IsKeyUp(Keys.Up))
+                 && !victoryScreenIsPlaying)
             {
                 character.Jump();
                 jump.Play();
             }
 
             //stone
-            if (state.IsKeyDown(Keys.Down))
+            if (state.IsKeyDown(Keys.Down) && !victoryScreenIsPlaying)
             {
                 if(!isStone)
                 {
@@ -434,7 +437,6 @@ namespace Platformer
                 character.Body.ResetDynamics();
                 character.Body.Rotation = 0;
                 character.Body.ApplyForce(new Vector2(0, 30f));
-                //character.Taps = 0;
             }
 
             //is not stone
@@ -444,24 +446,24 @@ namespace Platformer
             }
 
             //change levels
-            if (state.IsKeyDown(Keys.D1) && state.IsKeyDown(Keys.LeftShift))
+            if (state.IsKeyDown(Keys.D1) && state.IsKeyDown(Keys.LeftShift) && !victoryScreenIsPlaying)
             {
                 currentLevel = 1;
                 CreateGameComponents();
             }
-            if (state.IsKeyDown(Keys.D2) && state.IsKeyDown(Keys.LeftShift))
+            if (state.IsKeyDown(Keys.D2) && state.IsKeyDown(Keys.LeftShift) && !victoryScreenIsPlaying)
             {
                 currentLevel = 2;
                 CreateGameComponents();
             }
-            if (state.IsKeyDown(Keys.D3) && state.IsKeyDown(Keys.LeftShift))
+            if (state.IsKeyDown(Keys.D3) && state.IsKeyDown(Keys.LeftShift) && !victoryScreenIsPlaying)
             {
                 currentLevel = 3;
                 CreateGameComponents();
             }
 
             //reset character
-            if (state.IsKeyDown(Keys.R))
+            if (state.IsKeyDown(Keys.R) && !victoryScreenIsPlaying)
             {
                 ResetCharacter();
             }
@@ -478,6 +480,7 @@ namespace Platformer
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            //music
             if (level1Instance.State == SoundState.Stopped && currentLevel == 1)
             {
                 level2Instance.Stop();
@@ -497,6 +500,7 @@ namespace Platformer
                 level3Instance.Play();
             }
 
+            //victory screen
             if(levelCleared)
             {
                 level1Instance.Stop();
@@ -523,9 +527,9 @@ namespace Platformer
                     {
                         ResetCharacter();
                     }
-                    character.Body.Awake = true;
                 }
             }
+
 
             HandleKeyboard();
 
