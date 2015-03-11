@@ -125,16 +125,16 @@
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
-    <Compile Include="sounds\grasslandMusic.wav">
-      <Name>grasslandMusic</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-    </Compile>
     <Content Include="levels\level3.txt">
       <Name>level3</Name>
     </Content>
     <Compile Include="sounds\victory.wav">
       <Name>victory</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+    <Compile Include="sounds\grassLandMusic.wav">
+      <Name>grassLandMusic</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
