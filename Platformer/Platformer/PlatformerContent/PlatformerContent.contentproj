@@ -101,8 +101,18 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="images\victoryScreen.png">
-      <Name>victoryScreen</Name>
+    <Compile Include="images\kirbyWin.png">
+      <Name>kirbyWin</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="images\pinkBorder.png">
+      <Name>pinkBorder</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+    <Compile Include="images\sandBorder.png">
+      <Name>sandBorder</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -167,13 +177,6 @@
   <ItemGroup>
     <Compile Include="images\iceBackground.png">
       <Name>iceBackground</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="images\sideBorder.png">
-      <Name>sideBorder</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
