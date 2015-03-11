@@ -48,9 +48,14 @@ namespace Platformer
 
         private SoundEffect jump;
         private SoundEffect grassLandMusic;
-        SoundEffectInstance instance;
+        private SoundEffect iceLandMusic;
+        private SoundEffect sandLandMusic;
+        SoundEffectInstance level1Instance;
+        SoundEffectInstance level2Instance;
+        SoundEffectInstance level3Instance;
         private SoundEffect attack;
         private SoundEffect victory;
+        SoundEffectInstance victoryInstance;
 
         public static float HalfScreenWidth { get; private set; }
 
@@ -60,8 +65,9 @@ namespace Platformer
         private bool levelCleared = false;
         private bool victoryScreenIsPlaying = false;
 
-        //private GameTime time;
-        //private double elapsedSeconds;
+        private float timer = 3;
+        private const float TIMER = 3;
+        private float elapsedTime;
 
         #region Game1
         public Game1()
@@ -112,15 +118,25 @@ namespace Platformer
             background2 = Content.Load<Texture2D>(@"images/iceBackground");
             background3 = Content.Load<Texture2D>(@"images/sandBackground");
 
-            victoryScreen = Content.Load<Texture2D>(@"images/victoryScreen");
+            victoryScreen = Content.Load<Texture2D>(@"images/kirbyWin");
 
             jump = Content.Load<SoundEffect>(@"sounds/jump");
+
             grassLandMusic = Content.Load<SoundEffect>(@"sounds/grasslandMusic");
-            instance = grassLandMusic.CreateInstance();
-            instance.IsLooped = true;
+            level1Instance = grassLandMusic.CreateInstance();
+            level1Instance.IsLooped = true;
+
+            iceLandMusic = Content.Load<SoundEffect>(@"sounds/icelandMusic");
+            level2Instance = iceLandMusic.CreateInstance();
+            level2Instance.IsLooped = true;
+
+            sandLandMusic = Content.Load<SoundEffect>(@"sounds/sandLandMusic");
+            level3Instance = sandLandMusic.CreateInstance();
+            level3Instance.IsLooped = true;
 
             attack = Content.Load<SoundEffect>(@"sounds/stone");
             victory = Content.Load<SoundEffect>(@"sounds/victory");
+            victoryInstance = victory.CreateInstance();
 
             CreateGameComponents();
         }
@@ -164,9 +180,11 @@ namespace Platformer
         {
             if (fixtureB.Body.UserData == "goal")
             {
-                ResetCharacter();
-                //levelCleared = true;
-
+                //ResetCharacter();
+                if (currentLevel <= 2)
+                {
+                    levelCleared = true;
+                }
                 currentLevel++;
                 if (currentLevel > 3)
                 {
@@ -235,7 +253,7 @@ namespace Platformer
                         {
                             case 1:
                                 {
-                                    img = "images\\sideBorder";
+                                    img = "images\\pinkBorder";
                                 }
                                 break;
                             case 2:
@@ -245,7 +263,7 @@ namespace Platformer
                                 break;
                             case 3:
                                 {
-                                    img = "images\\sandGround";
+                                    img = "images\\sandBorder";
                                 }
                                 break;
                         }
@@ -460,9 +478,53 @@ namespace Platformer
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (instance.State == SoundState.Stopped)
+            if (level1Instance.State == SoundState.Stopped && currentLevel == 1)
             {
-                instance.Play();
+                level2Instance.Stop();
+                level3Instance.Stop();
+                level1Instance.Play();
+            }
+            if (level2Instance.State == SoundState.Stopped && currentLevel == 2)
+            {
+                level1Instance.Stop();
+                level3Instance.Stop();
+                level2Instance.Play();
+            }
+            if (level3Instance.State == SoundState.Stopped && currentLevel >= 3)
+            {
+                level1Instance.Stop();
+                level2Instance.Stop();
+                level3Instance.Play();
+            }
+
+            if(levelCleared)
+            {
+                level1Instance.Stop();
+                level2Instance.Stop();
+                level3Instance.Stop();
+                
+                victoryScreenIsPlaying = true;
+                elapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            if (victoryScreenIsPlaying)
+            {
+                victoryInstance.Play(); 
+                timer -= elapsedTime;
+                if (timer <= 0)
+                {
+                    victoryScreenIsPlaying = false;
+                    levelCleared = false;
+                    timer = TIMER;
+                    if (currentLevel <= 3)
+                    {
+                        CreateGameComponents();
+                    }
+                    else
+                    {
+                        ResetCharacter();
+                    }
+                    character.Body.Awake = true;
+                }
             }
 
             HandleKeyboard();
@@ -488,7 +550,7 @@ namespace Platformer
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
                 null, Camera.Current.TransformationMatrix);
             
-            if (victoryScreenIsPlaying)
+            if (victoryScreenIsPlaying && currentLevel <= 3)
             {
                 DrawVictoryScreen();
             }
