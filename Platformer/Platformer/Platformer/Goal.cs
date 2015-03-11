@@ -36,7 +36,7 @@ namespace Platformer
                 null,
                 Color.White,
                 Body.Rotation,
-                new Vector2(goalTexture.Width / 2, goalTexture.Height / 2),  // origin  / middle point
+                new Vector2(goalTexture.Width / 2, goalTexture.Height / 2),
                 1f,
                 SpriteEffects.None,
                 0f);

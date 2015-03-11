@@ -53,7 +53,7 @@ namespace Platformer
                 null,
                 Color.White,
                 Body.Rotation,
-                new Vector2(tomatoTexture.Width / 2, tomatoTexture.Height / 2),  // origin
+                new Vector2(tomatoTexture.Width / 2, tomatoTexture.Height / 2),
                 1f,
                 SpriteEffects.None,
                 0f);

@@ -20,16 +20,11 @@ namespace Platformer
             Body = BodyFactory.CreateRectangle(world,
                 ConvertUnits.ToSimUnits(groundTexture.Width),
                 ConvertUnits.ToSimUnits(groundTexture.Height - 5), 1f, position);
+
+            Body.UserData = "ground";
             Body.IsStatic = true;
             Body.Restitution = 0f;
-            if (Game1.currentLevel == 2)
-            {
-                Body.Friction = 0.05f;
-            }
-            else
-            {
-                Body.Friction = 1f;
-            }
+            Body.Friction = 1f;
             Body.CollisionCategories = Category.Cat1;
             Body.CollidesWith = Category.Cat1;
 
@@ -43,7 +38,7 @@ namespace Platformer
                 null,
                 Color.White,
                 Body.Rotation,
-                new Vector2(groundTexture.Width / 2, groundTexture.Height / 2),  // origin  / middle point
+                new Vector2(groundTexture.Width / 2, groundTexture.Height / 2),
                 1f,
                 SpriteEffects.None,
                 0f);

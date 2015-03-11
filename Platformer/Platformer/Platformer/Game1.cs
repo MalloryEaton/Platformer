@@ -22,6 +22,8 @@ namespace Platformer
         public int screenHeight;
         public static float HalfScreenWidth { get; private set; }
 
+        private Vector2 jumpForce = new Vector2(0, -0.25f); // applied force when jumping
+
         //world objects
         private World world;
         private Character character;
@@ -75,9 +77,9 @@ namespace Platformer
 
         public static int currentLevel = 1;
 
+        //victory screen
         private bool levelCleared = false;
         private bool victoryScreenIsPlaying = false;
-
         //timer for victory screen
         private float VSTimer = 4;
         private const float VSTIMER = 4;
@@ -181,6 +183,8 @@ namespace Platformer
         #region ResetCharacter
         private void ResetCharacter()
         {
+            gotTomato = false;
+            isInvincible = false;
             character.Body.ResetDynamics();
             character.Body.Rotation = 0;
             character.Body.Position = characterInitPos;
@@ -202,6 +206,12 @@ namespace Platformer
         #region Character_Collision
         bool Character_Collision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
+            //ground
+            if (fixtureB.Body.UserData == "ground")
+            {
+                character.jumpNum = 0;
+            }
+
             //goal
             if (fixtureB.Body.UserData == "goal")
             {
@@ -235,7 +245,11 @@ namespace Platformer
         private void CreateGameComponents()
         {
             world.Clear();
+
             HalfScreenWidth = graphics.GraphicsDevice.Viewport.Width / 2;
+
+            gotTomato = false;
+            isInvincible = false;
 
             ReadInLevels();
 
@@ -435,22 +449,43 @@ namespace Platformer
             //move left
             if(state.IsKeyDown(Keys.Left) && !isStone && !victoryScreenIsPlaying)
             {
-                character.Body.Position -= new Vector2(0.05f, 0f);
-                
+                if (gotTomato)
+                {
+                    character.Body.Position -= new Vector2(0.06f, 0f);
+                }
+                else
+                {
+                    character.Body.Position -= new Vector2(0.04f, 0f);
+                }
             }
 
             //move right
             if (state.IsKeyDown(Keys.Right) && !isStone && !victoryScreenIsPlaying)
             {
-                character.Body.Position += new Vector2(0.05f, 0f);
+                if (gotTomato)
+                {
+                    character.Body.Position += new Vector2(0.06f, 0f);
+                }
+                else
+                {
+                    character.Body.Position += new Vector2(0.04f, 0f);
+                }
             }
 
             //jump
             if ((state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space)) 
                 || (state.IsKeyDown(Keys.Up) && oldKeyState.IsKeyUp(Keys.Up))
-                 && !victoryScreenIsPlaying)
+                 && !victoryScreenIsPlaying && character.jumpNum < 5)
             {
-                character.Jump();
+                character.jumpNum++;
+                if (gotTomato)
+                {
+                    character.Jump(new Vector2 (0, -0.3f));
+                }
+                else
+                {
+                    character.Jump(jumpForce);
+                }
                 jump.Play();
             }
 
@@ -531,9 +566,6 @@ namespace Platformer
             //victory screen
             if(levelCleared)
             {
-                gotTomato = false;
-                isInvincible = false;
-
                 level1Instance.Stop();
                 level2Instance.Stop();
                 level3Instance.Stop();

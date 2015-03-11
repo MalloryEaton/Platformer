@@ -16,9 +16,11 @@ namespace Platformer
 
         public Vector2 Origin;
 
-        public int lives;
+        public int lives = 3;
 
-        private Vector2 jumpForce = new Vector2(0, -0.3f); // applied force when jumping
+        public int jumpNum = 6;
+
+        
 
         public Character(World world, Texture2D texture, Vector2 position)
         {
@@ -45,9 +47,9 @@ namespace Platformer
             Body.SleepingAllowed = false;
         }
 
-        public void Jump()
+        public void Jump(Vector2 jumpForce)
         {
-            Body.ApplyLinearImpulse(ref jumpForce);
+            Body.ApplyLinearImpulse(jumpForce);
         }
 
         public void Draw(SpriteBatch spriteBatch)
@@ -57,7 +59,7 @@ namespace Platformer
                 null,
                 Color.White,
                 Body.Rotation,
-                new Vector2(characterTexture.Width / 2, characterTexture.Height / 2),  // origin
+                new Vector2(characterTexture.Width / 2, characterTexture.Height / 2),
                 1f,
                 SpriteEffects.None,
                 0f);
@@ -69,7 +71,7 @@ namespace Platformer
                 null,
                 Color.White,
                 Body.Rotation,
-                new Vector2(invincibleTexture.Width / 2, invincibleTexture.Height / 2),  // origin
+                new Vector2(invincibleTexture.Width / 2, invincibleTexture.Height / 2),
                 1f,
                 SpriteEffects.None,
                 0f);
