@@ -15,8 +15,10 @@ namespace Platformer
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        #region Components
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        public static SpriteFont font;
 
         public int screenWidth;
         public int screenHeight;
@@ -38,7 +40,10 @@ namespace Platformer
         private List<Barrier> barriers;
         private WaddleDee waddleDee;
         private List<WaddleDee> waddleDees;
+        private Burt burt;
+        private List<Burt> burts;
         private MaximTomato tomato;
+        private LevelClearedScreen levelClearedScreen;
 
         //keyboard handling
         private KeyboardState oldKeyState;
@@ -83,11 +88,11 @@ namespace Platformer
 
         //victory screen
         private bool levelCleared = false;
-        private bool victoryScreenIsPlaying = false;
-        //timer for victory screen
-        private float VSTimer = 4;
-        private const float VSTIMER = 4;
-        private float VSElapsedTime;
+        private bool levelClearedScreenIsPlaying = false;
+        //timer for level cleared screen
+        private float LCTimer = 4;
+        private const float LCTIMER = 4;
+        private float LCElapsedTime;
 
         //timer for invincibility
         private float ITimer = 10;
@@ -96,6 +101,7 @@ namespace Platformer
 
         //? cheat
         private bool cheatIsOn = false;
+        #endregion
 
         #region Game1
         public Game1()
@@ -133,6 +139,9 @@ namespace Platformer
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            levelClearedScreen = new LevelClearedScreen();
+
+            font = Content.Load<SpriteFont>(@"font\myFont");
 
             //screen width and height
             screenWidth = GraphicsDevice.Viewport.Width;
@@ -170,7 +179,6 @@ namespace Platformer
 
             invincible = Content.Load<SoundEffect>(@"sounds/invincible");
             invincibleInstance = invincible.CreateInstance();
-
 
             CreateGameComponents();
         }
@@ -446,6 +454,15 @@ namespace Platformer
                     //    waddleDees.Add(waddleDee);
                     //}
 
+                    //burt
+                    //else if (piece == 'B')
+                    //{
+                    //    texture = Content.Load<Texture2D>(@"images\burt");
+                    //    location = new Vector2((float)k / 2, (float)i / 2);
+                    //    burt = new Burt(world, texture, location);
+                    //    burts.Add(burt);
+                    //}
+
                     // player/character
                     else if (piece == 'P')
                     {
@@ -467,7 +484,7 @@ namespace Platformer
             KeyboardState state = Keyboard.GetState();
 
             //move left
-            if(state.IsKeyDown(Keys.Left) && !isStone && !victoryScreenIsPlaying)
+            if(state.IsKeyDown(Keys.Left) && !isStone && !levelClearedScreenIsPlaying)
             {
                 if (gotTomato)
                 {
@@ -480,7 +497,7 @@ namespace Platformer
             }
 
             //move right
-            if (state.IsKeyDown(Keys.Right) && !isStone && !victoryScreenIsPlaying)
+            if (state.IsKeyDown(Keys.Right) && !isStone && !levelClearedScreenIsPlaying)
             {
                 if (gotTomato)
                 {
@@ -495,7 +512,7 @@ namespace Platformer
             //jump
             if (((state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space)) 
                 || (state.IsKeyDown(Keys.Up) && oldKeyState.IsKeyUp(Keys.Up)))
-                 && !victoryScreenIsPlaying && character.jumpNum < 5)
+                 && !levelClearedScreenIsPlaying && character.jumpNum < 5)
             {
                 character.jumpNum++;
                 if (gotTomato)
@@ -510,7 +527,7 @@ namespace Platformer
             }
 
             //stone
-            if (state.IsKeyDown(Keys.Down) && !victoryScreenIsPlaying)
+            if (state.IsKeyDown(Keys.Down) && !levelClearedScreenIsPlaying)
             {
                 if(!isStone)
                 {
@@ -529,29 +546,29 @@ namespace Platformer
             }
 
             //change levels
-            if (state.IsKeyDown(Keys.D1) && state.IsKeyDown(Keys.LeftShift) && !victoryScreenIsPlaying)
+            if (state.IsKeyDown(Keys.D1) && state.IsKeyDown(Keys.LeftShift) && !levelClearedScreenIsPlaying)
             {
                 currentLevel = 1;
                 CreateGameComponents();
             }
-            if (state.IsKeyDown(Keys.D2) && state.IsKeyDown(Keys.LeftShift) && !victoryScreenIsPlaying)
+            if (state.IsKeyDown(Keys.D2) && state.IsKeyDown(Keys.LeftShift) && !levelClearedScreenIsPlaying)
             {
                 currentLevel = 2;
                 CreateGameComponents();
             }
-            if (state.IsKeyDown(Keys.D3) && state.IsKeyDown(Keys.LeftShift) && !victoryScreenIsPlaying)
+            if (state.IsKeyDown(Keys.D3) && state.IsKeyDown(Keys.LeftShift) && !levelClearedScreenIsPlaying)
             {
                 currentLevel = 3;
                 CreateGameComponents();
             }
 
             //press enter
-            if (state.IsKeyDown(Keys.Enter) && victoryScreenIsPlaying)
+            if (state.IsKeyDown(Keys.Enter) && levelClearedScreenIsPlaying)
             {
                 victoryInstance.Stop();
-                victoryScreenIsPlaying = false;
+                levelClearedScreenIsPlaying = false;
                 levelCleared = false;
-                VSTimer = VSTIMER;
+                LCTimer = LCTIMER;
                 if (currentLevel <= 3)
                 {
                     CreateGameComponents();
@@ -563,7 +580,7 @@ namespace Platformer
             }
 
             //reset character
-            if (state.IsKeyDown(Keys.R) && !victoryScreenIsPlaying)
+            if (state.IsKeyDown(Keys.R) && !levelClearedScreenIsPlaying)
             {
                 ResetCharacter();
             }
@@ -614,14 +631,14 @@ namespace Platformer
                 level2Instance.Stop();
                 level3Instance.Stop();
                 
-                victoryScreenIsPlaying = true;
-                VSElapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+                levelClearedScreenIsPlaying = true;
+                LCElapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
-            if (victoryScreenIsPlaying)
+            if (levelClearedScreenIsPlaying)
             {
                 victoryInstance.Play();
-                VSTimer -= VSElapsedTime;
-                if (VSTimer <= 0)
+                LCTimer -= LCElapsedTime;
+                if (LCTimer <= 0)
                 {
                     victoryInstance.Stop();
                 }
@@ -662,7 +679,6 @@ namespace Platformer
                 }
             }
 
-
             HandleKeyboard();
 
             world.Step((float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f);
@@ -686,7 +702,7 @@ namespace Platformer
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
                 null, Camera.Current.TransformationMatrix);
             
-            if (victoryScreenIsPlaying && currentLevel <= 3)
+            if (levelClearedScreenIsPlaying && currentLevel <= 3)
             {
                 DrawVictoryScreen();
             }
@@ -757,10 +773,17 @@ namespace Platformer
                 tomato.Draw(spriteBatch);
             }
 
-            //draw waddleDees
-            //foreach (WaddleDee w in waddleDees)
+            //draw enemies
+            //if (!cheatIsOn)
             //{
-            //    w.Draw(spriteBatch);
+            //    foreach (WaddleDee w in waddleDees)
+            //    {
+            //        w.Draw(spriteBatch);
+            //    }
+            //    foreach (Burt b in burts)
+            //    {
+            //        b.Draw(spriteBatch);
+            //    }
             //}
 
             //draw character
@@ -788,6 +811,7 @@ namespace Platformer
         {
             Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
             spriteBatch.Draw(victoryScreen, screen, Color.White);
+            levelClearedScreen.Draw(spriteBatch);
         }
         #endregion
     }
