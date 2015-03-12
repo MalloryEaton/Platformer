@@ -126,18 +126,11 @@
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Content Include="levels\level2.txt">
-      <Name>level2</Name>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Compile Include="sounds\stone.wav">
       <Name>stone</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
-    <Content Include="levels\level3.txt">
-      <Name>level3</Name>
-    </Content>
     <Compile Include="sounds\victory.wav">
       <Name>victory</Name>
       <Importer>WavImporter</Importer>
@@ -226,12 +219,6 @@
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="levels\level1.txt">
-      <Name>level1</Name>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

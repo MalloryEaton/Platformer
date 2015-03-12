@@ -295,7 +295,7 @@ namespace Platformer
             
             string level = "level" + currentLevel + ".txt";
             //read in the file
-            System.IO.StreamReader worldFile = new System.IO.StreamReader(Content.RootDirectory + @"/levels/" + level);
+            System.IO.StreamReader worldFile = new System.IO.StreamReader(@"Content/levels/" + level);
             string numberOfLines = worldFile.ReadLine();
             string lengthOfLine = worldFile.ReadLine();
 
