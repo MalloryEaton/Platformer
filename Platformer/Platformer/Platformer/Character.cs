@@ -16,9 +16,12 @@ namespace Platformer
 
         public Vector2 Origin;
 
-        public int lives = 3;
+        public bool dies = false;
+        public bool isDead = false;
 
-        public int jumpNum = 6;
+        public int lives = 1;
+
+        public int jumpNum = 0;
 
         
 

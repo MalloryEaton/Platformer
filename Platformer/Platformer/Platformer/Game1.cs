@@ -42,8 +42,9 @@ namespace Platformer
         private List<WaddleDee> waddleDees;
         private Burt burt;
         private List<Burt> burts;
-        private MaximTomato tomato;
+        private InvinvibleCandy invincibleCandy;
         private LevelClearedScreen levelClearedScreen;
+        private LoseGameScreen loseGameScreen;
 
         //keyboard handling
         private KeyboardState oldKeyState;
@@ -55,7 +56,7 @@ namespace Platformer
         private Vector2 stoneOrigin;
 
         //invincible
-        private bool gotTomato = false;
+        private bool gotCandy = false;
         private bool isInvincible = false;
 
         //backgrounds
@@ -65,6 +66,9 @@ namespace Platformer
 
         //victory Screen
         private Texture2D victoryScreen;
+
+        //lose screen
+        private Texture2D loseScreen;
 
         //sound effects and music
         private SoundEffect jump;
@@ -79,25 +83,26 @@ namespace Platformer
         SoundEffectInstance victoryInstance;
         private SoundEffect invincible;
         SoundEffectInstance invincibleInstance;
+        private SoundEffect gameOver;
+        SoundEffectInstance gameOverInstance;
 
         private Vector2 characterInitPos;
 
-        private bool isTomato = false;
+        private bool isCandy = false;
 
         public static int currentLevel = 1;
 
-        //victory screen
+        private bool LCHasBeenPlayed = false;
+        private bool deadHasBeenPlayed = false;
+
+        //level cleared screen
         private bool levelCleared = false;
         private bool levelClearedScreenIsPlaying = false;
-        //timer for level cleared screen
-        private float LCTimer = 4;
-        private const float LCTIMER = 4;
-        private float LCElapsedTime;
 
         //timer for invincibility
-        private float ITimer = 10;
-        private const float ITIMER = 10;
-        private float IElapsedTime;
+        private double invincibilityTimer = 9.8;
+        private const double INVINCIBILITYTIMER = 9.8;
+        private double invincibilityElapsedTime;
 
         //? cheat
         private bool cheatIsOn = false;
@@ -140,6 +145,7 @@ namespace Platformer
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             levelClearedScreen = new LevelClearedScreen();
+            loseGameScreen = new LoseGameScreen();
 
             font = Content.Load<SpriteFont>(@"font\myFont");
 
@@ -159,6 +165,7 @@ namespace Platformer
             background3 = Content.Load<Texture2D>(@"images/sandBackground");
 
             victoryScreen = Content.Load<Texture2D>(@"images/kirbyWin");
+            loseScreen = Content.Load<Texture2D>(@"images/kirbyLose");
 
             //sound effects
             jump = Content.Load<SoundEffect>(@"sounds/jump");
@@ -180,6 +187,9 @@ namespace Platformer
             invincible = Content.Load<SoundEffect>(@"sounds/invincible");
             invincibleInstance = invincible.CreateInstance();
 
+            gameOver = Content.Load<SoundEffect>(@"sounds/gameOver");
+            gameOverInstance = gameOver.CreateInstance();
+
             CreateGameComponents();
         }
         #endregion
@@ -198,7 +208,7 @@ namespace Platformer
         #region ResetCharacter
         private void ResetCharacter()
         {
-            gotTomato = false;
+            gotCandy = false;
             isInvincible = false;
             character.Body.ResetDynamics();
             character.Body.Rotation = 0;
@@ -206,21 +216,20 @@ namespace Platformer
         }
         #endregion
 
-        #region Character_Falls
-        bool Character_Falls(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
-        {
-            if (fixtureB.Body.UserData == "pit")
-            {
-                ResetCharacter();
-            }
-
-            return true;
-        }
-        #endregion
-
         #region Character_Collision
         bool Character_Collision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
+            //pit
+            if (fixtureB.Body.UserData == "pit")
+            {
+                character.lives--;
+                if (character.lives == 0)
+                {
+                    character.isDead = true;
+                }
+                ResetCharacter();
+            }
+
             //ground
             if (fixtureB.Body.UserData == "ground")
             {
@@ -248,8 +257,8 @@ namespace Platformer
             //tomato
             else if (fixtureB.Body.UserData == "tomato")
             {
-                gotTomato = true;
-                tomato.Destroy();
+                gotCandy = true;
+                invincibleCandy.Destroy();
             }
 
             return true;
@@ -263,8 +272,11 @@ namespace Platformer
 
             HalfScreenWidth = graphics.GraphicsDevice.Viewport.Width / 2;
 
-            gotTomato = false;
+            gotCandy = false;
             isInvincible = false;
+            levelCleared = false;
+            LCHasBeenPlayed = false;
+            deadHasBeenPlayed = false;
 
             ReadInLevels();
 
@@ -274,7 +286,6 @@ namespace Platformer
                 goal.Body.Position.X);
 
             // event listeners
-            character.Body.OnCollision += Character_Falls;
             character.Body.OnCollision += Character_Collision;
         }
         #endregion
@@ -282,7 +293,7 @@ namespace Platformer
         #region ReadInLevels
         private void ReadInLevels()
         {
-            isTomato = false;
+            isCandy = false;
 
             grounds = new List<Ground>();
             pits = new List<Pit>();
@@ -439,10 +450,10 @@ namespace Platformer
                     // tomato
                     else if (piece == 'T')
                     {
-                        texture = Content.Load<Texture2D>(@"images\tomato");
+                        texture = Content.Load<Texture2D>(@"images\invincibleCandy");
                         location = new Vector2((float)k / 2, (float)i / 2);
-                        tomato = new MaximTomato(world, texture, location);
-                        isTomato = true;
+                        invincibleCandy = new InvinvibleCandy(world, texture, location);
+                        isCandy = true;
                     }
 
                     //waddleDee
@@ -484,9 +495,9 @@ namespace Platformer
             KeyboardState state = Keyboard.GetState();
 
             //move left
-            if(state.IsKeyDown(Keys.Left) && !isStone && !levelClearedScreenIsPlaying)
+            if(state.IsKeyDown(Keys.Left) && !isStone && !levelClearedScreenIsPlaying && !character.isDead)
             {
-                if (gotTomato)
+                if (gotCandy)
                 {
                     character.Body.Position -= new Vector2(0.06f, 0f);
                 }
@@ -497,9 +508,9 @@ namespace Platformer
             }
 
             //move right
-            if (state.IsKeyDown(Keys.Right) && !isStone && !levelClearedScreenIsPlaying)
+            if (state.IsKeyDown(Keys.Right) && !isStone && !levelClearedScreenIsPlaying && !character.isDead)
             {
-                if (gotTomato)
+                if (gotCandy)
                 {
                     character.Body.Position += new Vector2(0.06f, 0f);
                 }
@@ -512,10 +523,10 @@ namespace Platformer
             //jump
             if (((state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space)) 
                 || (state.IsKeyDown(Keys.Up) && oldKeyState.IsKeyUp(Keys.Up)))
-                 && !levelClearedScreenIsPlaying && character.jumpNum < 5)
+                 && !levelClearedScreenIsPlaying && !character.isDead && character.jumpNum < 5)
             {
                 character.jumpNum++;
-                if (gotTomato)
+                if (gotCandy)
                 {
                     character.Jump(new Vector2 (0, -0.3f));
                 }
@@ -527,7 +538,7 @@ namespace Platformer
             }
 
             //stone
-            if (state.IsKeyDown(Keys.Down) && !levelClearedScreenIsPlaying)
+            if (state.IsKeyDown(Keys.Down) && !levelClearedScreenIsPlaying && !character.isDead)
             {
                 if(!isStone)
                 {
@@ -546,37 +557,33 @@ namespace Platformer
             }
 
             //change levels
-            if (state.IsKeyDown(Keys.D1) && state.IsKeyDown(Keys.LeftShift) && !levelClearedScreenIsPlaying)
+            if (state.IsKeyDown(Keys.D1) && state.IsKeyDown(Keys.LeftShift) && !levelClearedScreenIsPlaying && !character.isDead)
             {
                 currentLevel = 1;
                 CreateGameComponents();
             }
-            if (state.IsKeyDown(Keys.D2) && state.IsKeyDown(Keys.LeftShift) && !levelClearedScreenIsPlaying)
+            if (state.IsKeyDown(Keys.D2) && state.IsKeyDown(Keys.LeftShift) && !levelClearedScreenIsPlaying && !character.isDead)
             {
                 currentLevel = 2;
                 CreateGameComponents();
             }
-            if (state.IsKeyDown(Keys.D3) && state.IsKeyDown(Keys.LeftShift) && !levelClearedScreenIsPlaying)
+            if (state.IsKeyDown(Keys.D3) && state.IsKeyDown(Keys.LeftShift) && !levelClearedScreenIsPlaying && !character.isDead)
             {
                 currentLevel = 3;
                 CreateGameComponents();
             }
 
             //press enter
-            if (state.IsKeyDown(Keys.Enter) && levelClearedScreenIsPlaying)
+            if (state.IsKeyDown(Keys.Enter) && (levelCleared || character.isDead))
             {
                 victoryInstance.Stop();
-                levelClearedScreenIsPlaying = false;
-                levelCleared = false;
-                LCTimer = LCTIMER;
-                if (currentLevel <= 3)
+                gameOverInstance.Stop();
+
+                if (character.isDead)
                 {
-                    CreateGameComponents();
+                    currentLevel = 1;
                 }
-                else
-                {
-                    ResetCharacter();
-                }
+                CreateGameComponents();
             }
 
             //reset character
@@ -624,41 +631,35 @@ namespace Platformer
             }
 
             //victory screen
-            if(levelCleared)
+            if (levelCleared)
             {
                 invincibleInstance.Stop();
                 level1Instance.Stop();
                 level2Instance.Stop();
                 level3Instance.Stop();
-                
-                levelClearedScreenIsPlaying = true;
-                LCElapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            }
-            if (levelClearedScreenIsPlaying)
-            {
-                victoryInstance.Play();
-                LCTimer -= LCElapsedTime;
-                if (LCTimer <= 0)
+
+                if (!LCHasBeenPlayed)
                 {
-                    victoryInstance.Stop();
+                    victoryInstance.Play();
+                    LCHasBeenPlayed = true;
                 }
             }
 
             //invincible
-            if(gotTomato)
+            if(gotCandy)
             {
                 level1Instance.Pause();
                 level2Instance.Pause();
                 level3Instance.Pause();
 
                 isInvincible = true;
-                IElapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+                invincibilityElapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             }
             if(isInvincible)
             {
                 invincibleInstance.Play();
-                ITimer -= IElapsedTime;
-                if (ITimer <= 0)
+                invincibilityTimer -= invincibilityElapsedTime;
+                if (invincibilityTimer <= 0)
                 {
                     invincibleInstance.Stop();
                     switch(currentLevel)
@@ -674,8 +675,22 @@ namespace Platformer
                             break;
                     }
                     isInvincible = false;
-                    gotTomato = false;
-                    ITimer = ITIMER;
+                    gotCandy = false;
+                    invincibilityTimer = INVINCIBILITYTIMER;
+                }
+            }
+
+            //dead
+            if(character.isDead)
+            {
+                invincibleInstance.Stop();
+                level1Instance.Stop();
+                level2Instance.Stop();
+                level3Instance.Stop();
+                if (!deadHasBeenPlayed)
+                {
+                    gameOverInstance.Play();
+                    deadHasBeenPlayed = true;
                 }
             }
 
@@ -701,10 +716,14 @@ namespace Platformer
 
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
                 null, Camera.Current.TransformationMatrix);
-            
-            if (levelClearedScreenIsPlaying && currentLevel <= 3)
+
+            if (levelCleared && currentLevel <= 3)
             {
                 DrawVictoryScreen();
+            }
+            else if(character.isDead)
+            {
+                DrawLoseScreen();
             }
             else
             {
@@ -768,9 +787,9 @@ namespace Platformer
             }
 
             //draw tomato
-            if (isTomato && tomato.IsAlive)
+            if (isCandy && invincibleCandy.IsAlive)
             {
-                tomato.Draw(spriteBatch);
+                invincibleCandy.Draw(spriteBatch);
             }
 
             //draw enemies
@@ -812,6 +831,15 @@ namespace Platformer
             Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
             spriteBatch.Draw(victoryScreen, screen, Color.White);
             levelClearedScreen.Draw(spriteBatch);
+        }
+        #endregion
+
+        #region DrawLoseScreen
+        private void DrawLoseScreen()
+        {
+            Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
+            spriteBatch.Draw(loseScreen, screen, Color.White);
+            loseGameScreen.Draw(spriteBatch);
         }
         #endregion
     }
