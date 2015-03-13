@@ -24,6 +24,7 @@ namespace Platformer
         public int screenHeight;
         public static float HalfScreenWidth { get; private set; }
         public static float characterX { get; private set; }
+        public static int lives { get; private set; }
 
         //world objects
         private World world;
@@ -43,10 +44,8 @@ namespace Platformer
         private List<Burt> burts;
         private InvinvibleCandy invincibleCandy;
 
-        //screen texts
-        private LevelClearedScreen levelClearedScreen;
-        private GameOverScreen gameOverScreen;
-        private LoseLifeScreen loseLifeScreen;
+        //text
+        private DrawText drawText;
 
         //keyboard handling
         private KeyboardState oldKeyState;
@@ -95,7 +94,6 @@ namespace Platformer
         private bool isCandy = false;
 
         public static int currentLevel = 1;
-        public int lives = 3;
 
         private bool LCHasBeenPlayed = false;
         private bool deadHasBeenPlayed = false;
@@ -104,8 +102,8 @@ namespace Platformer
         private bool levelCleared = false;
 
         //timer for invincibility
-        private double invincibilityTimer = 9.9;
-        private const double INVINCIBILITYTIMER = 9.9;
+        private double invincibilityTimer = 9900;
+        private const double INVINCIBILITYTIMER = 9900;
         private double invincibilityElapsedTime;
 
         //? cheat
@@ -148,9 +146,9 @@ namespace Platformer
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            levelClearedScreen = new LevelClearedScreen();
-            gameOverScreen = new GameOverScreen();
-            loseLifeScreen = new LoseLifeScreen();
+            drawText = new DrawText();
+
+            lives = 3;
 
             font = Content.Load<SpriteFont>(@"font\myFont");
 
@@ -711,7 +709,7 @@ namespace Platformer
                 level3Instance.Pause();
 
                 isInvincible = true;
-                invincibilityElapsedTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+                invincibilityElapsedTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
             }
             if (isInvincible)
             {
@@ -794,7 +792,7 @@ namespace Platformer
                 if (character.losesLife)
                 {
                     Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
-                    loseLifeScreen.Draw(spriteBatch);
+                    drawText.DrawLoseLife(spriteBatch);
                 }
             }
 
@@ -826,6 +824,8 @@ namespace Platformer
         #region DrawWorld
         private void DrawWorld()
         {
+            drawText.DrawLivesTimeScore(spriteBatch);
+
             //draw goal
             goal.Draw(spriteBatch);
 
@@ -897,7 +897,7 @@ namespace Platformer
         {
             Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
             spriteBatch.Draw(victoryScreen, screen, Color.White);
-            levelClearedScreen.Draw(spriteBatch);
+            drawText.DrawLevelCleared(spriteBatch);
         }
         #endregion
 
@@ -906,7 +906,7 @@ namespace Platformer
         {
             Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
             spriteBatch.Draw(loseScreen, screen, Color.White);
-            gameOverScreen.Draw(spriteBatch);
+            drawText.DrawGameOver(spriteBatch);
         }
         #endregion
     }
