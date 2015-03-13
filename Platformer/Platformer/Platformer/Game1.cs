@@ -42,7 +42,7 @@ namespace Platformer
         private List<Burt> burts;
         private InvinvibleCandy invincibleCandy;
         private LevelClearedScreen levelClearedScreen;
-        private LoseGameScreen loseGameScreen;
+        private GameOverScreen gameOverScreen;
 
         //keyboard handling
         private KeyboardState oldKeyState;
@@ -83,6 +83,8 @@ namespace Platformer
         SoundEffectInstance invincibleInstance;
         private SoundEffect gameOver;
         SoundEffectInstance gameOverInstance;
+        private SoundEffect die;
+        SoundEffectInstance dieInstance;
 
         private Vector2 characterInitPos;
 
@@ -143,7 +145,7 @@ namespace Platformer
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             levelClearedScreen = new LevelClearedScreen();
-            loseGameScreen = new LoseGameScreen();
+            gameOverScreen = new GameOverScreen();
 
             font = Content.Load<SpriteFont>(@"font\myFont");
 
@@ -169,7 +171,6 @@ namespace Platformer
             jump = Content.Load<SoundEffect>(@"sounds/jump");
             attack = Content.Load<SoundEffect>(@"sounds/stone");
 
-            //music
             grassLandMusic = Content.Load<SoundEffect>(@"sounds/grassLandMusic");
             level1Instance = grassLandMusic.CreateInstance();
 
@@ -187,6 +188,9 @@ namespace Platformer
 
             gameOver = Content.Load<SoundEffect>(@"sounds/gameOver");
             gameOverInstance = gameOver.CreateInstance();
+
+            die = Content.Load<SoundEffect>(@"sounds/die");
+            dieInstance = die.CreateInstance();
 
             CreateGameComponents();
         }
@@ -220,8 +224,22 @@ namespace Platformer
             //pit
             if (fixtureB.Body.UserData == "pit")
             {
+                gotCandy = false;
+                isInvincible = false;
+                character.losesLife = true;
                 lives--;
-                ResetCharacter();
+                if (lives > 0)
+                {
+                    dieInstance.Play();
+                    character.Body.ResetDynamics();
+                    character.Body.CollisionCategories = Category.Cat5;
+                    character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
+                }
+                else
+                {
+                    CreateGameComponents();
+                    character.gameOver = true;
+                }
             }
 
             //ground
@@ -264,16 +282,29 @@ namespace Platformer
             //    character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
             //}
 
+            // die / lose life
+            else if (fixtureB.Body.UserData == "barrier" && !isStone && !isInvincible)
+            {
+                character.losesLife = true;
+                lives--;
+                if (lives > 0)
+                {
+                    dieInstance.Play();
+                    character.Body.ResetDynamics();
+                    character.Body.CollisionCategories = Category.Cat5;
+                    character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
+                }
+                else
+                {
+                    CreateGameComponents();
+                    character.gameOver = true;
+                }
+            }
+            
+
             return true;
         }
         #endregion
-
-        //#region Character_Dies
-        //private void Character_Dies(Fixture fixtureA, Fixture fixtureB)
-        //{
-        //    fixtureA.Body.IgnoreCollisionWith(fixtureB.Body);
-        //}
-        //#endregion
 
         #region CreateGameComponents
         private void CreateGameComponents()
@@ -294,7 +325,6 @@ namespace Platformer
 
             // event listeners
             character.Body.OnCollision += Character_Collision;
-            //character.Body.OnSeparation += Character_Dies;
         }
         #endregion
 
@@ -502,7 +532,7 @@ namespace Platformer
         {
             KeyboardState state = Keyboard.GetState();
 
-            if (!levelCleared && !character.isDead && !character.losesLife)
+            if (!levelCleared && !character.gameOver && !character.losesLife)
             {
                 //move left
                 if (state.IsKeyDown(Keys.Left) && !isStone)
@@ -598,15 +628,18 @@ namespace Platformer
             }
 
             //press enter
-            if (state.IsKeyDown(Keys.Enter) && (levelCleared || character.isDead))
+            if (state.IsKeyDown(Keys.Enter) && (levelCleared || character.gameOver || character.losesLife))
             {
                 victoryInstance.Stop();
                 gameOverInstance.Stop();
+                dieInstance.Stop();
 
-                if (character.isDead)
+                if (character.gameOver)
                 {
                     lives = 3;
                 }
+
+                character.losesLife = false;
 
                 levelCleared = false;
                 
@@ -628,29 +661,34 @@ namespace Platformer
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (lives == 0)
+            if(character.losesLife)
             {
-                character.isDead = true;
-            }
-
-            //music
-            if (level1Instance.State == SoundState.Stopped && currentLevel == 1)
-            {
-                level2Instance.Stop();
-                level3Instance.Stop();
-                level1Instance.Play();
-            }
-            if (level2Instance.State == SoundState.Stopped && currentLevel == 2)
-            {
-                level1Instance.Stop();
-                level3Instance.Stop();
-                level2Instance.Play();
-            }
-            if (level3Instance.State == SoundState.Stopped && currentLevel >= 3)
-            {
+                invincibleInstance.Stop();
                 level1Instance.Stop();
                 level2Instance.Stop();
-                level3Instance.Play();
+                level3Instance.Stop();
+            }
+            if (!character.losesLife)
+            {
+                //music
+                if (level1Instance.State == SoundState.Stopped && currentLevel == 1)
+                {
+                    level2Instance.Stop();
+                    level3Instance.Stop();
+                    level1Instance.Play();
+                }
+                if (level2Instance.State == SoundState.Stopped && currentLevel == 2)
+                {
+                    level1Instance.Stop();
+                    level3Instance.Stop();
+                    level2Instance.Play();
+                }
+                if (level3Instance.State == SoundState.Stopped && currentLevel >= 3)
+                {
+                    level1Instance.Stop();
+                    level2Instance.Stop();
+                    level3Instance.Play();
+                }
             }
 
             //victory screen
@@ -705,7 +743,7 @@ namespace Platformer
             }
 
             //dead
-            if (character.isDead)
+            if (character.gameOver)
             {
                 invincibleInstance.Stop();
                 level1Instance.Stop();
@@ -748,7 +786,7 @@ namespace Platformer
             {
                 DrawVictoryScreen();
             }
-            else if (character.isDead)
+            else if (character.gameOver)
             {
                 DrawLoseScreen();
             }
@@ -866,7 +904,7 @@ namespace Platformer
         {
             Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
             spriteBatch.Draw(loseScreen, screen, Color.White);
-            loseGameScreen.Draw(spriteBatch);
+            gameOverScreen.Draw(spriteBatch);
         }
         #endregion
     }

@@ -17,5 +17,7 @@ namespace Platformer
         // Framerate stuff
         int timeSinceLastFrame = 0;
         int millisecondsPerFrame = 200;
+
+        //Body.SleepingAllowed = false;
     }
 }

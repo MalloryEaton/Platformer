@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace Platformer
 {
-    class LoseGameScreen
+    class GameOverScreen
     {
         public void Draw(SpriteBatch spriteBatch)
         {

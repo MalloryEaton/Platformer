@@ -19,7 +19,7 @@ namespace Platformer
         public Vector2 jumpForce = new Vector2(0, -0.25f); // applied force when jumping
 
         public bool losesLife = false;
-        public bool isDead = false;
+        public bool gameOver = false;
 
         public int jumpNum = 0;
 
@@ -43,7 +43,7 @@ namespace Platformer
             Body.Friction = 1f;
 
             Body.CollisionCategories = Category.Cat1;
-            Body.CollidesWith = Category.Cat1 | Category.Cat3;
+            Body.CollidesWith = Category.Cat1 | Category.Cat2 | Category.Cat3;
 
             Body.SleepingAllowed = false;
         }

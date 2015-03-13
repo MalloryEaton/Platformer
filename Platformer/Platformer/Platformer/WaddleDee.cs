@@ -32,6 +32,8 @@ namespace Platformer
 
             Body.CollisionCategories = Category.Cat3;
             Body.CollidesWith = Category.Cat1 | Category.Cat2;
+
+            Body.SleepingAllowed = false;
         }
 
         public void MoveRight()

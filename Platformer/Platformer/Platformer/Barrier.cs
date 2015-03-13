@@ -21,11 +21,12 @@ namespace Platformer
                 ConvertUnits.ToSimUnits(barrierTexture.Width),
                 ConvertUnits.ToSimUnits(barrierTexture.Height), 1f, position);
 
+            Body.UserData = "barrier";
             Body.IsStatic = true;
             Body.Restitution = 0f;
             Body.Friction = 1f;
             Body.CollisionCategories = Category.Cat2;
-            Body.CollidesWith = Category.Cat3;
+            Body.CollidesWith = Category.Cat3 | Category.Cat1;
 
             Body.SleepingAllowed = false;
         }
