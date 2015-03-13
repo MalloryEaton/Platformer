@@ -20,6 +20,7 @@ namespace Platformer
             Body = BodyFactory.CreateRectangle(world,
                 ConvertUnits.ToSimUnits(barrierTexture.Width),
                 ConvertUnits.ToSimUnits(barrierTexture.Height), 1f, position);
+
             Body.IsStatic = true;
             Body.Restitution = 0f;
             Body.Friction = 1f;

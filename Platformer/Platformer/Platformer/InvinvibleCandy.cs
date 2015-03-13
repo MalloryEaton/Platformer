@@ -32,7 +32,7 @@ namespace Platformer
             Body.Rotation = 0f;
             Body.FixedRotation = true;
 
-            Body.UserData = "tomato";
+            Body.UserData = "candy";
 
             Body.CollisionCategories = Category.Cat1;
             Body.CollidesWith = Category.Cat1;

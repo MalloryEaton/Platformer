@@ -16,14 +16,12 @@ namespace Platformer
 
         public Vector2 Origin;
 
-        public bool dies = false;
+        public Vector2 jumpForce = new Vector2(0, -0.25f); // applied force when jumping
+
+        public bool losesLife = false;
         public bool isDead = false;
 
-        public int lives = 1;
-
         public int jumpNum = 0;
-
-        
 
         public Character(World world, Texture2D texture, Vector2 position)
         {
