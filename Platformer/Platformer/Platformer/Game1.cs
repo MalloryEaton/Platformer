@@ -23,6 +23,7 @@ namespace Platformer
         public int screenWidth;
         public int screenHeight;
         public static float HalfScreenWidth { get; private set; }
+        public static float characterX { get; private set; }
 
         //world objects
         private World world;
@@ -41,8 +42,11 @@ namespace Platformer
         private Burt burt;
         private List<Burt> burts;
         private InvinvibleCandy invincibleCandy;
+
+        //screen texts
         private LevelClearedScreen levelClearedScreen;
         private GameOverScreen gameOverScreen;
+        private LoseLifeScreen loseLifeScreen;
 
         //keyboard handling
         private KeyboardState oldKeyState;
@@ -146,6 +150,7 @@ namespace Platformer
             spriteBatch = new SpriteBatch(GraphicsDevice);
             levelClearedScreen = new LevelClearedScreen();
             gameOverScreen = new GameOverScreen();
+            loseLifeScreen = new LoseLifeScreen();
 
             font = Content.Load<SpriteFont>(@"font\myFont");
 
@@ -274,33 +279,23 @@ namespace Platformer
             }
 
             //enemy
-            //else if (fixtureB.Body.UserData == "enemy" && !isStone)
+            //else if (fixtureB.Body.UserData == "enemy" && !isStone && !isInvincible)
             //{
             //    character.losesLife = true;
-            //    character.lives--;
-            //    character.Body.ResetDynamics();
-            //    character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
+            //    lives--;
+            //    if (lives > 0)
+            //    {
+            //        dieInstance.Play();
+            //        character.Body.ResetDynamics();
+            //        character.Body.CollisionCategories = Category.Cat5;
+            //        character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
+            //    }
+            //    else
+            //    {
+            //        CreateGameComponents();
+            //        character.gameOver = true;
+            //    }
             //}
-
-            // die / lose life
-            else if (fixtureB.Body.UserData == "barrier" && !isStone && !isInvincible)
-            {
-                character.losesLife = true;
-                lives--;
-                if (lives > 0)
-                {
-                    dieInstance.Play();
-                    character.Body.ResetDynamics();
-                    character.Body.CollisionCategories = Category.Cat5;
-                    character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
-                }
-                else
-                {
-                    CreateGameComponents();
-                    character.gameOver = true;
-                }
-            }
-            
 
             return true;
         }
@@ -661,6 +656,7 @@ namespace Platformer
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            characterX = character.Body.Position.X;
             if(character.losesLife)
             {
                 invincibleInstance.Stop();
@@ -788,12 +784,18 @@ namespace Platformer
             }
             else if (character.gameOver)
             {
-                DrawLoseScreen();
+                DrawGameOverScreen();
             }
             else
             {
                 DrawBackground();
                 DrawWorld();
+
+                if (character.losesLife)
+                {
+                    Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
+                    loseLifeScreen.Draw(spriteBatch);
+                }
             }
 
             spriteBatch.End();
@@ -899,8 +901,8 @@ namespace Platformer
         }
         #endregion
 
-        #region DrawLoseScreen
-        private void DrawLoseScreen()
+        #region DrawGameOverScreen
+        private void DrawGameOverScreen()
         {
             Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
             spriteBatch.Draw(loseScreen, screen, Color.White);

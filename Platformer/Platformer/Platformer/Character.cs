@@ -43,7 +43,7 @@ namespace Platformer
             Body.Friction = 1f;
 
             Body.CollisionCategories = Category.Cat1;
-            Body.CollidesWith = Category.Cat1 | Category.Cat2 | Category.Cat3;
+            Body.CollidesWith = Category.Cat1 | Category.Cat3;
 
             Body.SleepingAllowed = false;
         }
