@@ -57,7 +57,6 @@ namespace Platformer
         private Vector2 stoneOrigin;
 
         //invincible
-        private bool gotCandy = false;
         private bool isInvincible = false;
 
         //backgrounds
@@ -83,8 +82,8 @@ namespace Platformer
         SoundEffectInstance level1Instance;
         SoundEffectInstance level2Instance;
         SoundEffectInstance level3Instance;
-        private SoundEffect victory;
-        SoundEffectInstance victoryInstance;
+        private SoundEffect levelCleared;
+        SoundEffectInstance levelClearedInstance;
         private SoundEffect invincible;
         SoundEffectInstance invincibleInstance;
         private SoundEffect gameOver;
@@ -103,17 +102,15 @@ namespace Platformer
         private bool LCHasBeenPlayed = false;
         private bool deadHasBeenPlayed = false;
         private bool winHasBeenPlayed = false;
+        private bool lostLifeHasBeenPlayed = false;
+
+        private int invincibleNumberOfTimesPlayed = 0;
 
         //win screen
         private bool gameWon = false;
 
         //level cleared screen
-        private bool levelCleared = false;
-
-        //timer for invincibility
-        private double invincibilityTimer = 9900;
-        private const double INVINCIBILITYTIMER = 9900;
-        private double invincibilityElapsedTime;
+        private bool levelIsCleared = false;
 
         //? cheat
         private bool cheatIsOn = false;
@@ -193,8 +190,8 @@ namespace Platformer
             sandLandMusic = Content.Load<SoundEffect>(@"sounds/sandLandMusic");
             level3Instance = sandLandMusic.CreateInstance();
 
-            victory = Content.Load<SoundEffect>(@"sounds/victory");
-            victoryInstance = victory.CreateInstance();
+            levelCleared = Content.Load<SoundEffect>(@"sounds/levelCleared");
+            levelClearedInstance = levelCleared.CreateInstance();
 
             invincible = Content.Load<SoundEffect>(@"sounds/invincible");
             invincibleInstance = invincible.CreateInstance();
@@ -226,7 +223,6 @@ namespace Platformer
         #region ResetCharacter
         private void ResetCharacter()
         {
-            gotCandy = false;
             isInvincible = false;
             character.Body.ResetDynamics();
             character.Body.Rotation = 0;
@@ -238,24 +234,14 @@ namespace Platformer
         bool Character_Collision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
             //pit
-            if (fixtureB.Body.UserData == "pit")
+            if (fixtureB.Body.UserData == "pit" && !character.losesLife)
             {
-                gotCandy = false;
-                isInvincible = false;
                 character.losesLife = true;
+                isInvincible = false;
                 lives--;
-                if (lives > 0)
-                {
-                    dieInstance.Play();
-                    character.Body.ResetDynamics();
-                    character.Body.CollisionCategories = Category.Cat5;
-                    character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
-                }
-                else
-                {
-                    CreateGameComponents();
-                    character.gameOver = true;
-                }
+                character.Body.ResetDynamics();
+                character.Body.CollisionCategories = Category.Cat5;
+                character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
             }
 
             //ground
@@ -269,7 +255,7 @@ namespace Platformer
             {
                 if (currentLevel <= 2)
                 {
-                    levelCleared = true;
+                    levelIsCleared = true;
                 }
                 currentLevel++;
                 if (currentLevel > 3)
@@ -287,7 +273,7 @@ namespace Platformer
             //invincible candy
             else if (fixtureB.Body.UserData == "candy")
             {
-                gotCandy = true;
+                isInvincible = true;
                 invincibleCandy.Destroy();
             }
 
@@ -365,7 +351,6 @@ namespace Platformer
 
             HalfScreenWidth = graphics.GraphicsDevice.Viewport.Width / 2;
 
-            gotCandy = false;
             isInvincible = false;
 
             ReadInLevels();
@@ -593,12 +578,12 @@ namespace Platformer
         {
             KeyboardState state = Keyboard.GetState();
 
-            if (!levelCleared && !character.gameOver && !character.losesLife && !gameWon)
+            if (!levelIsCleared && !character.gameOver && !character.losesLife && !gameWon)
             {
                 //move left
                 if (state.IsKeyDown(Keys.Left) && !isStone)
                 {
-                    if (gotCandy)
+                    if (isInvincible)
                     {
                         character.Body.Position -= new Vector2(0.06f, 0f);
                     }
@@ -611,7 +596,7 @@ namespace Platformer
                 //move right
                 if (state.IsKeyDown(Keys.Right) && !isStone)
                 {
-                    if (gotCandy)
+                    if (isInvincible)
                     {
                         character.Body.Position += new Vector2(0.06f, 0f);
                     }
@@ -627,7 +612,7 @@ namespace Platformer
                      && character.jumpNum < 6)
                 {
                     character.jumpNum++;
-                    if (gotCandy)
+                    if (isInvincible)
                     {
                         character.Jump(new Vector2(0, -0.3f));
                     }
@@ -689,9 +674,9 @@ namespace Platformer
             }
 
             //press enter
-            if (state.IsKeyDown(Keys.Enter) && (levelCleared || character.gameOver || character.losesLife || gameWon))
+            if (state.IsKeyDown(Keys.Enter) && (levelIsCleared || character.gameOver || character.losesLife || gameWon))
             {
-                victoryInstance.Stop();
+                levelClearedInstance.Stop();
                 gameOverInstance.Stop();
                 dieInstance.Stop();
                 winInstance.Stop();
@@ -708,12 +693,13 @@ namespace Platformer
 
                 character.losesLife = false;
 
-                levelCleared = false;
+                levelIsCleared = false;
                 gameWon = false;
                 
                 LCHasBeenPlayed = false;
                 deadHasBeenPlayed = false;
                 winHasBeenPlayed = false;
+                lostLifeHasBeenPlayed = false;
 
                 CreateGameComponents();
             }
@@ -737,7 +723,20 @@ namespace Platformer
                 level1Instance.Stop();
                 level2Instance.Stop();
                 level3Instance.Stop();
+
+                if (!lostLifeHasBeenPlayed)
+                {
+                    dieInstance.Play();
+                    lostLifeHasBeenPlayed = true;
+                }
+
+                else if(lives == 0 && dieInstance.State == SoundState.Stopped)
+                {
+                    ResetCharacter();
+                    character.gameOver = true;
+                }
             }
+
             if (!character.losesLife)
             {
                 //music
@@ -762,7 +761,7 @@ namespace Platformer
             }
 
             //level cleared screen
-            if (levelCleared)
+            if (levelIsCleared)
             {
                 invincibleInstance.Stop();
                 level1Instance.Stop();
@@ -771,7 +770,7 @@ namespace Platformer
 
                 if (!LCHasBeenPlayed)
                 {
-                    victoryInstance.Play();
+                    levelClearedInstance.Play();
                     LCHasBeenPlayed = true;
                 }
             }
@@ -789,25 +788,31 @@ namespace Platformer
                     winInstance.Play();
                     winHasBeenPlayed = true;
                 }
+
+                lives = 3;
             }
 
             //invincible
-            if (gotCandy)
+            if (isInvincible)
             {
                 level1Instance.Pause();
                 level2Instance.Pause();
                 level3Instance.Pause();
 
-                isInvincible = true;
-                invincibilityElapsedTime = (float)gameTime.ElapsedGameTime.TotalMilliseconds;
-            }
-            if (isInvincible)
-            {
-                invincibleInstance.Play();
-                invincibilityTimer -= invincibilityElapsedTime;
-                if (invincibilityTimer <= 0)
+                if(invincibleNumberOfTimesPlayed <= 2)
+                {
+                    if (invincibleInstance.State == SoundState.Stopped)
+                    {
+                        invincibleInstance.Play();
+                        invincibleNumberOfTimesPlayed++;
+                    }
+                }
+                else
                 {
                     invincibleInstance.Stop();
+                    isInvincible = false;
+                    invincibleNumberOfTimesPlayed = 0;
+
                     switch (currentLevel)
                     {
                         case 1:
@@ -820,22 +825,13 @@ namespace Platformer
                             level3Instance.Resume();
                             break;
                     }
-                    isInvincible = false;
-                    gotCandy = false;
-                    invincibilityTimer = INVINCIBILITYTIMER;
                 }
             }
 
             //dead
-            if (character.gameOver)
+            if (character.gameOver && lostLifeHasBeenPlayed)
             {
-                invincibleInstance.Stop();
-                level1Instance.Stop();
-                level2Instance.Stop();
-                level3Instance.Stop();
-
                 currentLevel = 1;
-
                 if (!deadHasBeenPlayed)
                 {
                     gameOverInstance.Play();
@@ -877,7 +873,7 @@ namespace Platformer
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
                 null, Camera.Current.TransformationMatrix);
 
-            if (levelCleared && currentLevel <= 3)
+            if (levelIsCleared && currentLevel <= 3)
             {
                 DrawVictoryScreen();
             }
@@ -894,7 +890,7 @@ namespace Platformer
                 DrawBackground();
                 DrawWorld();
 
-                if (character.losesLife)
+                if (character.losesLife && lives != 0)
                 {
                     Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
                     drawText.DrawLoseLife(spriteBatch);
