@@ -82,6 +82,7 @@ namespace Platformer
         //sound effects and music
         private SoundEffect jump;
         private SoundEffect attack;
+        private SoundEffect enemyDie;
         private SoundEffect grassLandMusic;
         private SoundEffect iceLandMusic;
         private SoundEffect sandLandMusic;
@@ -192,6 +193,7 @@ namespace Platformer
             //sound effects
             jump = Content.Load<SoundEffect>(@"sounds/jump");
             attack = Content.Load<SoundEffect>(@"sounds/stone");
+            enemyDie = Content.Load<SoundEffect>(@"sounds/enemyDie");
 
             grassLandMusic = Content.Load<SoundEffect>(@"sounds/grassLandMusic");
             level1Instance = grassLandMusic.CreateInstance();
@@ -321,6 +323,7 @@ namespace Platformer
             if (fixtureB.Body.UserData == "player" && ((isStone && character.Body.LinearVelocity.Y > 0) || isInvincible) && !cheatIsOn)
             {
                 w.Die();
+                enemyDie.Play();
                 return false;
             }
           
@@ -337,6 +340,7 @@ namespace Platformer
             Burt b = (Burt)fixtureA.Body.UserData;
             if (fixtureB.Body.UserData == "player" && ((isStone && character.Body.LinearVelocity.Y > 0) || isInvincible) && !cheatIsOn)
             {
+                enemyDie.Play();
                 b.Die();
             }
 
