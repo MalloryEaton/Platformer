@@ -82,8 +82,8 @@ namespace Platformer
         SoundEffectInstance level1Instance;
         SoundEffectInstance level2Instance;
         SoundEffectInstance level3Instance;
-        private SoundEffect victory;
-        SoundEffectInstance victoryInstance;
+        private SoundEffect levelCleared;
+        SoundEffectInstance levelClearedInstance;
         private SoundEffect invincible;
         SoundEffectInstance invincibleInstance;
         private SoundEffect gameOver;
@@ -110,7 +110,7 @@ namespace Platformer
         private bool gameWon = false;
 
         //level cleared screen
-        private bool levelCleared = false;
+        private bool levelIsCleared = false;
 
         //? cheat
         private bool cheatIsOn = false;
@@ -154,7 +154,7 @@ namespace Platformer
             spriteBatch = new SpriteBatch(GraphicsDevice);
             drawText = new DrawText();
 
-            lives = 1;
+            lives = 3;
 
             font = Content.Load<SpriteFont>(@"font\myFont");
 
@@ -190,8 +190,8 @@ namespace Platformer
             sandLandMusic = Content.Load<SoundEffect>(@"sounds/sandLandMusic");
             level3Instance = sandLandMusic.CreateInstance();
 
-            victory = Content.Load<SoundEffect>(@"sounds/victory");
-            victoryInstance = victory.CreateInstance();
+            levelCleared = Content.Load<SoundEffect>(@"sounds/levelCleared");
+            levelClearedInstance = levelCleared.CreateInstance();
 
             invincible = Content.Load<SoundEffect>(@"sounds/invincible");
             invincibleInstance = invincible.CreateInstance();
@@ -255,7 +255,7 @@ namespace Platformer
             {
                 if (currentLevel <= 2)
                 {
-                    levelCleared = true;
+                    levelIsCleared = true;
                 }
                 currentLevel++;
                 if (currentLevel > 3)
@@ -525,7 +525,7 @@ namespace Platformer
         {
             KeyboardState state = Keyboard.GetState();
 
-            if (!levelCleared && !character.gameOver && !character.losesLife && !gameWon)
+            if (!levelIsCleared && !character.gameOver && !character.losesLife && !gameWon)
             {
                 //move left
                 if (state.IsKeyDown(Keys.Left) && !isStone)
@@ -621,9 +621,9 @@ namespace Platformer
             }
 
             //press enter
-            if (state.IsKeyDown(Keys.Enter) && (levelCleared || character.gameOver || character.losesLife || gameWon))
+            if (state.IsKeyDown(Keys.Enter) && (levelIsCleared || character.gameOver || character.losesLife || gameWon))
             {
-                victoryInstance.Stop();
+                levelClearedInstance.Stop();
                 gameOverInstance.Stop();
                 dieInstance.Stop();
                 winInstance.Stop();
@@ -640,7 +640,7 @@ namespace Platformer
 
                 character.losesLife = false;
 
-                levelCleared = false;
+                levelIsCleared = false;
                 gameWon = false;
                 
                 LCHasBeenPlayed = false;
@@ -708,7 +708,7 @@ namespace Platformer
             }
 
             //level cleared screen
-            if (levelCleared)
+            if (levelIsCleared)
             {
                 invincibleInstance.Stop();
                 level1Instance.Stop();
@@ -717,7 +717,7 @@ namespace Platformer
 
                 if (!LCHasBeenPlayed)
                 {
-                    victoryInstance.Play();
+                    levelClearedInstance.Play();
                     LCHasBeenPlayed = true;
                 }
             }
@@ -735,6 +735,8 @@ namespace Platformer
                     winInstance.Play();
                     winHasBeenPlayed = true;
                 }
+
+                lives = 3;
             }
 
             //invincible
@@ -807,7 +809,7 @@ namespace Platformer
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
                 null, Camera.Current.TransformationMatrix);
 
-            if (levelCleared && currentLevel <= 3)
+            if (levelIsCleared && currentLevel <= 3)
             {
                 DrawVictoryScreen();
             }

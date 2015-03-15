@@ -40,7 +40,7 @@ namespace Platformer
 
         public void DrawGameOver(SpriteBatch spriteBatch)
         {
-            string loseString = "You Died...";
+            string loseString = "You Lost...";
             spriteBatch.DrawString(Game1.font, loseString,
                 new Vector2((Game1.HalfScreenWidth)
                     - (Game1.font.MeasureString(loseString).Length() + 100), 200), Color.Black);

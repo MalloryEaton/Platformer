@@ -126,11 +126,6 @@
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
-    <Compile Include="sounds\victory.wav">
-      <Name>victory</Name>
-      <Importer>WavImporter</Importer>
-      <Processor>SoundEffectProcessor</Processor>
-    </Compile>
     <Compile Include="sounds\grassLandMusic.wav">
       <Name>grassLandMusic</Name>
       <Importer>WavImporter</Importer>
@@ -260,6 +255,13 @@
   <ItemGroup>
     <Compile Include="sounds\win.wav">
       <Name>win</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="sounds\levelCleared.wav">
+      <Name>levelCleared</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
     </Compile>
