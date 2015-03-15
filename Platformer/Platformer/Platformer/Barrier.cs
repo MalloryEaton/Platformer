@@ -29,7 +29,7 @@ namespace Platformer
             Body.Restitution = 0f;
             Body.Friction = 1f;
             Body.CollisionCategories = Category.Cat2;
-            Body.CollidesWith = Category.Cat3 | Category.Cat1;
+            Body.CollidesWith = Category.Cat3 | Category.Cat4;
 
             Body.SleepingAllowed = false;
         }

@@ -26,6 +26,7 @@ namespace Platformer
         public static float characterX { get; private set; }
         public static float characterY { get; private set; }
         public static int lives { get; private set; }
+        public static bool titleScreenIsPlaying { get; private set; }
 
         //world objects
         private World world;
@@ -73,6 +74,9 @@ namespace Platformer
 
         //win screen
         private Texture2D winScreen;
+
+        //title screen
+        private Texture2D titleScreen;
 
         //sound effects and music
         private SoundEffect jump;
@@ -157,6 +161,8 @@ namespace Platformer
 
             lives = 3;
 
+            titleScreenIsPlaying = true;
+
             font = Content.Load<SpriteFont>(@"font\myFont");
 
             //screen width and height
@@ -177,6 +183,7 @@ namespace Platformer
             levelClearedScreen = Content.Load<Texture2D>(@"images/kirbyLevelCleared");
             loseScreen = Content.Load<Texture2D>(@"images/kirbyLose");
             winScreen = Content.Load<Texture2D>(@"images/kirbyWin");
+            titleScreen = Content.Load<Texture2D>(@"images/titleScreen");
 
             //sound effects
             jump = Content.Load<SoundEffect>(@"sounds/jump");
@@ -569,7 +576,45 @@ namespace Platformer
         {
             KeyboardState state = Keyboard.GetState();
 
-            if (!levelIsCleared && !character.gameOver && !character.losesLife && !gameWon)
+            //press enter
+            if (state.IsKeyDown(Keys.Enter) && (titleScreenIsPlaying || levelIsCleared || character.gameOver || (character.losesLife && lives != 0) || gameWon))
+            {
+                if (titleScreenIsPlaying)
+                {
+                    titleScreenIsPlaying = false;
+                    CreateGameComponents();
+                }
+                levelClearedInstance.Stop();
+                gameOverInstance.Stop();
+                dieInstance.Stop();
+                winInstance.Stop();
+
+                if (character.gameOver)
+                {
+                    lives = 3;
+                }
+
+                if (gameWon)
+                {
+                    currentLevel = 1;
+                }
+
+                cheatIsOn = false;
+
+                character.losesLife = false;
+
+                levelIsCleared = false;
+                gameWon = false;
+
+                LCHasBeenPlayed = false;
+                deadHasBeenPlayed = false;
+                winHasBeenPlayed = false;
+                lostLifeHasBeenPlayed = false;
+
+                CreateGameComponents();
+            }
+
+            if (!titleScreenIsPlaying && !levelIsCleared && !character.gameOver && !character.losesLife && !gameWon)
             {
                 //move left
                 if (state.IsKeyDown(Keys.Left) && !isStone)
@@ -680,6 +725,8 @@ namespace Platformer
                 {
                     currentLevel = 1;
 
+                    cheatIsOn = false;
+
                     invincibleInstance.Stop();
                     level1Instance.Stop();
                     level2Instance.Stop();
@@ -691,6 +738,8 @@ namespace Platformer
                 {
                     currentLevel = 2;
 
+                    cheatIsOn = false;
+
                     invincibleInstance.Stop();
                     level1Instance.Stop();
                     level2Instance.Stop();
@@ -701,6 +750,8 @@ namespace Platformer
                 if (state.IsKeyDown(Keys.D3) && state.IsKeyDown(Keys.LeftShift))
                 {
                     currentLevel = 3;
+
+                    cheatIsOn = false;
 
                     invincibleInstance.Stop();
                     level1Instance.Stop();
@@ -724,11 +775,11 @@ namespace Platformer
                         cheatIsOn = false;
                         foreach (Burt b in burts)
                         {
-                            b.Body.IsSensor = false;
+                            b.Body.CollisionCategories = Category.Cat3;
                         }
                         foreach (WaddleDee w in waddleDees)
                         {
-                            w.Body.IsSensor = false;
+                            w.Body.CollisionCategories = Category.Cat3;
                         }
                     }
                     else
@@ -736,49 +787,16 @@ namespace Platformer
                         cheatIsOn = true;
                         foreach (Burt b in burts)
                         {
-                            b.Body.IsSensor = true;
+                            b.Body.CollisionCategories = Category.Cat4;
                         }
                         foreach (WaddleDee w in waddleDees)
                         {
-                            w.Body.IsSensor = true;
+                            w.Body.CollisionCategories = Category.Cat4;
                         }
                     }
 
                     
                 }
-            }
-
-            //press enter
-            if (state.IsKeyDown(Keys.Enter) && (levelIsCleared || character.gameOver || (character.losesLife && lives != 0) || gameWon))
-            {
-                levelClearedInstance.Stop();
-                gameOverInstance.Stop();
-                dieInstance.Stop();
-                winInstance.Stop();
-
-                if (character.gameOver)
-                {
-                    lives = 3;
-                }
-
-                if (gameWon)
-                {
-                    currentLevel = 1;
-                }
-
-                cheatIsOn = false;
-
-                character.losesLife = false;
-
-                levelIsCleared = false;
-                gameWon = false;
-                
-                LCHasBeenPlayed = false;
-                deadHasBeenPlayed = false;
-                winHasBeenPlayed = false;
-                lostLifeHasBeenPlayed = false;
-
-                CreateGameComponents();
             }
 
             oldKeyState = state;
@@ -818,19 +836,19 @@ namespace Platformer
             if (!character.losesLife)
             {
                 //music
-                if (level1Instance.State == SoundState.Stopped && currentLevel == 1)
+                if (level1Instance.State == SoundState.Stopped && currentLevel == 1 && !titleScreenIsPlaying)
                 {
                     level2Instance.Stop();
                     level3Instance.Stop();
                     level1Instance.Play();
                 }
-                if (level2Instance.State == SoundState.Stopped && currentLevel == 2)
+                if (level2Instance.State == SoundState.Stopped && currentLevel == 2 && !titleScreenIsPlaying)
                 {
                     level1Instance.Stop();
                     level3Instance.Stop();
                     level2Instance.Play();
                 }
-                if (level3Instance.State == SoundState.Stopped && currentLevel >= 3)
+                if (level3Instance.State == SoundState.Stopped && currentLevel >= 3 && !titleScreenIsPlaying)
                 {
                     level1Instance.Stop();
                     level2Instance.Stop();
@@ -951,9 +969,13 @@ namespace Platformer
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
                 null, Camera.Current.TransformationMatrix);
 
-            if (levelIsCleared && currentLevel <= 3)
+            if(titleScreenIsPlaying)
             {
-                DrawVictoryScreen();
+                DrawTitleScreen();
+            }
+            else if (levelIsCleared && currentLevel <= 3)
+            {
+                DrawLevelClearedScreen();
             }
             else if (character.gameOver)
             {
@@ -1071,8 +1093,8 @@ namespace Platformer
         }
         #endregion
 
-        #region DrawVictoryScreen
-        private void DrawVictoryScreen()
+        #region DrawLevelClearedScreen
+        private void DrawLevelClearedScreen()
         {
             Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
             spriteBatch.Draw(levelClearedScreen, screen, Color.White);
@@ -1095,6 +1117,14 @@ namespace Platformer
             Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
             spriteBatch.Draw(winScreen, screen, Color.White);
             drawText.DrawWinScreen(spriteBatch);
+        }
+        #endregion
+
+        #region DrawTitleScreen
+        private void DrawTitleScreen ()
+        {
+            Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
+            spriteBatch.Draw(titleScreen, screen, Color.White);
         }
         #endregion
     }

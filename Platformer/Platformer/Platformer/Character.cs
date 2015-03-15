@@ -43,9 +43,17 @@ namespace Platformer
             Body.BodyType = BodyType.Dynamic;
             Body.Restitution = 0f;
             Body.Friction = 1f;
-            
-            Body.CollisionCategories = Category.Cat10;
-            Body.CollidesWith = Category.Cat1 | Category.Cat3 | Category.Cat6;
+
+            if (Game1.titleScreenIsPlaying)
+            {
+                Body.CollisionCategories = Category.Cat15;
+                Body.CollidesWith = Category.Cat1;
+            }
+            else
+            {
+                Body.CollisionCategories = Category.Cat10;
+                Body.CollidesWith = Category.Cat1 | Category.Cat3 | Category.Cat6;
+            }
 
             Body.SleepingAllowed = false;
         }

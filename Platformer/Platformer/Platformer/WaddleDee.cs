@@ -22,10 +22,6 @@ namespace Platformer
             Body = BodyFactory.CreateRectangle(world,
                 ConvertUnits.ToSimUnits(frameSize.X),
                 ConvertUnits.ToSimUnits(frameSize.Y), 1f, position);
-            //Body = BodyFactory.CreateCircle(world,
-            //    ConvertUnits.ToSimUnits(20),
-            //    1f,
-            //    position);
 
             Origin = new Vector2(ConvertUnits.ToSimUnits(frameSize.X / 2),
                 ConvertUnits.ToSimUnits(frameSize.Y / 2));

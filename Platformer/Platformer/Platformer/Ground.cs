@@ -26,7 +26,7 @@ namespace Platformer
             Body.Restitution = 0f;
             Body.Friction = 1f;
             Body.CollisionCategories = Category.Cat1;
-            Body.CollidesWith = Category.Cat1 | Category.Cat3 | Category.Cat10;
+            Body.CollidesWith = Category.Cat1 | Category.Cat3 | Category.Cat4 | Category.Cat10 | Category.Cat15;
 
             Body.SleepingAllowed = false;
         }
