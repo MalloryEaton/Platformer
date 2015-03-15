@@ -102,6 +102,7 @@ namespace Platformer
         private bool LCHasBeenPlayed = false;
         private bool deadHasBeenPlayed = false;
         private bool winHasBeenPlayed = false;
+        private bool lostLifeHasBeenPlayed = false;
 
         private int invincibleNumberOfTimesPlayed = 0;
 
@@ -110,11 +111,6 @@ namespace Platformer
 
         //level cleared screen
         private bool levelCleared = false;
-
-        //timer for invincibility
-        //private double invincibilityTimer = 9900;
-        //private const double INVINCIBILITYTIMER = 9900;
-        //private double invincibilityElapsedTime;
 
         //? cheat
         private bool cheatIsOn = false;
@@ -158,7 +154,7 @@ namespace Platformer
             spriteBatch = new SpriteBatch(GraphicsDevice);
             drawText = new DrawText();
 
-            lives = 3;
+            lives = 1;
 
             font = Content.Load<SpriteFont>(@"font\myFont");
 
@@ -243,18 +239,9 @@ namespace Platformer
                 character.losesLife = true;
                 isInvincible = false;
                 lives--;
-                if (lives > 0)
-                {
-                    dieInstance.Play();
-                    character.Body.ResetDynamics();
-                    character.Body.CollisionCategories = Category.Cat5;
-                    character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
-                }
-                else
-                {
-                    CreateGameComponents();
-                    character.gameOver = true;
-                }
+                character.Body.ResetDynamics();
+                character.Body.CollisionCategories = Category.Cat5;
+                character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
             }
 
             //ground
@@ -659,6 +646,7 @@ namespace Platformer
                 LCHasBeenPlayed = false;
                 deadHasBeenPlayed = false;
                 winHasBeenPlayed = false;
+                lostLifeHasBeenPlayed = false;
 
                 CreateGameComponents();
             }
@@ -682,7 +670,20 @@ namespace Platformer
                 level1Instance.Stop();
                 level2Instance.Stop();
                 level3Instance.Stop();
+
+                if (!lostLifeHasBeenPlayed)
+                {
+                    dieInstance.Play();
+                    lostLifeHasBeenPlayed = true;
+                }
+
+                else if(lives == 0 && dieInstance.State == SoundState.Stopped)
+                {
+                    ResetCharacter();
+                    character.gameOver = true;
+                }
             }
+
             if (!character.losesLife)
             {
                 //music
@@ -773,15 +774,9 @@ namespace Platformer
             }
 
             //dead
-            if (character.gameOver)
+            if (character.gameOver && lostLifeHasBeenPlayed)
             {
-                invincibleInstance.Stop();
-                level1Instance.Stop();
-                level2Instance.Stop();
-                level3Instance.Stop();
-
                 currentLevel = 1;
-
                 if (!deadHasBeenPlayed)
                 {
                     gameOverInstance.Play();
@@ -829,7 +824,7 @@ namespace Platformer
                 DrawBackground();
                 DrawWorld();
 
-                if (character.losesLife)
+                if (character.losesLife && lives != 0)
                 {
                     Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
                     drawText.DrawLoseLife(spriteBatch);
