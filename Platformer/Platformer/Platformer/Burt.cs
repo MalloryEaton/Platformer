@@ -19,21 +19,16 @@ namespace Platformer
             millisecondsPerFrame = 100;
 
             Texture = texture;
-            //Body = BodyFactory.CreateRectangle(world, 
-            //    ConvertUnits.ToSimUnits(frameSize.X), 
-            //    ConvertUnits.ToSimUnits(frameSize.Y), 1f, position);
             Body = BodyFactory.CreateCircle(world,
-                ConvertUnits.ToSimUnits(19),
+                ConvertUnits.ToSimUnits(20),
                 1f,
                 position);
 
             Origin = new Vector2(ConvertUnits.ToSimUnits(frameSize.X / 2),
                 ConvertUnits.ToSimUnits(frameSize.Y / 2));
-            //Origin = new Vector2(0f, 0f);
 
             Body.UserData = this;
 
-            //Body.IsSensor = true;
             Body.IgnoreGravity = true;
             Body.BodyType = BodyType.Dynamic;
             Body.CollisionCategories = Category.Cat6;
@@ -54,11 +49,11 @@ namespace Platformer
                 Body.Position -= new Vector2(0.03f, 0f);
                 if (Game1.characterY > Body.Position.Y)
                 {
-                    Body.Position += new Vector2(0f, 0.01f);
+                    Body.Position += new Vector2(0f, 0.02f);
                 }
                 if (Game1.characterY < Body.Position.Y)
                 {
-                    Body.Position -= new Vector2(0f, 0.01f);
+                    Body.Position -= new Vector2(0f, 0.02f);
                 }
             }
         }

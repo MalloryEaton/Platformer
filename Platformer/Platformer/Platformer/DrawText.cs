@@ -17,13 +17,13 @@ namespace Platformer
             float X = ConvertUnits.ToDisplayUnits(Game1.characterX);
 
             string time = "Time:";
-            spriteBatch.DrawString(Game1.font, time,
+            spriteBatch.DrawString(Game1.smallFont, time,
                 new Vector2(X, 25), Color.Black);
             string score = "Score:";
-            spriteBatch.DrawString(Game1.font, score,
+            spriteBatch.DrawString(Game1.smallFont, score,
                 new Vector2(X, 50), Color.Black);
             string lives = "Lives: " + Game1.lives;
-            spriteBatch.DrawString(Game1.font, lives,
+            spriteBatch.DrawString(Game1.smallFont, lives,
                 new Vector2(X, 75), Color.Black);
         }
 

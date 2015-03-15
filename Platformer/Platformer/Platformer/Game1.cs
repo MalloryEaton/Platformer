@@ -19,6 +19,7 @@ namespace Platformer
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         public static SpriteFont font;
+        public static SpriteFont smallFont;
 
         public int screenWidth;
         public int screenHeight;
@@ -97,6 +98,8 @@ namespace Platformer
         SoundEffectInstance dieInstance;
         private SoundEffect win;
         SoundEffectInstance winInstance;
+        private SoundEffect titleScreenSound;
+        SoundEffectInstance titleScreenInstance;
 
         private Vector2 characterInitPos;
 
@@ -164,6 +167,7 @@ namespace Platformer
             titleScreenIsPlaying = true;
 
             font = Content.Load<SpriteFont>(@"font\myFont");
+            smallFont = Content.Load<SpriteFont>(@"font\small");
 
             //screen width and height
             screenWidth = GraphicsDevice.Viewport.Width;
@@ -212,6 +216,9 @@ namespace Platformer
 
             win = Content.Load<SoundEffect>(@"sounds/win");
             winInstance = win.CreateInstance();
+
+            titleScreenSound = Content.Load<SoundEffect>(@"sounds/titleScreen");
+            titleScreenInstance = titleScreenSound.CreateInstance();
 
             CreateGameComponents();
         }
@@ -581,6 +588,7 @@ namespace Platformer
             {
                 if (titleScreenIsPlaying)
                 {
+                    titleScreenInstance.Stop();
                     titleScreenIsPlaying = false;
                     CreateGameComponents();
                 }
@@ -813,6 +821,12 @@ namespace Platformer
         {
             characterX = character.Body.Position.X;
             characterY = character.Body.Position.Y;
+
+            if (titleScreenInstance.State == SoundState.Stopped && titleScreenIsPlaying)
+            {
+                titleScreenInstance.Play();
+            }
+
             if(character.losesLife)
             {
                 invincibleInstance.Stop();
