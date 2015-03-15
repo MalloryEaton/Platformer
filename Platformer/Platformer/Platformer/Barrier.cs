@@ -21,8 +21,11 @@ namespace Platformer
                 ConvertUnits.ToSimUnits(barrierTexture.Width),
                 ConvertUnits.ToSimUnits(barrierTexture.Height), 1f, position);
 
+            Body.BodyType = BodyType.Static;
             Body.UserData = "barrier";
-            Body.IsStatic = true;
+            //Body.IsStatic = true;
+            Body.IsSensor = true;
+            //Body.IsKinematic = true;
             Body.Restitution = 0f;
             Body.Friction = 1f;
             Body.CollisionCategories = Category.Cat2;

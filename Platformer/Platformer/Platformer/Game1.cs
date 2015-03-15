@@ -234,7 +234,7 @@ namespace Platformer
         }
         #endregion
 
-        #region Character_Collision
+        #region Collisions
         bool Character_Collision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
             //pit
@@ -292,23 +292,67 @@ namespace Platformer
             }
 
             //enemy
-            //else if (fixtureB.Body.UserData == "enemy" && !isStone && !isInvincible)
-            //{
-            //    character.losesLife = true;
-            //    lives--;
-            //    if (lives > 0)
-            //    {
-            //        dieInstance.Play();
-            //        character.Body.ResetDynamics();
-            //        character.Body.CollisionCategories = Category.Cat5;
-            //        character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
-            //    }
-            //    else
-            //    {
-            //        CreateGameComponents();
-            //        character.gameOver = true;
-            //    }
-            //}
+            else if (fixtureB.Body.UserData.GetType().BaseType == typeof(Enemy))
+            {
+                if (!isStone && !isInvincible)
+                {
+                    character.losesLife = true;
+                    lives--;
+                    if (lives > 0)
+                    {
+                        dieInstance.Play();
+                        character.Body.ResetDynamics();
+                        character.Body.CollisionCategories = Category.Cat5;
+                        character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
+                    }
+                    else
+                    {
+                        CreateGameComponents();
+                        character.gameOver = true;
+                    }
+                }
+                else if (!isInvincible)
+                {
+                    character.Body.ResetDynamics();
+                    character.Body.ApplyLinearImpulse(new Vector2(0, -0.2f));
+                }
+                
+            }
+
+            return true;
+        }
+
+        bool WaddleDee_Collision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+        {
+            WaddleDee w = (WaddleDee)fixtureA.Body.UserData;
+            if (fixtureB.Body.UserData == "player" && ((isStone && character.Body.LinearVelocity.Y != 0) || isInvincible))
+            {
+                w.Die();
+                return false;
+            }
+          
+            else if (fixtureB.Body.UserData != "ground")
+            {
+                w.ChangeDirection();
+            }
+
+
+
+            return true;
+        }
+
+        bool Burt_Collision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+        {
+            Burt b = (Burt)fixtureA.Body.UserData;
+            if (fixtureB.Body.UserData == "player" && ((isStone && character.Body.LinearVelocity.Y > 0) || isInvincible))
+            {
+                b.Die();
+            }
+
+            else if (fixtureB.Body.UserData != "ground")
+            {
+                b.ChangeDirection();
+            }
 
             return true;
         }
@@ -333,6 +377,14 @@ namespace Platformer
 
             // event listeners
             character.Body.OnCollision += Character_Collision;
+            foreach (WaddleDee w in waddleDees)
+            {
+                w.Body.OnCollision += WaddleDee_Collision;
+            }
+            foreach (Burt b in burts)
+            {
+                b.Body.OnCollision += Burt_Collision;
+            }
         }
         #endregion
 
@@ -346,6 +398,7 @@ namespace Platformer
             borders = new List<Border>();
             barriers = new List<Barrier>();
             waddleDees = new List<WaddleDee>();
+            burts = new List<Burt>();
 
             Texture2D texture;
             Vector2 location;
@@ -503,22 +556,22 @@ namespace Platformer
                     }
 
                     //waddleDee
-                    //else if (piece == 'W')
-                    //{
-                    //    texture = Content.Load<Texture2D>(@"images\waddleDee");
-                    //    location = new Vector2((float)k / 2, (float)i / 2);
-                    //    waddleDee = new WaddleDee(world, texture, location);
-                    //    waddleDees.Add(waddleDee);
-                    //}
+                    else if (piece == 'W')
+                    {
+                        texture = Content.Load<Texture2D>(@"images\waddleDee");
+                        location = new Vector2((float)k / 2, (float)i / 2);
+                        waddleDee = new WaddleDee(world, texture, location);
+                        waddleDees.Add(waddleDee);
+                    }
 
                     //burt
-                    //else if (piece == 'B')
-                    //{
-                    //    texture = Content.Load<Texture2D>(@"images\burt");
-                    //    location = new Vector2((float)k / 2, (float)i / 2);
-                    //    burt = new Burt(world, texture, location);
-                    //    burts.Add(burt);
-                    //}
+                    else if (piece == 'B')
+                    {
+                        texture = Content.Load<Texture2D>(@"images\burt");
+                        location = new Vector2((float)k / 2, (float)i / 2);
+                        burt = new Burt(world, texture, location);
+                        burts.Add(burt);
+                    }
 
                     // player/character
                     else if (piece == 'P')
@@ -586,7 +639,7 @@ namespace Platformer
                 }
 
                 //stone
-                if (state.IsKeyDown(Keys.Down))
+                if (state.IsKeyDown(Keys.Down) && oldKeyState.IsKeyUp(Keys.Down))
                 {
                     if (!isStone)
                     {
@@ -790,6 +843,17 @@ namespace Platformer
                 }
             }
 
+            //ememy movement
+            foreach (WaddleDee w in waddleDees)
+            {
+                w.Update(gameTime);               
+            }
+
+            foreach (Burt b in burts)
+            {
+                b.Update(gameTime);
+            }
+
             HandleKeyboard();
 
             world.Step((float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f);
@@ -901,17 +965,17 @@ namespace Platformer
             }
 
             //draw enemies
-            //if (!cheatIsOn)
-            //{
-            //    foreach (WaddleDee w in waddleDees)
-            //    {
-            //        w.Draw(spriteBatch);
-            //    }
-            //    foreach (Burt b in burts)
-            //    {
-            //        b.Draw(spriteBatch);
-            //    }
-            //}
+            if (!cheatIsOn)
+            {
+                foreach (WaddleDee w in waddleDees)
+                {
+                    w.Draw(spriteBatch);
+                }
+                foreach (Burt b in burts)
+                {
+                    b.Draw(spriteBatch);
+                }
+            }
 
             //draw character
             if (isStone)

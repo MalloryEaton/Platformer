@@ -35,13 +35,15 @@ namespace Platformer
             Origin = new Vector2(ConvertUnits.ToSimUnits(characterTexture.Width / 2),
                 ConvertUnits.ToSimUnits(characterTexture.Height / 2));
 
+            Body.UserData = "player";
+
             Body.Rotation = 0;
             Body.FixedRotation = true;
 
             Body.BodyType = BodyType.Dynamic;
             Body.Restitution = 0f;
             Body.Friction = 1f;
-
+            
             Body.CollisionCategories = Category.Cat1;
             Body.CollidesWith = Category.Cat1 | Category.Cat3;
 

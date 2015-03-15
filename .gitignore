@@ -12,12 +12,10 @@
 [Rr]elease/
 [Rr]eleases/
 x64/
-font
-images
-sounds
+x86/
 build/
 bld/
-
+[Bb]in/
 [Oo]bj/
 
 # Roslyn cache directories

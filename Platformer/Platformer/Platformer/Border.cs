@@ -24,7 +24,8 @@ namespace Platformer
             Body.Restitution = 0f;
             Body.Friction = 0f;
             Body.CollisionCategories = Category.Cat1;
-            Body.CollidesWith = Category.Cat1;
+            Body.CollidesWith = Category.Cat1 | Category.Cat3;
+            Body.UserData = "border";
 
             Body.SleepingAllowed = false;
         }
