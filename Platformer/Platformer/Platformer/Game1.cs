@@ -284,18 +284,10 @@ namespace Platformer
                 {
                     character.losesLife = true;
                     lives--;
-                    if (lives > 0)
-                    {
-                        dieInstance.Play();
-                        character.Body.ResetDynamics();
-                        character.Body.CollisionCategories = Category.Cat5;
-                        character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
-                    }
-                    else
-                    {
-                        CreateGameComponents();
-                        character.gameOver = true;
-                    }
+                    dieInstance.Play();
+                    character.Body.ResetDynamics();
+                    character.Body.CollisionCategories = Category.Cat5;
+                    character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
                 }
                 else if (!isInvincible)
                 {
@@ -321,8 +313,6 @@ namespace Platformer
             {
                 w.ChangeDirection();
             }
-
-
 
             return true;
         }
@@ -531,8 +521,8 @@ namespace Platformer
                         barriers.Add(barrier);
                     }
 
-                    // tomato
-                    else if (piece == 'T')
+                    // candy
+                    else if (piece == 'c')
                     {
                         texture = Content.Load<Texture2D>(@"images\invincibleCandy");
                         location = new Vector2((float)k / 2, (float)i / 2);
@@ -674,7 +664,7 @@ namespace Platformer
             }
 
             //press enter
-            if (state.IsKeyDown(Keys.Enter) && (levelIsCleared || character.gameOver || character.losesLife || gameWon))
+            if (state.IsKeyDown(Keys.Enter) && (levelIsCleared || character.gameOver || (character.losesLife && lives != 0) || gameWon))
             {
                 levelClearedInstance.Stop();
                 gameOverInstance.Stop();

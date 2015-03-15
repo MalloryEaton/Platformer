@@ -33,6 +33,7 @@ namespace Platformer
 
             Body.UserData = this;
 
+            //Body.IsSensor = true;
             Body.IgnoreGravity = true;
             Body.BodyType = BodyType.Dynamic;
             Body.CollisionCategories = Category.Cat3;
@@ -46,11 +47,11 @@ namespace Platformer
             base.Update(gameTime);
             if (!dead && movingRight)
             {
-                Body.Position += new Vector2(0.02f, 0f);
+                Body.Position += new Vector2(0.03f, 0f);
             }
             else if (!dead)
             {
-                Body.Position -= new Vector2(0.02f, 0f);
+                Body.Position -= new Vector2(0.03f, 0f);
             }
         }
 

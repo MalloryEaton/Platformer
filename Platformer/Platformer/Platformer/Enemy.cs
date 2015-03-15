@@ -42,7 +42,7 @@ namespace Platformer
         {
             dead = true;
             Body.ResetDynamics();
-            Body.CollisionCategories = Category.Cat5;
+            Body.CollisionCategories = Category.Cat6;
             //Body.CollidesWith = Category.None;
             Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
             //Body.SleepingAllowed = true;
