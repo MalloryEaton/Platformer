@@ -35,7 +35,7 @@ namespace Platformer
             Body.UserData = "candy";
 
             Body.CollisionCategories = Category.Cat1;
-            Body.CollidesWith = Category.Cat1;
+            Body.CollidesWith = Category.Cat1 | Category.Cat10;
 
             Body.SleepingAllowed = false;
         }

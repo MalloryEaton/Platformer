@@ -24,7 +24,7 @@ namespace Platformer
             //body.IsSensor = true;
             Body.UserData = "pit";
             Body.CollisionCategories = Category.Cat1;
-            Body.CollidesWith = Category.Cat1;
+            Body.CollidesWith = Category.Cat10;
 
             Body.SleepingAllowed = false;
         }

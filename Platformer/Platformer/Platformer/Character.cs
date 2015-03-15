@@ -38,14 +38,14 @@ namespace Platformer
             Body.UserData = "player";
 
             Body.Rotation = 0;
-            Body.FixedRotation = true;
+            //Body.FixedRotation = true;
 
             Body.BodyType = BodyType.Dynamic;
             Body.Restitution = 0f;
             Body.Friction = 1f;
             
-            Body.CollisionCategories = Category.Cat1;
-            Body.CollidesWith = Category.Cat1 | Category.Cat3;
+            Body.CollisionCategories = Category.Cat10;
+            Body.CollidesWith = Category.Cat1 | Category.Cat3 | Category.Cat6;
 
             Body.SleepingAllowed = false;
         }

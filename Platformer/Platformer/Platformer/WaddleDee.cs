@@ -19,23 +19,22 @@ namespace Platformer
             millisecondsPerFrame = 150;
 
             Texture = texture;
-            //Body = BodyFactory.CreateRectangle(world, 
-            //    ConvertUnits.ToSimUnits(frameSize.X), 
-            //    ConvertUnits.ToSimUnits(frameSize.Y), 1f, position);
-            Body = BodyFactory.CreateCircle(world,
-                ConvertUnits.ToSimUnits(20),
-                1f,
-                position);
+            Body = BodyFactory.CreateRectangle(world,
+                ConvertUnits.ToSimUnits(frameSize.X),
+                ConvertUnits.ToSimUnits(frameSize.Y), 1f, position);
+            //Body = BodyFactory.CreateCircle(world,
+            //    ConvertUnits.ToSimUnits(20),
+            //    1f,
+            //    position);
 
             Origin = new Vector2(ConvertUnits.ToSimUnits(frameSize.X / 2),
                 ConvertUnits.ToSimUnits(frameSize.Y / 2));
-            //Origin = new Vector2(0f, 0f);
 
             Body.UserData = this;
 
             Body.BodyType = BodyType.Dynamic;
             Body.CollisionCategories = Category.Cat3;
-            Body.CollidesWith = Category.Cat1 | Category.Cat2;
+            Body.CollidesWith = Category.Cat1 | Category.Cat2 | Category.Cat10;
 
             Body.SleepingAllowed = false;
         }

@@ -16,7 +16,7 @@ namespace Platformer
             sheetSize = new Point(4, 1);
 
             timeSinceLastFrame = 0;
-            millisecondsPerFrame = 200;
+            millisecondsPerFrame = 100;
 
             Texture = texture;
             //Body = BodyFactory.CreateRectangle(world, 
@@ -36,8 +36,8 @@ namespace Platformer
             //Body.IsSensor = true;
             Body.IgnoreGravity = true;
             Body.BodyType = BodyType.Dynamic;
-            Body.CollisionCategories = Category.Cat3;
-            Body.CollidesWith = Category.Cat1 | Category.Cat2;
+            Body.CollisionCategories = Category.Cat6;
+            Body.CollidesWith = Category.Cat10;
 
             Body.SleepingAllowed = false;
         }
@@ -52,6 +52,14 @@ namespace Platformer
             else if (!dead)
             {
                 Body.Position -= new Vector2(0.03f, 0f);
+                if (Game1.characterY > Body.Position.Y)
+                {
+                    Body.Position += new Vector2(0f, 0.01f);
+                }
+                if (Game1.characterY < Body.Position.Y)
+                {
+                    Body.Position -= new Vector2(0f, 0.01f);
+                }
             }
         }
 

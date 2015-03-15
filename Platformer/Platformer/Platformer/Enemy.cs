@@ -42,10 +42,8 @@ namespace Platformer
         {
             dead = true;
             Body.ResetDynamics();
-            Body.CollisionCategories = Category.Cat6;
-            //Body.CollidesWith = Category.None;
+            Body.CollisionCategories = Category.Cat5;
             Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
-            //Body.SleepingAllowed = true;
         }
 
         public virtual void Update(GameTime gameTime)
