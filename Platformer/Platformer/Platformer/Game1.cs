@@ -238,11 +238,11 @@ namespace Platformer
         bool Character_Collision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
             //pit
-            if (fixtureB.Body.UserData == "pit")
+            if (fixtureB.Body.UserData == "pit" && !character.losesLife)
             {
+                character.losesLife = true;
                 gotCandy = false;
                 isInvincible = false;
-                character.losesLife = true;
                 lives--;
                 if (lives > 0)
                 {
