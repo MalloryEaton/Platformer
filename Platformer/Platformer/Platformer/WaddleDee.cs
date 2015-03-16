@@ -40,11 +40,11 @@ namespace Platformer
             base.Update(gameTime);
             if (!dead && movingRight)
             {
-                Body.Position += new Vector2(0.02f, 0f);
+                Body.Position += new Vector2(0.015f, 0f);
             }
             else if (!dead)
             {
-                Body.Position -= new Vector2(0.02f, 0f);
+                Body.Position -= new Vector2(0.015f, 0f);
             }
         }
 

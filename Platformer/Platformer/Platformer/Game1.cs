@@ -28,6 +28,7 @@ namespace Platformer
         public static float characterY { get; private set; }
         public static int lives { get; private set; }
         public static bool titleScreenIsPlaying { get; private set; }
+        public static int currentLevel { get; private set; }
 
         //world objects
         private World world;
@@ -106,8 +107,6 @@ namespace Platformer
 
         private bool isCandy = false;
 
-        public static int currentLevel = 1;
-
         private bool LCHasBeenPlayed = false;
         private bool deadHasBeenPlayed = false;
         private bool winHasBeenPlayed = false;
@@ -163,6 +162,7 @@ namespace Platformer
             spriteBatch = new SpriteBatch(GraphicsDevice);
             drawText = new DrawText();
 
+            currentLevel = 1;
             lives = 3;
 
             titleScreenIsPlaying = true;
@@ -343,11 +343,6 @@ namespace Platformer
                 enemyDie.Play();
                 b.Die();
             }
-
-            //else if (fixtureB.Body.UserData != "ground")
-            //{
-            //    b.ChangeDirection();
-            //}
 
             return true;
         }
@@ -631,70 +626,40 @@ namespace Platformer
                 //move left
                 if (state.IsKeyDown(Keys.Left) && !isStone)
                 {
-                    character.Body.FixedRotation = false;
-                    if(currentLevel == 2)
+                    //character.Body.FixedRotation = false;
+                   
+                    if (isInvincible)
                     {
-                        if (isInvincible)
-                        {
-                            character.Body.Position -= new Vector2(0.06f, 0f);
-                            character.Body.Rotation -= 0.5f;
-                        }
-                        else
-                        {
-                            character.Body.Position -= new Vector2(0.04f, 0f);
-                            character.Body.Rotation -= 0.4f;
-                        }
+                        character.Body.Position -= new Vector2(0.06f, 0f);
+                        //character.Body.Rotation -= 0.4f;
                     }
                     else
                     {
-                        if (isInvincible)
-                        {
-                            character.Body.Position -= new Vector2(0.06f, 0f);
-                            character.Body.Rotation -= 0.4f;
-                        }
-                        else
-                        {
-                            character.Body.Position -= new Vector2(0.04f, 0f);
-                            character.Body.Rotation -= 0.3f;
-                        }
+                        character.Body.Position -= new Vector2(0.04f, 0f);
+                        //character.Body.Rotation -= 0.3f;
                     }
                 }
 
                 //move right
                 else if (state.IsKeyDown(Keys.Right) && !isStone)
                 {
-                    character.Body.FixedRotation = false;
-                    if (currentLevel == 2)
+                    //character.Body.FixedRotation = false;
+                    
+                    if (isInvincible)
                     {
-                        if (isInvincible)
-                        {
-                            character.Body.Position += new Vector2(0.06f, 0f);
-                            character.Body.Rotation += 0.5f;
-                        }
-                        else
-                        {
-                            character.Body.Position += new Vector2(0.04f, 0f);
-                            character.Body.Rotation += 0.4f;
-                        }
+                        character.Body.Position += new Vector2(0.06f, 0f);
+                        //character.Body.Rotation += 0.4f;
                     }
                     else
                     {
-                        if (isInvincible)
-                        {
-                            character.Body.Position += new Vector2(0.06f, 0f);
-                            character.Body.Rotation += 0.4f;
-                        }
-                        else
-                        {
-                            character.Body.Position += new Vector2(0.04f, 0f);
-                            character.Body.Rotation += 0.3f;
-                        }
+                        character.Body.Position += new Vector2(0.04f, 0f);
+                        //character.Body.Rotation += 0.3f;
                     }
                 }
-                else
-                {
-                    character.Body.FixedRotation = true;
-                }
+                //else
+                //{
+                //    character.Body.FixedRotation = true;
+                //}
 
                 //jump
                 if (((state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space))

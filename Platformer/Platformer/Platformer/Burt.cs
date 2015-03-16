@@ -40,20 +40,61 @@ namespace Platformer
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-            if (!dead && movingRight)
+            if (Game1.currentLevel == 1)
             {
-                Body.Position += new Vector2(0.03f, 0f);
-            }
-            else if (!dead)
-            {
-                Body.Position -= new Vector2(0.03f, 0f);
-                if (Game1.characterY > Body.Position.Y)
+                if (!dead && movingRight)
                 {
-                    Body.Position += new Vector2(0f, 0.02f);
+                    Body.Position += new Vector2(0.02f, 0f);
                 }
-                if (Game1.characterY < Body.Position.Y)
+                else if (!dead)
                 {
-                    Body.Position -= new Vector2(0f, 0.02f);
+                    Body.Position -= new Vector2(0.02f, 0f);
+                    if (Game1.characterY > Body.Position.Y)
+                    {
+                        Body.Position += new Vector2(0f, 0.01f);
+                    }
+                    if (Game1.characterY < Body.Position.Y)
+                    {
+                        Body.Position -= new Vector2(0f, 0.01f);
+                    }
+                }
+            }
+            else if (Game1.currentLevel == 2)
+            {
+                if (!dead && movingRight)
+                {
+                    Body.Position += new Vector2(0.03f, 0f);
+                }
+                else if (!dead)
+                {
+                    Body.Position -= new Vector2(0.03f, 0f);
+                    if (Game1.characterY > Body.Position.Y)
+                    {
+                        Body.Position += new Vector2(0f, 0.02f);
+                    }
+                    if (Game1.characterY < Body.Position.Y)
+                    {
+                        Body.Position -= new Vector2(0f, 0.02f);
+                    }
+                }
+            }
+            else if (Game1.currentLevel == 3)
+            {
+                if (!dead && movingRight)
+                {
+                    Body.Position += new Vector2(0.04f, 0f);
+                }
+                else if (!dead)
+                {
+                    Body.Position -= new Vector2(0.04f, 0f);
+                    if (Game1.characterY > Body.Position.Y)
+                    {
+                        Body.Position += new Vector2(0f, 0.03f);
+                    }
+                    if (Game1.characterY < Body.Position.Y)
+                    {
+                        Body.Position -= new Vector2(0f, 0.03f);
+                    }
                 }
             }
         }

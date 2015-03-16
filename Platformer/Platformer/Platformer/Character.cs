@@ -38,7 +38,7 @@ namespace Platformer
             Body.UserData = "player";
 
             Body.Rotation = 0;
-            //Body.FixedRotation = true;
+            Body.FixedRotation = true;
 
             Body.BodyType = BodyType.Dynamic;
             Body.Restitution = 0f;
