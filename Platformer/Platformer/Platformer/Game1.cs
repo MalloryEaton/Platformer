@@ -476,24 +476,6 @@ namespace Platformer
                         grounds.Add(ground);
                     }
 
-                    // yellow ground
-                    else if (piece == 'Y')
-                    {
-                        texture = Content.Load<Texture2D>("images\\yellowGround");
-                        location = new Vector2((float)k / 2, (float)i / 2);
-                        ground = new Ground(world, texture, location);
-                        grounds.Add(ground);
-                    }
-
-                    // orange ground
-                    else if (piece == 'O')
-                    {
-                        texture = Content.Load<Texture2D>("images\\orangeGround");
-                        location = new Vector2((float)k / 2, (float)i / 2);
-                        ground = new Ground(world, texture, location);
-                        grounds.Add(ground);
-                    }
-
                     // platform
                     else if (piece == 't')
                     {
@@ -1027,12 +1009,6 @@ namespace Platformer
             //draw goal
             goal.Draw(spriteBatch);
 
-            //draw borders
-            foreach (Border b in borders)
-            {
-                b.Draw(spriteBatch);
-            }
-
             //draw grounds
             foreach (Ground g in grounds)
             {
@@ -1074,6 +1050,12 @@ namespace Platformer
                 {
                     b.Draw(spriteBatch);
                 }
+            }
+
+            //draw borders
+            foreach (Border b in borders)
+            {
+                b.Draw(spriteBatch);
             }
 
             //draw character

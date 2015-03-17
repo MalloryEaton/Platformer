@@ -37,13 +37,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="images\yellowGround.png">
-      <Name>yellowGround</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="images\goal.png">
       <Name>goal</Name>
       <Importer>TextureImporter</Importer>
@@ -185,13 +178,6 @@
   <ItemGroup>
     <Compile Include="images\iceBackground.png">
       <Name>iceBackground</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="images\orangeGround.png">
-      <Name>orangeGround</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
