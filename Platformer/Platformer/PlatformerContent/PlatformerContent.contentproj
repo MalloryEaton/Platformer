@@ -288,15 +288,18 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="levels\level1.txt">
+    <None Include="levels\level1.txt">
       <Name>level1</Name>
-    </Content>
-    <Content Include="levels\level2.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="levels\level2.txt">
       <Name>level2</Name>
-    </Content>
-    <Content Include="levels\level3.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="levels\level3.txt">
       <Name>level3</Name>
-    </Content>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\$(XnaFrameworkVersion)\Microsoft.Xna.GameStudio.ContentPipeline.targets" />
   <!--  To modify your build process, add your task inside one of the targets below and uncomment it. 

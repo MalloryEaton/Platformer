@@ -15,27 +15,57 @@ namespace Platformer
         public void DrawLivesTimeScore(SpriteBatch spriteBatch)
         {
             float X = ConvertUnits.ToDisplayUnits(Game1.characterX);
+            double timer = Game1.timer;
+            int score = Game1.score;
 
-            string time = "Time:";
-            spriteBatch.DrawString(Game1.smallFont, time,
-                new Vector2(X, 25), Color.Black);
-            string score = "Score:";
-            spriteBatch.DrawString(Game1.smallFont, score,
-                new Vector2(X, 50), Color.Black);
-            string lives = "Lives: " + Game1.lives;
-            spriteBatch.DrawString(Game1.smallFont, lives,
-                new Vector2(X, 75), Color.Black);
+            if (Game1.currentLevel == 2)
+            {
+                string timeString = "Time: " + timer;
+                spriteBatch.DrawString(Game1.smallFont, timeString,
+                    new Vector2(X, 25), Color.White);
+                string scoreString = "Score:";
+                spriteBatch.DrawString(Game1.smallFont, scoreString,
+                    new Vector2(X, 50), Color.White);
+                string lives = "Lives: " + Game1.lives;
+                spriteBatch.DrawString(Game1.smallFont, lives,
+                    new Vector2(X, 75), Color.White);
+            }
+            else
+            {
+                string timeString = "Time: " + timer;
+                spriteBatch.DrawString(Game1.smallFont, timeString,
+                    new Vector2(X, 25), Color.Black);
+                string scoreString = "Score:";
+                spriteBatch.DrawString(Game1.smallFont, scoreString,
+                    new Vector2(X, 50), Color.Black);
+                string lives = "Lives: " + Game1.lives;
+                spriteBatch.DrawString(Game1.smallFont, lives,
+                    new Vector2(X, 75), Color.Black);
+            }
         }
 
         public void DrawLoseLife(SpriteBatch spriteBatch)
         {
-            float X = ConvertUnits.ToDisplayUnits(Game1.characterX);
-            string lostLifeString = "You Lost a Life...";
-            spriteBatch.DrawString(Game1.font, lostLifeString,
-                new Vector2(X, 200), Color.Black);
-            string keepPlaying = "Press ENTER to Continue.";
-            spriteBatch.DrawString(Game1.font, keepPlaying,
-                new Vector2(X, 250), Color.Black);
+            if (Game1.currentLevel == 2)
+            {
+                float X = ConvertUnits.ToDisplayUnits(Game1.characterX);
+                string lostLifeString = "You Lost a Life...";
+                spriteBatch.DrawString(Game1.font, lostLifeString,
+                    new Vector2(X, 200), Color.White);
+                string keepPlaying = "Press ENTER to Continue.";
+                spriteBatch.DrawString(Game1.font, keepPlaying,
+                    new Vector2(X, 250), Color.White);
+            }
+            else
+            {
+                float X = ConvertUnits.ToDisplayUnits(Game1.characterX);
+                string lostLifeString = "You Lost a Life...";
+                spriteBatch.DrawString(Game1.font, lostLifeString,
+                    new Vector2(X, 200), Color.Black);
+                string keepPlaying = "Press ENTER to Continue.";
+                spriteBatch.DrawString(Game1.font, keepPlaying,
+                    new Vector2(X, 250), Color.Black);
+            }
         }
 
         public void DrawGameOver(SpriteBatch spriteBatch)

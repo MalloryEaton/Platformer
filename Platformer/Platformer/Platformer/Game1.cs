@@ -27,6 +27,8 @@ namespace Platformer
         public static float characterX { get; private set; }
         public static float characterY { get; private set; }
         public static int lives { get; private set; }
+        public static double timer { get; private set; }
+        public static int score { get; private set; }
         public static bool titleScreenIsPlaying { get; private set; }
         public static int currentLevel { get; private set; }
 
@@ -291,11 +293,15 @@ namespace Platformer
                 {
                     gameWon = true;
                     currentLevel = 3;
+                    
                     CreateGameComponents();
+                    character.Body.CollisionCategories = Category.Cat5;
                 }
                 else
                 {
+                    
                     CreateGameComponents();
+                    character.Body.CollisionCategories = Category.Cat5;
                 }
             }
 
@@ -477,7 +483,7 @@ namespace Platformer
                     }
 
                     // platform
-                    else if (piece == 't')
+                    else if (piece == '-')
                     {
                         string img = "";
                         switch (currentLevel)
@@ -786,6 +792,7 @@ namespace Platformer
         {
             characterX = character.Body.Position.X;
             characterY = character.Body.Position.Y;
+            timer = gameTime.ElapsedGameTime.TotalSeconds;
 
             if (titleScreenInstance.State == SoundState.Stopped && titleScreenIsPlaying)
             {
@@ -943,6 +950,7 @@ namespace Platformer
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            timer = gameTime.ElapsedGameTime.TotalSeconds;
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
@@ -968,6 +976,7 @@ namespace Platformer
             {
                 DrawBackground();
                 DrawWorld();
+                drawText.DrawLivesTimeScore(spriteBatch);
 
                 if (character.losesLife && lives != 0)
                 {
@@ -1004,16 +1013,8 @@ namespace Platformer
         #region DrawWorld
         private void DrawWorld()
         {
-            drawText.DrawLivesTimeScore(spriteBatch);
-
             //draw goal
             goal.Draw(spriteBatch);
-
-            //draw grounds
-            foreach (Ground g in grounds)
-            {
-                g.Draw(spriteBatch);
-            }
 
             //draw platforms
             foreach(Platform p in platforms)
@@ -1056,6 +1057,12 @@ namespace Platformer
             foreach (Border b in borders)
             {
                 b.Draw(spriteBatch);
+            }
+
+            //draw grounds
+            foreach (Ground g in grounds)
+            {
+                g.Draw(spriteBatch);
             }
 
             //draw character
