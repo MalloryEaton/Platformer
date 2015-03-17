@@ -7,12 +7,14 @@
 *.sln.docstates
 
 # Build results
-
 [Dd]ebugPublic/
+[Dd]ebug/
 [Rr]elease/
 [Rr]eleases/
 x64/
+x86/
 bld/
+[Bb]in/
 [Oo]bj/
 
 # Roslyn cache directories
