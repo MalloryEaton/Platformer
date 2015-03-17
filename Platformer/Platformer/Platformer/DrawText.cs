@@ -15,12 +15,12 @@ namespace Platformer
         public void DrawLivesTimeScore(SpriteBatch spriteBatch)
         {
             float X = ConvertUnits.ToDisplayUnits(Game1.characterX);
-            double timer = Game1.timer;
+            //double timer = Game1.timer;
             int score = Game1.score;
 
             if (Game1.currentLevel == 2)
             {
-                string timeString = "Time: " + timer;
+                string timeString = "Time: ";
                 spriteBatch.DrawString(Game1.smallFont, timeString,
                     new Vector2(X, 25), Color.White);
                 string scoreString = "Score:";
@@ -32,7 +32,7 @@ namespace Platformer
             }
             else
             {
-                string timeString = "Time: " + timer;
+                string timeString = "Time: ";
                 spriteBatch.DrawString(Game1.smallFont, timeString,
                     new Vector2(X, 25), Color.Black);
                 string scoreString = "Score:";

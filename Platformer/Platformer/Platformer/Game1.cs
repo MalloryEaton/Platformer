@@ -792,7 +792,7 @@ namespace Platformer
         {
             characterX = character.Body.Position.X;
             characterY = character.Body.Position.Y;
-            timer = gameTime.ElapsedGameTime.TotalSeconds;
+            //timer = gameTime.ElapsedGameTime.TotalSeconds;
 
             if (titleScreenInstance.State == SoundState.Stopped && titleScreenIsPlaying)
             {
@@ -950,7 +950,7 @@ namespace Platformer
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            timer = gameTime.ElapsedGameTime.TotalSeconds;
+            //timer = gameTime.ElapsedGameTime.TotalSeconds;
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
