@@ -46,7 +46,9 @@ namespace Platformer
         private List<WaddleDee> waddleDees;
         private Burt burt;
         private List<Burt> burts;
-        private InvinvibleCandy invincibleCandy;
+        private InvincibleCandy invincibleCandy;
+        private Platform platform;
+        private List<Platform> platforms;
 
         //text
         private DrawText drawText;
@@ -267,6 +269,16 @@ namespace Platformer
                 character.jumpNum = 0;
             }
 
+            //platform
+            if (fixtureB.Body.UserData == "platform")
+            {
+
+                if (character.Body.LinearVelocity.Y > 0 || character.Body.LinearVelocity.Y == 0)
+                {
+                    character.jumpNum = 0;
+                }
+            }
+
             //goal
             if (fixtureA.Body.UserData == "player" && fixtureB.Body.UserData == "goal")
             {
@@ -326,8 +338,8 @@ namespace Platformer
                 enemyDie.Play();
                 return false;
             }
-          
-            else if (fixtureB.Body.UserData != "ground")
+
+            else if (fixtureB.Body.UserData != "ground" && fixtureB.Body.UserData != "platform")
             {
                 w.ChangeDirection();
             }
@@ -388,6 +400,7 @@ namespace Platformer
             barriers = new List<Barrier>();
             waddleDees = new List<WaddleDee>();
             burts = new List<Burt>();
+            platforms = new List<Platform>();
 
             Texture2D texture;
             Vector2 location;
@@ -489,7 +502,7 @@ namespace Platformer
                         {
                             case 1:
                                 {
-                                    img = "images\\transparentGround";
+                                    img = "images\\grassPlatform";
                                 }
                                 break;
                             case 2:
@@ -505,8 +518,8 @@ namespace Platformer
                         }
                         texture = Content.Load<Texture2D>(img);
                         location = new Vector2((float)k / 2, (float)i / 2);
-                        ground = new Ground(world, texture, location);
-                        grounds.Add(ground);
+                        platform = new Platform(world, texture, location);
+                        platforms.Add(platform);
                     }
 
                     // pit
@@ -540,7 +553,7 @@ namespace Platformer
                     {
                         texture = Content.Load<Texture2D>(@"images\invincibleCandy");
                         location = new Vector2((float)k / 2, (float)i / 2);
-                        invincibleCandy = new InvinvibleCandy(world, texture, location);
+                        invincibleCandy = new InvincibleCandy(world, texture, location);
                         isCandy = true;
                     }
 
@@ -675,6 +688,7 @@ namespace Platformer
                     {
                         character.Jump(character.jumpForce);
                     }
+
                     jump.Play();
                 }
 
@@ -1023,6 +1037,12 @@ namespace Platformer
             foreach (Ground g in grounds)
             {
                 g.Draw(spriteBatch);
+            }
+
+            //draw platforms
+            foreach(Platform p in platforms)
+            {
+                p.Draw(spriteBatch);
             }
 
             //draw pits

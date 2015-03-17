@@ -65,8 +65,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="images\transparentGround.png">
-      <Name>transparentGround</Name>
+    <Compile Include="images\grassPlatform.png">
+      <Name>grassPlatform</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

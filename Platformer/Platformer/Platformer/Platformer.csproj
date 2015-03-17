@@ -84,7 +84,7 @@
     <Compile Include="Enemy.cs" />
     <Compile Include="Goal.cs" />
     <Compile Include="Ground.cs" />
-    <Compile Include="InvinvibleCandy.cs" />
+    <Compile Include="InvincibleCandy.cs" />
     <Compile Include="Pit.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

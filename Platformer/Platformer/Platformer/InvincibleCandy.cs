@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Platformer
 {
-    class InvinvibleCandy
+    class InvincibleCandy
     {
         public bool IsAlive { get; private set; }
 
@@ -14,7 +14,7 @@ namespace Platformer
 
         private Texture2D candyTexture;
 
-        public InvinvibleCandy(World world, Texture2D texture, Vector2 position)
+        public InvincibleCandy(World world, Texture2D texture, Vector2 position)
         {
             IsAlive = true;
 
