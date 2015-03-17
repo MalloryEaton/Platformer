@@ -9,14 +9,10 @@
 # Build results
 
 [Dd]ebugPublic/
-[Dd]ebug/
 [Rr]elease/
 [Rr]eleases/
 x64/
-x86/
-build/
 bld/
-[Bb]in/
 [Oo]bj/
 
 # Roslyn cache directories
@@ -60,6 +56,7 @@ dlldata.c
 *.pidb
 *.svclog
 *.scc
+*.xnb
 
 # Chutzpah Test files
 _Chutzpah*
