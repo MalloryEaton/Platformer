@@ -66,6 +66,10 @@ namespace Platformer
 
         //invincible
         private bool isInvincible = false;
+        //need to add a variable to prevent kirby from touching
+            //both the candy and the enemies twice.
+        //I think that's why the candy doesn't work sometimes, and occasionally 
+            //when he touches the enemies the die sound plays twice
 
         //backgrounds
         private Texture2D background1;
@@ -1040,6 +1044,18 @@ namespace Platformer
                 invincibleCandy.Draw(spriteBatch);
             }
 
+            //draw borders
+            foreach (Border b in borders)
+            {
+                b.Draw(spriteBatch);
+            }
+
+            //draw grounds
+            foreach (Ground g in grounds)
+            {
+                g.Draw(spriteBatch);
+            }
+
             //draw enemies
             if (!cheatIsOn)
             {
@@ -1051,18 +1067,6 @@ namespace Platformer
                 {
                     b.Draw(spriteBatch);
                 }
-            }
-
-            //draw borders
-            foreach (Border b in borders)
-            {
-                b.Draw(spriteBatch);
-            }
-
-            //draw grounds
-            foreach (Ground g in grounds)
-            {
-                g.Draw(spriteBatch);
             }
 
             //draw character
