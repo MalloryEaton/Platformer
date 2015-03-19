@@ -1162,16 +1162,13 @@ namespace Platformer
                 p.Draw(spriteBatch);
             }
 
-            //draw barriers
-            foreach (Barrier b in barriers)
-            {
-                b.Draw(spriteBatch);
-            }
-
             //draw candy
-            if (invincibleCandy.isCandy && invincibleCandy.IsAlive)
+            if (invincibleCandy != null)
             {
-                invincibleCandy.Draw(spriteBatch);
+                if (invincibleCandy.isCandy && invincibleCandy.IsAlive)
+                {
+                    invincibleCandy.Draw(spriteBatch);
+                }
             }
 
             //draw borders
