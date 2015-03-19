@@ -56,7 +56,7 @@ namespace Platformer
             else
             {
                 Body.CollisionCategories = Category.Cat10;
-                Body.CollidesWith = Category.Cat1 | Category.Cat3 | Category.Cat6;
+                Body.CollidesWith = Category.Cat1 | Category.Cat3 | Category.Cat6 | Category.Cat8;
             }
 
             Body.SleepingAllowed = false;

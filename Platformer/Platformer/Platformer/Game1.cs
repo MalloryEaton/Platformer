@@ -49,13 +49,17 @@ namespace Platformer
         public static SpriteFont font;
         public static SpriteFont smallFont;
 
+        public static double startTimeSec { get; private set; }
+        public int timeFromLevelStart = 0;
+        public double timeAdjustment = 0.0;
         public int screenWidth;
         public int screenHeight;
         public static float HalfScreenWidth { get; private set; }
         public static float characterX { get; private set; }
         public static float characterY { get; private set; }
         public static int lives { get; private set; }
-        public static double timer { get; private set; }
+        public static double timerMin { get; private set; }
+        public static double timerSec { get; private set; }
         public static int score { get; private set; }
         public static bool titleScreenIsPlaying { get; private set; }
         public static int currentLevel { get; private set; }
@@ -79,6 +83,8 @@ namespace Platformer
         private InvincibleCandy invincibleCandy;
         private Platform platform;
         private List<Platform> platforms;
+        private Coin coin;
+        private List<Coin> coins;
 
         //particles
         private ParticleEngine particleEngine;
@@ -358,6 +364,7 @@ namespace Platformer
             {
                 w.Die();
                 enemyDie.Play();
+                score += 100;
                 return false;
             }
 
@@ -377,6 +384,20 @@ namespace Platformer
             {
                 enemyDie.Play();
                 b.Die();
+                score = score + 200;
+            }
+
+            return true;
+        }
+
+        bool Coin_OnCollision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
+        {
+            Coin c = (Coin)fixtureA.Body.UserData;
+            if (fixtureB.Body.UserData == "player")
+            {
+                score += 50;
+                c.Collect();
+                coins.Remove(c);
             }
 
             return true;
@@ -416,6 +437,10 @@ namespace Platformer
             {
                 b.Body.OnCollision += Burt_Collision;
             }
+            foreach (Coin c in coins)
+            {
+                c.Body.OnCollision += Coin_OnCollision;
+            }
         }
         #endregion
 
@@ -429,6 +454,7 @@ namespace Platformer
             waddleDees = new List<WaddleDee>();
             burts = new List<Burt>();
             platforms = new List<Platform>();
+            coins = new List<Coin>();
 
             Texture2D texture;
             Vector2 location;
@@ -474,6 +500,15 @@ namespace Platformer
                         location = new Vector2((float)k / 2, (float)i / 2);
                         border = new Border(world, texture, location);
                         borders.Add(border);
+                    }
+
+                    // coin
+                    else if (piece == 'm')
+                    {
+                        texture = Content.Load<Texture2D>(@"images\coin");
+                        location = new Vector2((float)k / 2, (float)i / 2);
+                        coin = new Coin(world, texture, location);
+                        coins.Add(coin);
                     }
 
                     // ground
@@ -601,7 +636,7 @@ namespace Platformer
         #endregion
 
         #region HandleKeyboard
-        private void HandleKeyboard()
+        private void HandleKeyboard(GameTime gameTime)
         {
             KeyboardState state = Keyboard.GetState();
 
@@ -619,6 +654,8 @@ namespace Platformer
                     titleScreenInstance.Stop();
                     titleScreenIsPlaying = false;
                     CreateGameComponents();
+                    startTimeSec = gameTime.TotalGameTime.TotalSeconds;
+                    timeAdjustment = 0;
                 }
                 levelClearedInstance.Stop();
                 gameOverInstance.Stop();
@@ -628,11 +665,17 @@ namespace Platformer
                 if (character.gameOver)
                 {
                     lives = 3;
+                    startTimeSec = gameTime.TotalGameTime.TotalSeconds;
+                    timeAdjustment = 0;
+                    score = 0;
                 }
 
                 if (gameWon)
                 {
                     currentLevel = 1;
+                    startTimeSec = gameTime.TotalGameTime.TotalSeconds;
+                    timeAdjustment = 0;
+                    score = 0;
                 }
 
                 cheatIsOn = false;
@@ -791,7 +834,7 @@ namespace Platformer
 
                     CreateGameComponents();
                 }
-
+               
                 //reset character
                 if (state.IsKeyDown(Keys.R))
                 {
@@ -987,6 +1030,13 @@ namespace Platformer
             }
             #endregion
 
+            #region adjust time
+            if (character.losesLife || levelIsCleared)
+            {
+                timeAdjustment += gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            #endregion
+
             #region enemy movement
             foreach (WaddleDee w in waddleDees)
             {
@@ -997,10 +1047,16 @@ namespace Platformer
             {
                 b.Update(gameTime);
             }
+
+            foreach (Coin c in coins)
+            {
+                c.Update(gameTime);
+            }
             #endregion
 
 
-            HandleKeyboard();
+
+            HandleKeyboard(gameTime);
 
             world.Step((float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f);
 
@@ -1017,7 +1073,8 @@ namespace Platformer
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            //timer = gameTime.ElapsedGameTime.TotalSeconds;
+            timerMin = gameTime.TotalGameTime.TotalMinutes;
+            timerSec = gameTime.TotalGameTime.TotalSeconds - startTimeSec - timeAdjustment;
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
@@ -1043,12 +1100,16 @@ namespace Platformer
             {
                 DrawBackground();
                 DrawWorld();
-                drawText.DrawLivesTimeScore(spriteBatch);
 
+                //we end the spritebatch operation and start a new one to remove the camera transformation
+                spriteBatch.End();
+                spriteBatch.Begin();
+                drawText.DrawLivesTimeScore(spriteBatch);
+                
                 if (character.losesLife && lives != 0)
                 {
                     Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
-                    drawText.DrawLoseLife(spriteBatch);
+                    drawText.DrawLoseLife(spriteBatch, GraphicsDevice);
                 }
             }
 
@@ -1087,6 +1148,12 @@ namespace Platformer
             foreach(Platform p in platforms)
             {
                 p.Draw(spriteBatch);
+            }
+
+            //draw coins
+            foreach (Coin c in coins)
+            {
+                c.Draw(spriteBatch);
             }
 
             //draw pits
