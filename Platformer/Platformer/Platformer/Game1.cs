@@ -51,6 +51,10 @@ namespace Platformer
         private InvincibleCandy invincibleCandy;
         private Platform platform;
         private List<Platform> platforms;
+        private ParticleEngine particleEngine;
+
+        //particles
+        private Texture2D particleTexture;
 
         //text
         private DrawText drawText;
@@ -174,6 +178,9 @@ namespace Platformer
             lives = 3;
 
             titleScreenIsPlaying = true;
+
+            particleTexture = Content.Load<Texture2D>(@"images\starParticle");
+            particleEngine = new ParticleEngine(particleTexture, new Vector2(400, 240));
 
             font = Content.Load<SpriteFont>(@"font\myFont");
             smallFont = Content.Load<SpriteFont>(@"font\small");
@@ -798,6 +805,9 @@ namespace Platformer
             characterY = character.Body.Position.Y;
             //timer = gameTime.ElapsedGameTime.TotalSeconds;
 
+            particleEngine.EmitterLocation = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
+            particleEngine.Update();
+
             if (titleScreenInstance.State == SoundState.Stopped && titleScreenIsPlaying)
             {
                 titleScreenInstance.Play();
@@ -981,6 +991,7 @@ namespace Platformer
                 DrawBackground();
                 DrawWorld();
                 drawText.DrawLivesTimeScore(spriteBatch);
+                particleEngine.Draw(spriteBatch);
 
                 if (character.losesLife && lives != 0)
                 {
