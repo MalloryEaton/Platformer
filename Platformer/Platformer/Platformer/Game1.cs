@@ -1096,10 +1096,10 @@ namespace Platformer
             }
 
             //draw barriers
-            foreach (Barrier b in barriers)
-            {
-                b.Draw(spriteBatch);
-            }
+            //foreach (Barrier b in barriers)
+            //{
+            //    b.Draw(spriteBatch);
+            //}
 
             //draw candy
             if (invincibleCandy != null)
