@@ -805,7 +805,8 @@ namespace Platformer
             characterY = character.Body.Position.Y;
             //timer = gameTime.ElapsedGameTime.TotalSeconds;
 
-            particleEngine.EmitterLocation = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
+            particleEngine.EmitterLocation = new Vector2(ConvertUnits.ToDisplayUnits(characterX), 
+                ConvertUnits.ToDisplayUnits(characterY));
             particleEngine.Update();
 
             if (titleScreenInstance.State == SoundState.Stopped && titleScreenIsPlaying)
@@ -991,7 +992,6 @@ namespace Platformer
                 DrawBackground();
                 DrawWorld();
                 drawText.DrawLivesTimeScore(spriteBatch);
-                particleEngine.Draw(spriteBatch);
 
                 if (character.losesLife && lives != 0)
                 {
@@ -1078,6 +1078,12 @@ namespace Platformer
                 {
                     b.Draw(spriteBatch);
                 }
+            }
+
+            //draw particles
+            if (isInvincible)
+            {
+                particleEngine.Draw(spriteBatch);
             }
 
             //draw character

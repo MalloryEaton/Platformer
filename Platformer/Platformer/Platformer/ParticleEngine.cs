@@ -24,7 +24,7 @@ namespace Platformer
 
         public void Update()
         {
-            int total = 10;
+            int total = 1;
 
             for (int i = 0; i < total; i++)
             {
@@ -44,19 +44,15 @@ namespace Platformer
 
         private Particle GenerateNewParticle()
         {
-            //Texture2D texture = texture[random.Next(texture.Count)];
             Vector2 position = EmitterLocation;
             Vector2 velocity = new Vector2(
                                     1f * (float)(random.NextDouble() * 2 - 1),
                                     1f * (float)(random.NextDouble() * 2 - 1));
             float angle = 0;
             float angularVelocity = 0.1f * (float)(random.NextDouble() * 2 - 1);
-            Color color = new Color(
-                        (float)random.NextDouble(),
-                        (float)random.NextDouble(),
-                        (float)random.NextDouble());
+            Color color = new Color(255, 255, 255);
             float size = (float)random.NextDouble();
-            int ttl = 20 + random.Next(40);
+            int ttl = 1 + random.Next(40);
 
             return new Particle(particleTexture, position, velocity, angle, angularVelocity, color, size, ttl);
         }
