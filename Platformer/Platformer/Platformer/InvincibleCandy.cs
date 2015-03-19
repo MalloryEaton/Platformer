@@ -9,6 +9,7 @@ namespace Platformer
     class InvincibleCandy
     {
         public bool IsAlive { get; private set; }
+        public bool isCandy = false;
 
         public Body Body { get; private set; }
 

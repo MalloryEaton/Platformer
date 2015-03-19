@@ -1,3 +1,31 @@
+/* 2D Platformer Project
+ * Super Kirbario
+ * Created by Mallory Eaton and Sam Hipp
+ * 
+ * Sprites and Images
+ * http://spritedatabase.net/custom/126
+ * http://4.bp.blogspot.com/-LIQG1czOYtI/UGOEIE_Rd5I/AAAAAAAARrQ/4dQdV_5Rnx0/s1600/kirby+wallpaper.jpg
+ * http://fc07.deviantart.net/fs40/f/2009/026/4/2/Sad_Kirby_by_supernintendogirl.png
+ * http://wiiuforums.com/attachments/wii-wii-mini/1570d1361208467-***win-free-kirby-game-wii-vc-contest-details-inside-***-20130120070658-kirby.jpg
+ * http://images4.alphacoders.com/359/35916.jpg
+ * http://2.envato-static.com/assets/common/icons-buttons/rating/star-on-24a8d2589eca9f34bc2ff72a59bd9af7.png
+ * http://www.spriters-resource.com/ds/kirbysqueaksquad/sheet/60929/
+ * http://www.spriters-resource.com/snes/kirbydream3/sheet/2843/
+ * http://www.spriters-resource.com/snes/kirbydream3/sheet/2818/
+ * http://www.spriters-resource.com/snes/kirbydream3/sheet/2842/
+ * http://spritedatabase.net/file/3519
+ * http://spritedatabase.net/file/1153
+ * http://www.nindb.net/gba/kirby-nightmare-in-dreamland/index.html
+ * http://www.polyvore.com/invincibility_candy_kirby/thing?id=62396938
+ * http://ksr.smackjeeves.com/comics/1441945/some-kdl3-tile-rips/
+ * 
+ * Sounds and Music
+ * http://downloads.khinsider.com/game-soundtracks/album/kirby-s-dreamland-3-original-soundtrack
+ * 
+ * Code
+ * http://rbwhitaker.wikidot.com/2d-particle-engine-1
+ */
+
 using FarseerPhysics;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
@@ -51,9 +79,9 @@ namespace Platformer
         private InvincibleCandy invincibleCandy;
         private Platform platform;
         private List<Platform> platforms;
-        private ParticleEngine particleEngine;
 
         //particles
+        private ParticleEngine particleEngine;
         private Texture2D particleTexture;
 
         //text
@@ -68,8 +96,6 @@ namespace Platformer
         private Body stoneBody;
         private Vector2 stoneOrigin;
 
-        //invincible
-        private bool isInvincible = false;
         //need to add a variable to prevent kirby from touching
             //both the candy and the enemies twice.
         //I think that's why the candy doesn't work sometimes, and occasionally 
@@ -114,10 +140,6 @@ namespace Platformer
         SoundEffectInstance winInstance;
         private SoundEffect titleScreenSound;
         SoundEffectInstance titleScreenInstance;
-
-        private Vector2 characterInitPos;
-
-        private bool isCandy = false;
 
         private bool LCHasBeenPlayed = false;
         private bool deadHasBeenPlayed = false;
@@ -255,10 +277,10 @@ namespace Platformer
         #region ResetCharacter
         private void ResetCharacter()
         {
-            isInvincible = false;
+            character.isInvincible = false;
             character.Body.ResetDynamics();
             character.Body.Rotation = 0;
-            character.Body.Position = characterInitPos;
+            character.Body.Position = character.characterInitPos;
         }
         #endregion
 
@@ -269,7 +291,7 @@ namespace Platformer
             if (fixtureB.Body.UserData == "pit" && !character.losesLife)
             {
                 character.losesLife = true;
-                isInvincible = false;
+                character.isInvincible = false;
                 lives--;
                 character.Body.ResetDynamics();
                 character.Body.CollisionCategories = Category.Cat5;
@@ -295,38 +317,20 @@ namespace Platformer
             //goal
             if (fixtureA.Body.UserData == "player" && fixtureB.Body.UserData == "goal")
             {
-                if (currentLevel <= 2)
-                {
-                    levelIsCleared = true;
-                }
-                currentLevel++;
-                if (currentLevel > 3)
-                {
-                    gameWon = true;
-                    currentLevel = 3;
-                    
-                    CreateGameComponents();
-                    character.Body.CollisionCategories = Category.Cat5;
-                }
-                else
-                {
-                    
-                    CreateGameComponents();
-                    character.Body.CollisionCategories = Category.Cat5;
-                }
+                character.onGoal = true;
             }
 
             //invincible candy
             if (fixtureB.Body.UserData == "candy")
             {
-                isInvincible = true;
+                character.isInvincible = true;
                 invincibleCandy.Destroy();
             }
 
             //enemy
             if (fixtureB.Body.UserData.GetType().BaseType == typeof(Enemy))
             {
-                if (!isStone && !isInvincible && !cheatIsOn)
+                if (!isStone && !character.isInvincible && !cheatIsOn)
                 {
                     character.losesLife = true;
                     lives--;
@@ -335,7 +339,7 @@ namespace Platformer
                     character.Body.CollisionCategories = Category.Cat5;
                     character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
                 }
-                else if (!isInvincible)
+                else if (!character.isInvincible)
                 {
                     character.Body.ResetDynamics();
                     character.Body.ApplyLinearImpulse(new Vector2(0, -0.2f));
@@ -349,7 +353,8 @@ namespace Platformer
         bool WaddleDee_Collision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
             WaddleDee w = (WaddleDee)fixtureA.Body.UserData;
-            if (fixtureB.Body.UserData == "player" && ((isStone && character.Body.LinearVelocity.Y > 0) || isInvincible) && !cheatIsOn)
+            if (fixtureB.Body.UserData == "player" && ((isStone && character.Body.LinearVelocity.Y > 0) 
+                || character.isInvincible) && !cheatIsOn)
             {
                 w.Die();
                 enemyDie.Play();
@@ -367,7 +372,8 @@ namespace Platformer
         bool Burt_Collision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
             Burt b = (Burt)fixtureA.Body.UserData;
-            if (fixtureB.Body.UserData == "player" && ((isStone && character.Body.LinearVelocity.Y > 0) || isInvincible) && !cheatIsOn)
+            if (fixtureB.Body.UserData == "player" && ((isStone && character.Body.LinearVelocity.Y > 0)
+                || character.isInvincible) && !cheatIsOn)
             {
                 enemyDie.Play();
                 b.Die();
@@ -384,7 +390,14 @@ namespace Platformer
 
             HalfScreenWidth = graphics.GraphicsDevice.Viewport.Width / 2;
 
-            isInvincible = false;
+            if (character != null)
+            {
+                character.isInvincible = false;
+            }
+            if (invincibleCandy != null)
+            {
+                invincibleCandy.isCandy = false;
+            }
 
             ReadInLevels();
 
@@ -409,8 +422,6 @@ namespace Platformer
         #region ReadInLevels
         private void ReadInLevels()
         {
-            isCandy = false;
-
             grounds = new List<Ground>();
             pits = new List<Pit>();
             borders = new List<Border>();
@@ -553,7 +564,7 @@ namespace Platformer
                         texture = Content.Load<Texture2D>(@"images\invincibleCandy");
                         location = new Vector2((float)k / 2, (float)i / 2);
                         invincibleCandy = new InvincibleCandy(world, texture, location);
-                        isCandy = true;
+                        invincibleCandy.isCandy = true;
                     }
 
                     //waddleDee
@@ -579,8 +590,8 @@ namespace Platformer
                     {
                         texture = Content.Load<Texture2D>(@"images\kirby");
                         location = new Vector2((float)k / 2, (float)i / 2);
-                        characterInitPos = location;
                         character = new Character(world, texture, location);
+                        character.characterInitPos = location;
                         //invincible
                         character.invincibleTexture = Content.Load<Texture2D>(@"images/kirbyInvincible");
                     }
@@ -594,8 +605,14 @@ namespace Platformer
         {
             KeyboardState state = Keyboard.GetState();
 
+            if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                this.Exit();
+            }
+
             //press enter
-            if (state.IsKeyDown(Keys.Enter) && (titleScreenIsPlaying || levelIsCleared || character.gameOver || (character.losesLife && lives != 0) || gameWon))
+            if (state.IsKeyDown(Keys.Enter) && (titleScreenIsPlaying || levelIsCleared 
+                || character.gameOver || (character.losesLife && lives != 0) || gameWon))
             {
                 if (titleScreenIsPlaying)
                 {
@@ -633,14 +650,15 @@ namespace Platformer
                 CreateGameComponents();
             }
 
-            if (!titleScreenIsPlaying && !levelIsCleared && !character.gameOver && !character.losesLife && !gameWon)
+            if (!titleScreenIsPlaying && !levelIsCleared && !character.gameOver 
+                && !character.losesLife && !gameWon)
             {
                 //move left
                 if (state.IsKeyDown(Keys.Left) && !isStone)
                 {
                     //character.Body.FixedRotation = false;
                    
-                    if (isInvincible)
+                    if (character.isInvincible)
                     {
                         character.Body.Position -= new Vector2(0.06f, 0f);
                         //character.Body.Rotation -= 0.4f;
@@ -656,8 +674,8 @@ namespace Platformer
                 else if (state.IsKeyDown(Keys.Right) && !isStone)
                 {
                     //character.Body.FixedRotation = false;
-                    
-                    if (isInvincible)
+
+                    if (character.isInvincible)
                     {
                         character.Body.Position += new Vector2(0.06f, 0f);
                         //character.Body.Rotation += 0.4f;
@@ -674,12 +692,11 @@ namespace Platformer
                 //}
 
                 //jump
-                if (((state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space))
-                    || (state.IsKeyDown(Keys.Up) && oldKeyState.IsKeyUp(Keys.Up)))
+                if ((state.IsKeyDown(Keys.Up) && oldKeyState.IsKeyUp(Keys.Up))
                      && character.jumpNum < 6)
                 {
                     character.jumpNum++;
-                    if (isInvincible)
+                    if (character.isInvincible)
                     {
                         character.Jump(new Vector2(0, -0.3f));
                     }
@@ -691,8 +708,32 @@ namespace Platformer
                     jump.Play();
                 }
 
+                //enter goal
+                if (character.onGoal && (state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space)))
+                {
+                    if (currentLevel <= 2)
+                    {
+                        levelIsCleared = true;
+                    }
+                    currentLevel++;
+                    if (currentLevel > 3)
+                    {
+                        gameWon = true;
+                        currentLevel = 3;
+                    
+                        CreateGameComponents();
+                        character.Body.CollisionCategories = Category.Cat5;
+                    }
+                    else
+                    {
+                    
+                        CreateGameComponents();
+                        character.Body.CollisionCategories = Category.Cat5;
+                    }
+                }
+
                 //stone
-                if (state.IsKeyDown(Keys.Down) && oldKeyState.IsKeyUp(Keys.Down) && !isInvincible)
+                if (state.IsKeyDown(Keys.Down) && oldKeyState.IsKeyUp(Keys.Down) && !character.isInvincible)
                 {
                     if (!isStone)
                     {
@@ -805,38 +846,15 @@ namespace Platformer
             characterY = character.Body.Position.Y;
             //timer = gameTime.ElapsedGameTime.TotalSeconds;
 
+            #region particle engine
             particleEngine.EmitterLocation = new Vector2(ConvertUnits.ToDisplayUnits(characterX), 
                 ConvertUnits.ToDisplayUnits(characterY));
             particleEngine.Update();
+            #endregion
 
-            if (titleScreenInstance.State == SoundState.Stopped && titleScreenIsPlaying)
-            {
-                titleScreenInstance.Play();
-            }
-
-            if(character.losesLife)
-            {
-                invincibleInstance.Stop();
-                level1Instance.Stop();
-                level2Instance.Stop();
-                level3Instance.Stop();
-
-                if (!lostLifeHasBeenPlayed)
-                {
-                    dieInstance.Play();
-                    lostLifeHasBeenPlayed = true;
-                }
-
-                else if(lives == 0 && dieInstance.State == SoundState.Stopped)
-                {
-                    ResetCharacter();
-                    character.gameOver = true;
-                }
-            }
-
+            #region music
             if (!character.losesLife)
             {
-                //music
                 if (level1Instance.State == SoundState.Stopped && currentLevel == 1 && !titleScreenIsPlaying)
                 {
                     level2Instance.Stop();
@@ -855,6 +873,14 @@ namespace Platformer
                     level2Instance.Stop();
                     level3Instance.Play();
                 }
+            }
+            #endregion
+
+            #region play screens
+            //title screen
+            if (titleScreenInstance.State == SoundState.Stopped && titleScreenIsPlaying)
+            {
+                titleScreenInstance.Play();
             }
 
             //level cleared screen
@@ -888,9 +914,10 @@ namespace Platformer
 
                 lives = 3;
             }
+            #endregion
 
-            //invincible
-            if (isInvincible)
+            #region invincible
+            if (character.isInvincible)
             {
                 level1Instance.Pause();
                 level2Instance.Pause();
@@ -907,7 +934,7 @@ namespace Platformer
                 else
                 {
                     invincibleInstance.Stop();
-                    isInvincible = false;
+                    character.isInvincible = false;
                     invincibleNumberOfTimesPlayed = 0;
 
                     switch (currentLevel)
@@ -924,8 +951,31 @@ namespace Platformer
                     }
                 }
             }
+            #endregion
 
-            //dead
+            #region lost life
+            if (character.losesLife)
+            {
+                invincibleInstance.Stop();
+                level1Instance.Stop();
+                level2Instance.Stop();
+                level3Instance.Stop();
+
+                if (!lostLifeHasBeenPlayed)
+                {
+                    dieInstance.Play();
+                    lostLifeHasBeenPlayed = true;
+                }
+
+                else if (lives == 0 && dieInstance.State == SoundState.Stopped)
+                {
+                    ResetCharacter();
+                    character.gameOver = true;
+                }
+            }
+            #endregion
+
+            #region dead
             if (character.gameOver && lostLifeHasBeenPlayed)
             {
                 currentLevel = 1;
@@ -935,8 +985,9 @@ namespace Platformer
                     deadHasBeenPlayed = true;
                 }
             }
+            #endregion
 
-            //ememy movement
+            #region enemy movement
             foreach (WaddleDee w in waddleDees)
             {
                 w.Update(gameTime);               
@@ -946,12 +997,13 @@ namespace Platformer
             {
                 b.Update(gameTime);
             }
+            #endregion
+
 
             HandleKeyboard();
 
             world.Step((float)gameTime.ElapsedGameTime.TotalMilliseconds * 0.001f);
 
-            // Allow camera to update
             Camera.Current.Update();
 
             base.Update(gameTime);
@@ -1050,7 +1102,7 @@ namespace Platformer
             }
 
             //draw candy
-            if (isCandy && invincibleCandy.IsAlive)
+            if (invincibleCandy.isCandy && invincibleCandy.IsAlive)
             {
                 invincibleCandy.Draw(spriteBatch);
             }
@@ -1081,7 +1133,7 @@ namespace Platformer
             }
 
             //draw particles
-            if (isInvincible)
+            if (character.isInvincible)
             {
                 particleEngine.Draw(spriteBatch);
             }
@@ -1095,7 +1147,7 @@ namespace Platformer
                     stoneOrigin,
                     1f, SpriteEffects.None, 0f);
             }
-            else if (isInvincible)
+            else if (character.isInvincible)
             {
                 character.DrawInvincible(spriteBatch);
             }

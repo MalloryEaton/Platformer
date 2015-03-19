@@ -78,6 +78,10 @@ namespace Platformer
             spriteBatch.DrawString(Game1.font, playagain,
                 new Vector2((Game1.HalfScreenWidth)
                     - (Game1.font.MeasureString(playagain).Length() + 100), 250), Color.Black);
+            string exit = "Press ESCAPE to Exit.";
+            spriteBatch.DrawString(Game1.font, exit,
+                new Vector2((Game1.HalfScreenWidth)
+                    - (Game1.font.MeasureString(exit).Length() + 100), 300), Color.Black);
         }
 
         public void DrawLevelCleared(SpriteBatch spriteBatch)
@@ -102,6 +106,10 @@ namespace Platformer
             spriteBatch.DrawString(Game1.font, playagain,
                 new Vector2((Game1.HalfScreenWidth)
                     - (Game1.font.MeasureString(playagain).Length() + 100), 250), Color.Black);
+            string exit = "Press ESCAPE to Exit.";
+            spriteBatch.DrawString(Game1.font, exit,
+                new Vector2((Game1.HalfScreenWidth)
+                    - (Game1.font.MeasureString(exit).Length() + 100), 300), Color.Black);
         }
     }
 }
