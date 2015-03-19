@@ -1102,9 +1102,12 @@ namespace Platformer
             }
 
             //draw candy
-            if (invincibleCandy.isCandy && invincibleCandy.IsAlive)
+            if (invincibleCandy != null)
             {
-                invincibleCandy.Draw(spriteBatch);
+                if (invincibleCandy.isCandy && invincibleCandy.IsAlive)
+                {
+                    invincibleCandy.Draw(spriteBatch);
+                }
             }
 
             //draw borders
