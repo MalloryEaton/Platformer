@@ -6,45 +6,26 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Platformer
 {
-    class Barrier
+    class Barrier : WorldComponents
     {
-        public Body Body { get; private set; }
-
-        private Texture2D barrierTexture;
-
         public Barrier(World world, Texture2D texture, Vector2 position)
         {
-            this.barrierTexture = texture;
+            this.texture = texture;
 
             // Create a body
             Body = BodyFactory.CreateRectangle(world,
-                ConvertUnits.ToSimUnits(barrierTexture.Width),
-                ConvertUnits.ToSimUnits(barrierTexture.Height), 1f, position);
+                ConvertUnits.ToSimUnits(texture.Width),
+                ConvertUnits.ToSimUnits(texture.Height), 1f, position);
 
             Body.BodyType = BodyType.Static;
             Body.UserData = "barrier";
-            //Body.IsStatic = true;
             Body.IsSensor = true;
-            //Body.IsKinematic = true;
             Body.Restitution = 0f;
             Body.Friction = 1f;
             Body.CollisionCategories = Category.Cat2;
             Body.CollidesWith = Category.Cat3 | Category.Cat4;
 
             Body.SleepingAllowed = false;
-        }
-
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Draw(barrierTexture,
-                ConvertUnits.ToDisplayUnits(Body.Position),
-                null,
-                Color.White,
-                Body.Rotation,
-                new Vector2(barrierTexture.Width / 2, barrierTexture.Height / 2),
-                1f,
-                SpriteEffects.None,
-                0f);
         }
     }
 }

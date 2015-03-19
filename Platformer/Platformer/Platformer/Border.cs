@@ -6,20 +6,16 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Platformer
 {
-    class Border
+    class Border : WorldComponents
     {
-        public Body Body { get; private set; }
-
-        private Texture2D borderTexture;
-
         public Border(World world, Texture2D texture, Vector2 position)
         {
-            this.borderTexture = texture;
+            this.texture = texture;
 
             // Create a body
             Body = BodyFactory.CreateRectangle(world,
-                ConvertUnits.ToSimUnits(borderTexture.Width),
-                ConvertUnits.ToSimUnits(borderTexture.Height), 1f, position);
+                ConvertUnits.ToSimUnits(texture.Width),
+                ConvertUnits.ToSimUnits(texture.Height), 1f, position);
             Body.IsStatic = true;
             Body.Restitution = 0f;
             Body.Friction = 0f;
@@ -28,19 +24,6 @@ namespace Platformer
             Body.UserData = "border";
 
             Body.SleepingAllowed = false;
-        }
-
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Draw(borderTexture,
-                ConvertUnits.ToDisplayUnits(Body.Position),
-                null,
-                Color.White,
-                Body.Rotation,
-                new Vector2(borderTexture.Width / 2, borderTexture.Height / 2),
-                1f,
-                SpriteEffects.None,
-                0f);
         }
     }
 }

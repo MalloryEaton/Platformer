@@ -6,20 +6,16 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Platformer
 {
-    class Ground
+    class Ground : WorldComponents
     {
-        public Body Body { get; private set; }
-
-        private Texture2D groundTexture;
-
         public Ground(World world, Texture2D texture, Vector2 position)
         {
-            this.groundTexture = texture;
+            this.texture = texture;
 
             // Create a body for the ground
             Body = BodyFactory.CreateRectangle(world,
-                ConvertUnits.ToSimUnits(groundTexture.Width),
-                ConvertUnits.ToSimUnits(groundTexture.Height - 5), 1f, position);
+                ConvertUnits.ToSimUnits(texture.Width),
+                ConvertUnits.ToSimUnits(texture.Height - 5), 1f, position);
 
             Body.UserData = "ground";
             Body.IsStatic = true;
@@ -29,19 +25,6 @@ namespace Platformer
             Body.CollidesWith = Category.Cat1 | Category.Cat3 | Category.Cat4 | Category.Cat10 | Category.Cat15;
 
             Body.SleepingAllowed = false;
-        }
-
-        public void Draw(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Draw(groundTexture,
-                ConvertUnits.ToDisplayUnits(Body.Position),
-                null,
-                Color.White,
-                Body.Rotation,
-                new Vector2(groundTexture.Width / 2, groundTexture.Height / 2),
-                1f,
-                SpriteEffects.None,
-                0f);
         }
     }
 }
