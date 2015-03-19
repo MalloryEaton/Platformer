@@ -18,6 +18,7 @@
  * http://www.nindb.net/gba/kirby-nightmare-in-dreamland/index.html
  * http://www.polyvore.com/invincibility_candy_kirby/thing?id=62396938
  * http://ksr.smackjeeves.com/comics/1441945/some-kdl3-tile-rips/
+ * http://melonjs.github.io/tutorial-platformer/media/spinning_coin_gold.png
  * 
  * Sounds and Music
  * http://downloads.khinsider.com/game-soundtracks/album/kirby-s-dreamland-3-original-soundtrack

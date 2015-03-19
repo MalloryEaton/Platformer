@@ -24,7 +24,7 @@ namespace Platformer
                 string timeString = "Time: " + timerSec.ToString("0.#");
                 spriteBatch.DrawString(Game1.smallFont, timeString,
                     new Vector2(X, 25), Color.White);
-                string scoreString = "Score:";
+                string scoreString = "Score: " + score;
                 spriteBatch.DrawString(Game1.smallFont, scoreString,
                     new Vector2(X, 50), Color.White);
                 string lives = "Lives: " + Game1.lives;
