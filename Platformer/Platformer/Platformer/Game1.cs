@@ -1138,7 +1138,7 @@ namespace Platformer
         #region DrawBackground
         private void DrawBackground()
         {
-            Rectangle screen = new Rectangle(0, 0, 3000, screenHeight);
+            Rectangle screen = new Rectangle(0, 0, 2000, screenHeight);
             if (currentLevel == 1)
             {
                 spriteBatch.Draw(background1, screen, Color.White);
