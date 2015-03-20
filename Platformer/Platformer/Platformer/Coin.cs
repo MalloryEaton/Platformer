@@ -42,7 +42,7 @@ namespace Platformer
 
             Body.IgnoreGravity = true;
             Body.BodyType = BodyType.Dynamic;
-            //Body.IsSensor = true;
+            Body.IsSensor = true;
             Body.CollisionCategories = Category.Cat8;
             Body.CollidesWith = Category.Cat10;
         }

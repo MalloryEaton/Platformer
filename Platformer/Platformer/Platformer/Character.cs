@@ -21,7 +21,6 @@ namespace Platformer
         public Vector2 jumpForce = new Vector2(0, -0.25f); // applied force when jumping
 
         public bool losesLife = false;
-        public bool gameOver = false;
         public bool isInvincible = false;
         public bool onGoal = false;
 

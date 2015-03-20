@@ -52,6 +52,7 @@ namespace Platformer
         public static SpriteFont smallFont;
 
         public static double startTimeSec { get; private set; }
+
         public int timeFromLevelStart = 0;
         public double timeAdjustment = 0.0;
         public int screenWidth;
@@ -87,6 +88,9 @@ namespace Platformer
         private List<Platform> platforms;
         private Coin coin;
         private List<Coin> coins;
+
+        //starting score at beginning of level
+        private int startingScore;
 
         //particles
         private ParticleEngine particleEngine;
@@ -141,8 +145,8 @@ namespace Platformer
         SoundEffectInstance levelClearedInstance;
         private SoundEffect invincible;
         SoundEffectInstance invincibleInstance;
-        private SoundEffect gameOver;
-        SoundEffectInstance gameOverInstance;
+        private SoundEffect gameOverSound;
+        SoundEffectInstance gameOverSoundInstance;
         private SoundEffect die;
         SoundEffectInstance dieInstance;
         private SoundEffect win;
@@ -156,6 +160,9 @@ namespace Platformer
         private bool lostLifeHasBeenPlayed = false;
 
         private int invincibleNumberOfTimesPlayed = 0;
+
+        //game over
+        private bool gameOver = false;
 
         //win screen
         private bool gameWon = false;
@@ -257,8 +264,8 @@ namespace Platformer
             invincible = Content.Load<SoundEffect>(@"sounds/invincible");
             invincibleInstance = invincible.CreateInstance();
 
-            gameOver = Content.Load<SoundEffect>(@"sounds/gameOver");
-            gameOverInstance = gameOver.CreateInstance();
+            gameOverSound = Content.Load<SoundEffect>(@"sounds/gameOver");
+            gameOverSoundInstance = gameOverSound.CreateInstance();
 
             die = Content.Load<SoundEffect>(@"sounds/die");
             dieInstance = die.CreateInstance();
@@ -284,13 +291,25 @@ namespace Platformer
         }
         #endregion
 
-        #region ResetCharacter
-        private void ResetCharacter()
+        #region ResetLevel
+        private void ResetLevel()
         {
-            character.isInvincible = false;
-            character.Body.ResetDynamics();
-            character.Body.Rotation = 0;
-            character.Body.Position = character.characterInitPos;
+            if(gameOver || gameWon)
+            {
+                startingScore = 0;
+            }
+
+            gameOver = false;
+            gameWon = false;
+
+            score = startingScore;
+
+            invincibleInstance.Stop();
+            level1Instance.Stop();
+            level2Instance.Stop();
+            level3Instance.Stop();
+
+            CreateGameComponents();
         }
         #endregion
 
@@ -418,10 +437,14 @@ namespace Platformer
 
             HalfScreenWidth = graphics.GraphicsDevice.Viewport.Width / 2;
 
+            cheatIsOn = false;
+
             if (invincibleCandy != null)
             {
                 invincibleCandy.isCandy = false;
             }
+
+            startingScore = score;
 
             ReadInLevels();
 
@@ -653,7 +676,7 @@ namespace Platformer
 
             //press enter
             if (state.IsKeyDown(Keys.Enter) && (titleScreenIsPlaying || levelIsCleared 
-                || character.gameOver || (character.losesLife && lives != 0) || gameWon))
+                || gameOver || (character.losesLife && lives != 0) || gameWon))
             {
                 if (titleScreenIsPlaying)
                 {
@@ -663,17 +686,17 @@ namespace Platformer
                     startTimeSec = gameTime.TotalGameTime.TotalSeconds;
                     timeAdjustment = 0;
                 }
+
                 levelClearedInstance.Stop();
-                gameOverInstance.Stop();
+                gameOverSoundInstance.Stop();
                 dieInstance.Stop();
                 winInstance.Stop();
 
-                if (character.gameOver)
+                if (gameOver)
                 {
                     lives = 3;
                     startTimeSec = gameTime.TotalGameTime.TotalSeconds;
                     timeAdjustment = 0;
-                    score = 0;
                 }
 
                 if (gameWon)
@@ -681,7 +704,6 @@ namespace Platformer
                     currentLevel = 1;
                     startTimeSec = gameTime.TotalGameTime.TotalSeconds;
                     timeAdjustment = 0;
-                    score = 0;
                 }
 
                 cheatIsOn = false;
@@ -689,17 +711,16 @@ namespace Platformer
                 character.losesLife = false;
 
                 levelIsCleared = false;
-                gameWon = false;
 
                 LCHasBeenPlayed = false;
                 deadHasBeenPlayed = false;
                 winHasBeenPlayed = false;
                 lostLifeHasBeenPlayed = false;
 
-                CreateGameComponents();
+                ResetLevel();
             }
 
-            if (!titleScreenIsPlaying && !levelIsCleared && !character.gameOver 
+            if (!titleScreenIsPlaying && !levelIsCleared && !gameOver 
                 && !character.losesLife && !gameWon)
             {
                 //move left
@@ -794,47 +815,23 @@ namespace Platformer
                 if (state.IsKeyDown(Keys.D1) && state.IsKeyDown(Keys.LeftShift))
                 {
                     currentLevel = 1;
-
-                    cheatIsOn = false;
-
-                    invincibleInstance.Stop();
-                    level1Instance.Stop();
-                    level2Instance.Stop();
-                    level3Instance.Stop();
-
-                    CreateGameComponents();
+                    ResetLevel();
                 }
                 if (state.IsKeyDown(Keys.D2) && state.IsKeyDown(Keys.LeftShift))
                 {
                     currentLevel = 2;
-
-                    cheatIsOn = false;
-
-                    invincibleInstance.Stop();
-                    level1Instance.Stop();
-                    level2Instance.Stop();
-                    level3Instance.Stop();
-
-                    CreateGameComponents();
+                    ResetLevel();
                 }
                 if (state.IsKeyDown(Keys.D3) && state.IsKeyDown(Keys.LeftShift))
                 {
                     currentLevel = 3;
-
-                    cheatIsOn = false;
-
-                    invincibleInstance.Stop();
-                    level1Instance.Stop();
-                    level2Instance.Stop();
-                    level3Instance.Stop();
-
-                    CreateGameComponents();
+                    ResetLevel();
                 }
                
                 //reset character
                 if (state.IsKeyDown(Keys.R))
                 {
-                    ResetCharacter();
+                    ResetLevel();
                 }
 
                 // ? remove enemies
@@ -893,19 +890,19 @@ namespace Platformer
             #region music
             if (!character.losesLife)
             {
-                if (level1Instance.State == SoundState.Stopped && currentLevel == 1 && !titleScreenIsPlaying)
+                if (currentLevel == 1 && level1Instance.State == SoundState.Stopped && !titleScreenIsPlaying)
                 {
                     level2Instance.Stop();
                     level3Instance.Stop();
                     level1Instance.Play();
                 }
-                if (level2Instance.State == SoundState.Stopped && currentLevel == 2 && !titleScreenIsPlaying)
+                if (currentLevel == 2 && level2Instance.State == SoundState.Stopped && !titleScreenIsPlaying)
                 {
                     level1Instance.Stop();
                     level3Instance.Stop();
                     level2Instance.Play();
                 }
-                if (level3Instance.State == SoundState.Stopped && currentLevel >= 3 && !titleScreenIsPlaying)
+                if (currentLevel >= 3 && level3Instance.State == SoundState.Stopped && !titleScreenIsPlaying)
                 {
                     level1Instance.Stop();
                     level2Instance.Stop();
@@ -1007,19 +1004,19 @@ namespace Platformer
 
                 else if (lives == 0 && dieInstance.State == SoundState.Stopped)
                 {
-                    ResetCharacter();
-                    character.gameOver = true;
+                    ResetLevel();
+                    gameOver = true;
                 }
             }
             #endregion
 
             #region dead
-            if (character.gameOver && lostLifeHasBeenPlayed)
+            if (gameOver && lostLifeHasBeenPlayed)
             {
                 currentLevel = 1;
                 if (!deadHasBeenPlayed)
                 {
-                    gameOverInstance.Play();
+                    gameOverSoundInstance.Play();
                     deadHasBeenPlayed = true;
                 }
             }
@@ -1081,7 +1078,7 @@ namespace Platformer
             {
                 DrawLevelClearedScreen();
             }
-            else if (character.gameOver)
+            else if (gameOver)
             {
                 DrawGameOverScreen();
             }

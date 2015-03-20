@@ -21,7 +21,8 @@ namespace Platformer
                 ConvertUnits.ToSimUnits(texture.Width),
                 ConvertUnits.ToSimUnits(texture.Height), 1f, position);
             
-            Body.IsStatic = false;
+            Body.IsStatic = true;
+            Body.IsSensor = true;
             Body.Restitution = 0f;
             Body.Friction = 0f;
             Body.Rotation = 0f;
