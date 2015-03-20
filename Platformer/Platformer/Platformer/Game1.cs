@@ -68,6 +68,8 @@ namespace Platformer
         public static int score { get; private set; }
         public static bool titleScreenIsPlaying { get; private set; }
         public static int currentLevel { get; private set; }
+        public static int enemyNum { get; private set; }
+        public static int coinNum { get; private set; }
 
         //world objects
         private World world;
@@ -91,8 +93,10 @@ namespace Platformer
         private Coin coin;
         private List<Coin> coins;
 
-        //starting score at beginning of level
+        //temp variables
         private int startingScore;
+        private int enemyStartingNum;
+        private int coinStartingNum;
 
         //particles
         private ParticleEngine particleEngine;
@@ -300,12 +304,16 @@ namespace Platformer
             if(gameOver || gameWon)
             {
                 startingScore = 0;
+                enemyStartingNum = 0;
+                coinStartingNum = 0;
             }
 
             gameOver = false;
             gameWon = false;
 
             score = startingScore;
+            enemyNum = enemyStartingNum;
+            coinNum = coinStartingNum;
 
             invincibleInstance.Stop();
             level1Instance.Stop();
@@ -412,9 +420,8 @@ namespace Platformer
             {
                 enemyDie.Play();
                 b.Die();
-                score = score + 200;
+                score += 200;
             }
-
             return true;
         }
 
@@ -428,7 +435,6 @@ namespace Platformer
                 coins.Remove(c);
                 collectCoin.Play();
             }
-
             return true;
         }
         #endregion
@@ -732,28 +738,54 @@ namespace Platformer
                 //move left
                 if (state.IsKeyDown(Keys.Left) && !isStone)
                 {
-                   
-                    if (character.isInvincible)
+                    if (state.IsKeyDown(Keys.LeftShift))
                     {
-                        character.Body.Position -= new Vector2(0.06f, 0f);
+                        if (character.isInvincible)
+                        {
+                            character.Body.Position -= new Vector2(0.08f, 0f);
+                        }
+                        else
+                        {
+                            character.Body.Position -= new Vector2(0.06f, 0f);
+                        }
                     }
                     else
                     {
-                        character.Body.Position -= new Vector2(0.04f, 0f);
+                        if (character.isInvincible)
+                        {
+                            character.Body.Position -= new Vector2(0.06f, 0f);
+                        }
+                        else
+                        {
+                            character.Body.Position -= new Vector2(0.04f, 0f);
+                        }
                     }
                 }
 
                 //move right
-                else if (state.IsKeyDown(Keys.Right) && !isStone)
+                if (state.IsKeyDown(Keys.Right) && !isStone)
                 {
-
-                    if (character.isInvincible)
+                    if (state.IsKeyDown(Keys.LeftShift))
                     {
-                        character.Body.Position += new Vector2(0.06f, 0f);
+                        if (character.isInvincible)
+                        {
+                            character.Body.Position += new Vector2(0.08f, 0f);
+                        }
+                        else
+                        {
+                            character.Body.Position += new Vector2(0.06f, 0f);
+                        }
                     }
                     else
                     {
-                        character.Body.Position += new Vector2(0.04f, 0f);
+                        if (character.isInvincible)
+                        {
+                            character.Body.Position += new Vector2(0.06f, 0f);
+                        }
+                        else
+                        {
+                            character.Body.Position += new Vector2(0.04f, 0f);
+                        }
                     }
                 }
 
@@ -777,6 +809,33 @@ namespace Platformer
                 //enter goal
                 if (!isStone && character.onGoal && (state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space)))
                 {
+                    if (currentLevel <= 2)
+                    {
+                        levelIsCleared = true;
+                    }
+                    currentLevel++;
+                    if (currentLevel > 3)
+                    {
+                        gameWon = true;
+                        currentLevel = 3;
+                    
+                        CreateGameComponents();
+                        character.Body.CollisionCategories = Category.Cat5;
+                    }
+                    else
+                    {
+                    
+                        CreateGameComponents();
+                        character.Body.CollisionCategories = Category.Cat5;
+                    }
+                }
+
+                //win cheat
+                if (state.IsKeyDown(Keys.W) && state.IsKeyDown(Keys.LeftShift))
+                {
+                    enemyNum = 23;
+                    coinNum = 47;
+                    score = 500000;
                     if (currentLevel <= 2)
                     {
                         levelIsCleared = true;
