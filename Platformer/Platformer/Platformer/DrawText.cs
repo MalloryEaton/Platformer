@@ -23,13 +23,13 @@ namespace Platformer
             {
                 string timeString = "Time: " + timerSec.ToString("0.#");
                 spriteBatch.DrawString(Game1.smallFont, timeString,
-                    new Vector2(X, 25), Color.White);
+                    new Vector2(10, 25), Color.White);
                 string scoreString = "Score: " + score;
                 spriteBatch.DrawString(Game1.smallFont, scoreString,
-                    new Vector2(X, 50), Color.White);
+                    new Vector2(10, 50), Color.White);
                 string lives = "Lives: " + Game1.lives;
                 spriteBatch.DrawString(Game1.smallFont, lives,
-                    new Vector2(X, 75), Color.White);
+                    new Vector2(10, 75), Color.White);
             }
             else
             {
@@ -62,10 +62,10 @@ namespace Platformer
                 float X = ConvertUnits.ToDisplayUnits(Game1.characterX);
                 string lostLifeString = "You Lost a Life...";
                 spriteBatch.DrawString(Game1.font, lostLifeString,
-                    new Vector2((graphicsDevice.Viewport.Width / 2) - 50, (graphicsDevice.Viewport.Height / 2) - 25), Color.Black);
+                    new Vector2(X, 200), Color.Black);
                 string keepPlaying = "Press ENTER to Continue.";
                 spriteBatch.DrawString(Game1.font, keepPlaying,
-                    new Vector2((graphicsDevice.Viewport.Width / 2) - 85, (graphicsDevice.Viewport.Height / 2) + 25), Color.Black);
+                    new Vector2(X, 250), Color.Black);
             }
         }
 

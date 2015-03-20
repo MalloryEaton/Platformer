@@ -22,6 +22,7 @@
  * 
  * Sounds and Music
  * http://downloads.khinsider.com/game-soundtracks/album/kirby-s-dreamland-3-original-soundtrack
+ * http://www.sounds-resource.com/game_boy_advance/mariobros/
  * 
  * Code
  * http://rbwhitaker.wikidot.com/2d-particle-engine-1
@@ -129,6 +130,7 @@ namespace Platformer
         private SoundEffect jump;
         private SoundEffect attack;
         private SoundEffect enemyDie;
+        private SoundEffect collectCoin;
         private SoundEffect grassLandMusic;
         private SoundEffect iceLandMusic;
         private SoundEffect sandLandMusic;
@@ -238,6 +240,7 @@ namespace Platformer
             jump = Content.Load<SoundEffect>(@"sounds/jump");
             attack = Content.Load<SoundEffect>(@"sounds/stone");
             enemyDie = Content.Load<SoundEffect>(@"sounds/enemyDie");
+            collectCoin = Content.Load<SoundEffect>(@"sounds/coin");
 
             grassLandMusic = Content.Load<SoundEffect>(@"sounds/grassLandMusic");
             level1Instance = grassLandMusic.CreateInstance();
@@ -397,8 +400,9 @@ namespace Platformer
             if (fixtureB.Body.UserData == "player")
             {
                 score += 50;
-                c.Collect();
                 coins.Remove(c);
+                c.Destroy();
+                collectCoin.Play();
             }
 
             return true;
@@ -504,7 +508,7 @@ namespace Platformer
                     }
 
                     // coin
-                    else if (piece == 'm')
+                    else if (piece == 'c')
                     {
                         texture = Content.Load<Texture2D>(@"images\coin");
                         location = new Vector2((float)k / 2, (float)i / 2);
@@ -594,8 +598,8 @@ namespace Platformer
                         barriers.Add(barrier);
                     }
 
-                    // candy
-                    else if (piece == 'c')
+                    // invincibility candy
+                    else if (piece == 'i')
                     {
                         texture = Content.Load<Texture2D>(@"images\invincibleCandy");
                         location = new Vector2((float)k / 2, (float)i / 2);
@@ -1102,16 +1106,16 @@ namespace Platformer
                 DrawBackground();
                 DrawWorld();
 
-                //we end the spritebatch operation and start a new one to remove the camera transformation
-                spriteBatch.End();
-                spriteBatch.Begin();
-                drawText.DrawLivesTimeScore(spriteBatch);
-                
                 if (character.losesLife && lives != 0)
                 {
                     Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
                     drawText.DrawLoseLife(spriteBatch, GraphicsDevice);
                 }
+
+                //we end the spritebatch operation and start a new one to remove the camera transformation
+                spriteBatch.End();
+                spriteBatch.Begin();
+                drawText.DrawLivesTimeScore(spriteBatch);
             }
 
             spriteBatch.End();
@@ -1154,7 +1158,10 @@ namespace Platformer
             //draw coins
             foreach (Coin c in coins)
             {
-                c.Draw(spriteBatch);
+                if (c.isAlive)
+                {
+                    c.Draw(spriteBatch);
+                }
             }
 
             //draw pits
@@ -1166,7 +1173,7 @@ namespace Platformer
             //draw candy
             if (invincibleCandy != null)
             {
-                if (invincibleCandy.isCandy && invincibleCandy.IsAlive)
+                if (invincibleCandy.isCandy && invincibleCandy.isAlive)
                 {
                     invincibleCandy.Draw(spriteBatch);
                 }
