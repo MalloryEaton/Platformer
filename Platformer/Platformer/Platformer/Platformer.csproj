@@ -78,7 +78,9 @@
     <Compile Include="Barrier.cs" />
     <Compile Include="Border.cs" />
     <Compile Include="Burt.cs" />
-    <Compile Include="Camera.cs" />
+    <Compile Include="Camera.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Character.cs" />
     <Compile Include="Coin.cs" />
     <Compile Include="DrawText.cs" />

@@ -9,6 +9,9 @@ namespace Platformer
 {
     class Camera
     {
+        // Distance away from the tracking body
+        private float offsetX;
+
         // Body to center the camera on
         private Body trackingBody;
 
@@ -17,34 +20,34 @@ namespace Platformer
         // X value of the target
         public float CenterPointTarget { get; set; }
 
+
         // Create a singleton
         public static readonly Camera Current = new Camera();
 
         private Camera()
         {
-            
-        }
-
-        public Vector2 Position { get; set; }
-        public Vector2 Origin { get; set; }
-        public float Zoom { get; set; }
-        public float Rotation { get; set; }
-
-        public Matrix GetViewMatrix(Vector2 parallax)
-        {
-            return Matrix.CreateTranslation(new Vector3(-Position * parallax, 0.0f));
+            // Private so that it can't be instantiated outside
+            // the class
         }
 
         public void Update()
         {
             if (trackingBody != null)
             {
-                float pos = ConvertUnits.ToDisplayUnits(trackingBody.Position.X);
-                pos = MathHelper.Clamp(pos - Game1.HalfScreenWidth, 0, CenterPointTarget - Game1.HalfScreenWidth);
-                Position = new Vector2(pos, 0f) ;
+                float halfScreenWidth = Game1.HalfScreenWidth;
+
+                // If tracking body is not located in the center
+                // of the view (half screen width + current offset)
+                if (ConvertUnits.ToDisplayUnits(trackingBody.Position.X) != halfScreenWidth + offsetX)
+                {
+                    offsetX = MathHelper.Clamp(
+                        ConvertUnits.ToDisplayUnits(trackingBody.Position.X) - halfScreenWidth, 
+                        0, CenterPointTarget - halfScreenWidth);
+                }
             }
 
-            
+            // Move scene
+            TransformationMatrix = Matrix.CreateTranslation(-offsetX, 0, 0);
         }
 
         public void StartTracking(Body body)
@@ -57,5 +60,4 @@ namespace Platformer
             trackingBody = null;
         }
     }
-
 }

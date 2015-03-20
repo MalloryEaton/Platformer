@@ -50,6 +50,8 @@ namespace Platformer
         public static SpriteFont font;
         public static SpriteFont smallFont;
 
+        private Camera newCamera;
+
         public static double startTimeSec { get; private set; }
         public int timeFromLevelStart = 0;
         public double timeAdjustment = 0.0;
@@ -187,6 +189,7 @@ namespace Platformer
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            //newCamera = new Camera(GraphicsDevice.Viewport);
 
             base.Initialize();
         }
@@ -427,6 +430,9 @@ namespace Platformer
             Camera.Current.StartTracking(character.Body);
             Camera.Current.CenterPointTarget = ConvertUnits.ToDisplayUnits(
                 goal.Body.Position.X);
+
+            //newCamera.StartTracking(character.Body);
+            //newCamera.CenterPointTarget = ConvertUnits.ToDisplayUnits(goal.Body.Position.X);
 
             // event listeners
             character.Body.OnCollision += Character_Collision;
@@ -1063,6 +1069,15 @@ namespace Platformer
 
             Camera.Current.Update();
 
+            //if (ConvertUnits.ToDisplayUnits(character.Body.Position.X) != HalfScreenWidth + offsetX)
+            //{
+            //    offsetX = MathHelper.Clamp(
+            //        ConvertUnits.ToDisplayUnits(character.Body.Position.X) - HalfScreenWidth,
+            //        0, CenterPointTarget - HalfScreenWidth);
+            //}
+
+            //newCamera.Update();
+
             base.Update(gameTime);
         }
         #endregion
@@ -1078,8 +1093,12 @@ namespace Platformer
             timerSec = gameTime.TotalGameTime.TotalSeconds - startTimeSec - timeAdjustment;
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
+            //spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
+            //    null, Camera.Current.TransformationMatrix);
+
+            //parallax with value of 5
             spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
-                null, Camera.Current.TransformationMatrix);
+                null, Camera.Current.GetViewMatrix(new Vector2(.25f, .25f)));
 
             if(titleScreenIsPlaying)
             {
@@ -1100,9 +1119,18 @@ namespace Platformer
             else
             {
                 DrawBackground();
-                DrawWorld();
+                spriteBatch.End();
 
-                //we end the spritebatch operation and start a new one to remove the camera transformation
+                //no parallax for this layer
+                spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
+                null, Camera.Current.GetViewMatrix(Vector2.One));
+                DrawWorld();
+                spriteBatch.End();
+
+                //no camera adjustment, relative only to screen
+                spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
+                null, Camera.Current.GetViewMatrix(Vector2.Zero));
+                
                 spriteBatch.End();
                 spriteBatch.Begin();
                 drawText.DrawLivesTimeScore(spriteBatch);
