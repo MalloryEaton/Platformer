@@ -891,9 +891,6 @@ namespace Platformer
                 //win cheat
                 if (state.IsKeyDown(Keys.W) && state.IsKeyDown(Keys.LeftShift))
                 {
-                    enemyNum = 23;
-                    coinNum = 47;
-                    //score = 500000;
                     if (currentLevel <= 2)
                     {
                         levelIsCleared = true;
