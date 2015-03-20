@@ -43,8 +43,6 @@ namespace Platformer
                 pos = MathHelper.Clamp(pos - Game1.HalfScreenWidth, 0, CenterPointTarget - Game1.HalfScreenWidth);
                 Position = new Vector2(pos, 0f) ;
             }
-
-            
         }
 
         public void StartTracking(Body body)

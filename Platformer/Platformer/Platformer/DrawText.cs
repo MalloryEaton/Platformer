@@ -12,13 +12,11 @@ namespace Platformer
 {
     class DrawText
     {
-        
+        #region DrawLivesTimeScore
         public void DrawLivesTimeScore(SpriteBatch spriteBatch)
         {
             int score = Game1.score;
             double timerSec = Game1.timerSec;
-            int timerMin = Convert.ToInt32(Game1.timerMin);
-            
             
             string timeString = "Time: " + timerSec.ToString("0.#");
             spriteBatch.DrawString(Game1.smallFont, timeString,
@@ -30,7 +28,9 @@ namespace Platformer
             spriteBatch.DrawString(Game1.smallFont, lives,
                 new Vector2(10, 75), Color.Black);
         }
+        #endregion
 
+        #region DrawLoseLife
         public void DrawLoseLife(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
         {
             string lostLifeString = "You Lost a Life...";
@@ -44,7 +44,9 @@ namespace Platformer
                     (Game1.font.MeasureString(keepPlaying).Length() / 2), 
                     (graphicsDevice.Viewport.Height / 2) + 25), Color.Black);
         }
+        #endregion
 
+        #region DrawGameOver
         public void DrawGameOver(SpriteBatch spriteBatch)
         {
             string loseString = "You Lost...";
@@ -60,22 +62,38 @@ namespace Platformer
                 new Vector2((Game1.HalfScreenWidth)
                     - (Game1.font.MeasureString(exit).Length() + 100), 300), Color.Black);
         }
+        #endregion
 
+        #region DrawLevelCleared
         public void DrawLevelCleared(SpriteBatch spriteBatch)
         {
+            int score = Game1.score;
+            double timerSec = Game1.timerSec;
+
             string levelClearedString = "You Cleared the Level!";
             spriteBatch.DrawString(Game1.font, levelClearedString,
                 new Vector2((Game1.HalfScreenWidth)
-                    - (Game1.font.MeasureString(levelClearedString).Length() + 100), 200), Color.Black);
+                    - (Game1.font.MeasureString(levelClearedString).Length() + 100), 150), Color.Black);
             string playagain = "Press ENTER to Continue.";
             spriteBatch.DrawString(Game1.font, playagain,
                 new Vector2((Game1.HalfScreenWidth)
-                    - (Game1.font.MeasureString(playagain).Length() + 100), 250), Color.Black);
+                    - (Game1.font.MeasureString(playagain).Length() + 100), 200), Color.Black);
+            string levelScore = "Score: " + score;
+            spriteBatch.DrawString(Game1.font, levelScore,
+                new Vector2((Game1.HalfScreenWidth)
+                    - (Game1.font.MeasureString(levelScore).Length() + 100), 300), Color.Black);
+            string time = "Time: " + timerSec.ToString("0.#") + " seconds";
+            spriteBatch.DrawString(Game1.font, time,
+                new Vector2((Game1.HalfScreenWidth)
+                    - (Game1.font.MeasureString(time).Length() + 100), 350), Color.Black);
         }
+        #endregion
 
+        #region DrawWinScreen
         public void DrawWinScreen(SpriteBatch spriteBatch)
         {
             int score = Game1.score;
+            double timerSec = Game1.timerSec;
 
             string levelClearedString = "You Win!";
             spriteBatch.DrawString(Game1.font, levelClearedString,
@@ -93,20 +111,25 @@ namespace Platformer
             spriteBatch.DrawString(Game1.font, finalScore,
                 new Vector2((Game1.HalfScreenWidth)
                     - (Game1.font.MeasureString(finalScore).Length() - 375), 300), Color.Black);
+            string time = "Final Time: " + timerSec.ToString("0.#") + " seconds";
+            spriteBatch.DrawString(Game1.font, time,
+                new Vector2((Game1.HalfScreenWidth)
+                    - (Game1.font.MeasureString(time).Length() - 375), 350), Color.Black);
             if(Game1.enemyNum == 23)
             {
                 string enemy = "You killed all of the enemies!";
                 spriteBatch.DrawString(Game1.font, enemy,
                     new Vector2((Game1.HalfScreenWidth)
-                        - (Game1.font.MeasureString(enemy).Length() - 375), 350), Color.Black);
+                        - (Game1.font.MeasureString(enemy).Length() - 375), 400), Color.Black);
             }
             if (Game1.coinNum == 47)
             {
                 string coin = "You collected all of the coins!";
                 spriteBatch.DrawString(Game1.font, coin,
                     new Vector2((Game1.HalfScreenWidth)
-                        - (Game1.font.MeasureString(coin).Length() - 375), 400), Color.Black);
+                        - (Game1.font.MeasureString(coin).Length() - 375), 450), Color.Black);
             }
         }
+        #endregion
     }
 }

@@ -51,10 +51,6 @@ namespace Platformer
         public static SpriteFont font;
         public static SpriteFont smallFont;
 
-        private Camera newCamera;
-
-        public static double startTimeSec { get; private set; }
-
         public int timeFromLevelStart = 0;
         public double timeAdjustment = 0.0;
         public int screenWidth;
@@ -63,8 +59,8 @@ namespace Platformer
         public static float characterX { get; private set; }
         public static float characterY { get; private set; }
         public static int lives { get; private set; }
-        public static double timerMin { get; private set; }
         public static double timerSec { get; private set; }
+        public static double startTimeSec { get; private set; }
         public static int score { get; private set; }
         public static bool titleScreenIsPlaying { get; private set; }
         public static int currentLevel { get; private set; }
@@ -465,9 +461,6 @@ namespace Platformer
             Camera.Current.CenterPointTarget = ConvertUnits.ToDisplayUnits(
                 goal.Body.Position.X);
 
-            //newCamera.StartTracking(character.Body);
-            //newCamera.CenterPointTarget = ConvertUnits.ToDisplayUnits(goal.Body.Position.X);
-
             // event listeners
             character.Body.OnCollision += Character_Collision;
             foreach (WaddleDee w in waddleDees)
@@ -835,7 +828,7 @@ namespace Platformer
                 {
                     enemyNum = 23;
                     coinNum = 47;
-                    score = 500000;
+                    //score = 500000;
                     if (currentLevel <= 2)
                     {
                         levelIsCleared = true;
@@ -945,6 +938,8 @@ namespace Platformer
         {
             characterX = character.Body.Position.X;
             characterY = character.Body.Position.Y;
+
+            timerSec = gameTime.TotalGameTime.TotalSeconds - startTimeSec - timeAdjustment;
 
             #region particle engine
             particleEngine.EmitterLocation = new Vector2(ConvertUnits.ToDisplayUnits(characterX), 
@@ -1088,7 +1083,7 @@ namespace Platformer
             #endregion
 
             #region adjust time
-            if (character.losesLife || levelIsCleared)
+            if (character.losesLife || levelIsCleared || gameWon)
             {
                 timeAdjustment += gameTime.ElapsedGameTime.TotalSeconds;
             }
@@ -1117,15 +1112,6 @@ namespace Platformer
 
             Camera.Current.Update();
 
-            //if (ConvertUnits.ToDisplayUnits(character.Body.Position.X) != HalfScreenWidth + offsetX)
-            //{
-            //    offsetX = MathHelper.Clamp(
-            //        ConvertUnits.ToDisplayUnits(character.Body.Position.X) - HalfScreenWidth,
-            //        0, CenterPointTarget - HalfScreenWidth);
-            //}
-
-            //newCamera.Update();
-
             base.Update(gameTime);
         }
         #endregion
@@ -1137,8 +1123,6 @@ namespace Platformer
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            timerMin = gameTime.TotalGameTime.TotalMinutes;
-            timerSec = gameTime.TotalGameTime.TotalSeconds - startTimeSec - timeAdjustment;
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             //spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
