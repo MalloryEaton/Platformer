@@ -39,7 +39,6 @@ namespace Platformer
                 position);
 
             Body.UserData = this;
-
             Body.IgnoreGravity = true;
             Body.BodyType = BodyType.Dynamic;
             Body.IsSensor = true;
