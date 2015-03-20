@@ -331,10 +331,10 @@ namespace Platformer
             }
 
             //invincible candy
-            if (fixtureB.Body.UserData == "candy")
+            if (fixtureB.Body.UserData == "candy" && !character.isInvincible)
             {
-                character.isInvincible = true;
                 invincibleCandy.Destroy();
+                character.isInvincible = true;
             }
 
             //enemy
@@ -363,7 +363,8 @@ namespace Platformer
         bool WaddleDee_Collision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
             WaddleDee w = (WaddleDee)fixtureA.Body.UserData;
-            if (fixtureB.Body.UserData == "player" && ((isStone && character.Body.LinearVelocity.Y > 0) 
+            if (fixtureB.Body.UserData == "player" &&
+                ((isStone && character.Body.LinearVelocity.Y > 0 && character.Body.Position.Y < w.Body.Position.Y - w.Origin.Y) 
                 || character.isInvincible) && !cheatIsOn)
             {
                 w.Die();
@@ -383,7 +384,8 @@ namespace Platformer
         bool Burt_Collision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
             Burt b = (Burt)fixtureA.Body.UserData;
-            if (fixtureB.Body.UserData == "player" && ((isStone && character.Body.LinearVelocity.Y > 0)
+            if (fixtureB.Body.UserData == "player" &&
+                ((isStone && character.Body.LinearVelocity.Y > 0 && character.Body.Position.Y < b.Body.Position.Y)
                 || character.isInvincible) && !cheatIsOn)
             {
                 enemyDie.Play();
@@ -399,9 +401,9 @@ namespace Platformer
             Coin c = (Coin)fixtureA.Body.UserData;
             if (fixtureB.Body.UserData == "player")
             {
+                c.Destroy();
                 score += 50;
                 coins.Remove(c);
-                c.Destroy();
                 collectCoin.Play();
             }
 
@@ -416,16 +418,15 @@ namespace Platformer
 
             HalfScreenWidth = graphics.GraphicsDevice.Viewport.Width / 2;
 
-            if (character != null)
-            {
-                character.isInvincible = false;
-            }
             if (invincibleCandy != null)
             {
                 invincibleCandy.isCandy = false;
             }
 
             ReadInLevels();
+
+            character.isInvincible = false;
+            invincibleNumberOfTimesPlayed = 0;
 
             // Setup the camera
             Camera.Current.StartTracking(character.Body);
@@ -704,43 +705,33 @@ namespace Platformer
                 //move left
                 if (state.IsKeyDown(Keys.Left) && !isStone)
                 {
-                    //character.Body.FixedRotation = false;
                    
                     if (character.isInvincible)
                     {
                         character.Body.Position -= new Vector2(0.06f, 0f);
-                        //character.Body.Rotation -= 0.4f;
                     }
                     else
                     {
                         character.Body.Position -= new Vector2(0.04f, 0f);
-                        //character.Body.Rotation -= 0.3f;
                     }
                 }
 
                 //move right
                 else if (state.IsKeyDown(Keys.Right) && !isStone)
                 {
-                    //character.Body.FixedRotation = false;
 
                     if (character.isInvincible)
                     {
                         character.Body.Position += new Vector2(0.06f, 0f);
-                        //character.Body.Rotation += 0.4f;
                     }
                     else
                     {
                         character.Body.Position += new Vector2(0.04f, 0f);
-                        //character.Body.Rotation += 0.3f;
                     }
                 }
-                //else
-                //{
-                //    character.Body.FixedRotation = true;
-                //}
 
                 //jump
-                if ((state.IsKeyDown(Keys.Up) && oldKeyState.IsKeyUp(Keys.Up))
+                if (!isStone && (state.IsKeyDown(Keys.Up) && oldKeyState.IsKeyUp(Keys.Up))
                      && character.jumpNum < 6)
                 {
                     character.jumpNum++;
@@ -757,7 +748,7 @@ namespace Platformer
                 }
 
                 //enter goal
-                if (character.onGoal && (state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space)))
+                if (!isStone && character.onGoal && (state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space)))
                 {
                     if (currentLevel <= 2)
                     {
@@ -892,7 +883,6 @@ namespace Platformer
         {
             characterX = character.Body.Position.X;
             characterY = character.Body.Position.Y;
-            //timer = gameTime.ElapsedGameTime.TotalSeconds;
 
             #region particle engine
             particleEngine.EmitterLocation = new Vector2(ConvertUnits.ToDisplayUnits(characterX), 
@@ -1058,8 +1048,6 @@ namespace Platformer
                 c.Update(gameTime);
             }
             #endregion
-
-
 
             HandleKeyboard(gameTime);
 
