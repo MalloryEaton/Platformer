@@ -6,26 +6,20 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Platformer
 {
-    class InvincibleCandy
+    class InvincibleCandy : CollectableItems
     {
-        public bool IsAlive { get; private set; }
         public bool isCandy = false;
-
-        public Body Body { get; private set; }
-
-        private Texture2D candyTexture;
 
         public InvincibleCandy(World world, Texture2D texture, Vector2 position)
         {
-            IsAlive = true;
+            isAlive = true;
 
-            this.candyTexture = texture;
+            this.Texture = texture;
 
             // Create a body
             Body = BodyFactory.CreateRectangle(world,
-                ConvertUnits.ToSimUnits(candyTexture.Width),
-                ConvertUnits.ToSimUnits(candyTexture.Height), 1f, position);
-
+                ConvertUnits.ToSimUnits(texture.Width),
+                ConvertUnits.ToSimUnits(texture.Height), 1f, position);
             
             Body.IsStatic = false;
             Body.Restitution = 0f;
@@ -41,20 +35,14 @@ namespace Platformer
             Body.SleepingAllowed = false;
         }
 
-        public void Destroy()
-        {
-            Body.IsSensor = true;
-            IsAlive = false;
-        }
-
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(candyTexture,
+            spriteBatch.Draw(Texture,
                 ConvertUnits.ToDisplayUnits(Body.Position),
                 null,
                 Color.White,
                 Body.Rotation,
-                new Vector2(candyTexture.Width / 2, candyTexture.Height / 2),
+                new Vector2(Texture.Width / 2, Texture.Height / 2),
                 1f,
                 SpriteEffects.None,
                 0f);

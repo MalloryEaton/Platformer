@@ -63,6 +63,25 @@ namespace Platformer
             {
                 if (!dead && movingRight)
                 {
+                    Body.Position += new Vector2(0.025f, 0f);
+                }
+                else if (!dead)
+                {
+                    Body.Position -= new Vector2(0.025f, 0f);
+                    if (Game1.characterY > Body.Position.Y)
+                    {
+                        Body.Position += new Vector2(0f, 0.015f);
+                    }
+                    if (Game1.characterY < Body.Position.Y)
+                    {
+                        Body.Position -= new Vector2(0f, 0.015f);
+                    }
+                }
+            }
+            else if (Game1.currentLevel == 3)
+            {
+                if (!dead && movingRight)
+                {
                     Body.Position += new Vector2(0.03f, 0f);
                 }
                 else if (!dead)
@@ -75,25 +94,6 @@ namespace Platformer
                     if (Game1.characterY < Body.Position.Y)
                     {
                         Body.Position -= new Vector2(0f, 0.02f);
-                    }
-                }
-            }
-            else if (Game1.currentLevel == 3)
-            {
-                if (!dead && movingRight)
-                {
-                    Body.Position += new Vector2(0.04f, 0f);
-                }
-                else if (!dead)
-                {
-                    Body.Position -= new Vector2(0.04f, 0f);
-                    if (Game1.characterY > Body.Position.Y)
-                    {
-                        Body.Position += new Vector2(0f, 0.03f);
-                    }
-                    if (Game1.characterY < Body.Position.Y)
-                    {
-                        Body.Position -= new Vector2(0f, 0.03f);
                     }
                 }
             }

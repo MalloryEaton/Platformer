@@ -8,7 +8,7 @@ using System;
 
 namespace Platformer
 {
-    class Coin
+    class Coin : CollectableItems
     {
         //Texture
         Point frameSize;
@@ -19,14 +19,12 @@ namespace Platformer
         int timeSinceLastFrame;
         int millisecondsPerFrame;
 
-        public Body Body { get; protected set; }
         public Vector2 Origin { get; set; }
-        protected Texture2D Texture { get; set; }
-
-        private bool collected = false;
 
         public Coin(World world, Texture2D texture, Vector2 position)
         {
+            isAlive = true;
+
             frameSize = new Point(32, 32);
             currentFrame = new Point(0, 0);
             sheetSize = new Point(8, 1);
@@ -44,7 +42,7 @@ namespace Platformer
 
             Body.IgnoreGravity = true;
             Body.BodyType = BodyType.Dynamic;
-            Body.IsSensor = true;
+            //Body.IsSensor = true;
             Body.CollisionCategories = Category.Cat8;
             Body.CollidesWith = Category.Cat10;
         }
@@ -64,12 +62,6 @@ namespace Platformer
                         currentFrame.Y = 0;
                 }
             }
-        }
-
-        public void Collect()
-        {
-            collected = true;
-            //play sound, maybe show particles
         }
 
         public void Draw(SpriteBatch spritebatch)
