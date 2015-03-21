@@ -486,7 +486,8 @@ namespace Platformer
                 w.Die();
                 enemyDie.Play();
                 score += 100;
-                return false;
+                enemyNum++;
+                //return false;
             }
 
             else if (fixtureB.Body.UserData != "ground" && fixtureB.Body.UserData != "platform")
@@ -506,6 +507,7 @@ namespace Platformer
                 enemyDie.Play();
                 b.Die();
                 score += 200;
+                enemyNum++;
             }
             return true;
         }
@@ -519,6 +521,7 @@ namespace Platformer
                 score += 50;
                 coins.Remove(c);
                 collectCoin.Play();
+                coinNum++;
             }
             return true;
         }
@@ -530,6 +533,8 @@ namespace Platformer
             world.Clear();
 
             startingScore = score;
+            coinStartingNum = coinNum;
+            enemyStartingNum = enemyNum;
 
             if (invincibleCandy != null)
             {
