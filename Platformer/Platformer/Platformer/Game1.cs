@@ -459,20 +459,19 @@ namespace Platformer
                     character.Body.CollisionCategories = Category.Cat5;
                     character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
                 }
-                else if (!character.IsInvincible && character.Body.LinearVelocity.Y > 0)
+                else if (character.IsStone && character.Body.LinearVelocity.Y > 0)
                 {
                     character.Body.ResetDynamics();
                     character.Body.ApplyLinearImpulse(new Vector2(0f, -0.2f));
                 }
                 else if (character.IsStone && fixtureB.Body.Position.X > character.Body.Position.X)
                 {
-                    character.Body.ApplyLinearImpulse(new Vector2(-0.1f, -0.05f));
+                    character.Body.ApplyLinearImpulse(new Vector2(-0.05f, -0.05f));
                 }
                 else if (character.IsStone && fixtureB.Body.Position.X < character.Body.Position.X)
                 {
-                    character.Body.ApplyLinearImpulse(new Vector2(0.1f, -0.05f));
+                    character.Body.ApplyLinearImpulse(new Vector2(0.05f, -0.05f));
                 }
-                
             }
 
             return true;
