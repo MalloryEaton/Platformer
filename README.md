@@ -11,7 +11,7 @@ Kirbario is controlled using the arrow keys on the keyboard:
     right = move right;
     space = go through the door at the end of the level
     
-I don't know of any bugs.
+We can't think of any bugs.
 
 What each person contributed:
 
