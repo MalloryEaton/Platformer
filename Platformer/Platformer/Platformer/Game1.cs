@@ -19,6 +19,7 @@
  * http://www.polyvore.com/invincibility_candy_kirby/thing?id=62396938
  * http://ksr.smackjeeves.com/comics/1441945/some-kdl3-tile-rips/
  * http://melonjs.github.io/tutorial-platformer/media/spinning_coin_gold.png
+ * http://www.pixeljoint.com/files/icons/original.gif
  * 
  * Sounds and Music
  * http://downloads.khinsider.com/game-soundtracks/album/kirby-s-dreamland-3-original-soundtrack
