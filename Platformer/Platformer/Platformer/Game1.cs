@@ -105,12 +105,6 @@ namespace Platformer
         //keyboard handling
         private KeyboardState oldKeyState;
 
-        //stone
-        private bool isStone = false;
-        private Texture2D stoneSprite;
-        private Body stoneBody;
-        private Vector2 stoneOrigin;
-
         //backgrounds
         private Texture2D background1;
         private Texture2D background2;
@@ -227,12 +221,6 @@ namespace Platformer
             font = Content.Load<SpriteFont>(@"font\myFont");
             smallFont = Content.Load<SpriteFont>(@"font\small");
 
-            //stone
-            stoneSprite = Content.Load<Texture2D>(@"images/kirbyStone");
-            stoneBody = BodyFactory.CreateBody(world);
-            stoneOrigin = new Vector2(ConvertUnits.ToSimUnits(stoneSprite.Width / 2),
-                ConvertUnits.ToSimUnits(stoneSprite.Height / 2));
-
             //backgrounds
             background1 = Content.Load<Texture2D>(@"images/grassBackground");
             background2 = Content.Load<Texture2D>(@"images/iceBackground");
@@ -309,8 +297,8 @@ namespace Platformer
             gameOver = false;
             gameWon = false;
             cheatIsOn = false;
-            character.isInvincible = false;
-            character.losesLife = false;
+            character.IsInvincible = false;
+            character.LosesLife = false;
             levelIsCleared = false;
 
             LCHasBeenPlayed = false;
@@ -338,7 +326,7 @@ namespace Platformer
         #region PlayMusic
         private void PlayMusic()
         {
-            if (!character.losesLife && !gameOver)
+            if (!character.LosesLife && !gameOver)
             {
                 if (currentLevel == 1 && level1Instance.State == SoundState.Stopped && !titleScreenIsPlaying)
                 {
@@ -419,10 +407,10 @@ namespace Platformer
         bool Character_Collision(Fixture fixtureA, Fixture fixtureB, FarseerPhysics.Dynamics.Contacts.Contact contact)
         {
             //pit
-            if (fixtureB.Body.UserData == "pit" && !character.losesLife)
+            if (fixtureB.Body.UserData == "pit" && !character.LosesLife)
             {
-                character.losesLife = true;
-                character.isInvincible = false;
+                character.LosesLife = true;
+                character.IsInvincible = false;
                 lives--;
                 character.Body.ResetDynamics();
                 character.Body.CollisionCategories = Category.Cat5;
@@ -448,29 +436,29 @@ namespace Platformer
             //goal
             if (fixtureA.Body.UserData == "player" && fixtureB.Body.UserData == "goal")
             {
-                character.onGoal = true;
+                character.OnGoal = true;
             }
 
             //invincible candy
-            if (fixtureB.Body.UserData == "candy" && !character.isInvincible)
+            if (fixtureB.Body.UserData == "candy" && !character.IsInvincible)
             {
                 invincibleCandy.Destroy();
-                character.isInvincible = true;
+                character.IsInvincible = true;
             }
 
             //enemy
             if (fixtureB.Body.UserData.GetType().BaseType == typeof(Enemy))
             {
-                if (!isStone && !character.isInvincible && !cheatIsOn)
+                if (!character.IsStone && !character.IsInvincible && !cheatIsOn)
                 {
-                    character.losesLife = true;
+                    character.LosesLife = true;
                     lives--;
                     dieInstance.Play();
                     character.Body.ResetDynamics();
                     character.Body.CollisionCategories = Category.Cat5;
                     character.Body.ApplyLinearImpulse(new Vector2(0, -0.25f));
                 }
-                else if (!character.isInvincible)
+                else if (!character.IsInvincible)
                 {
                     character.Body.ResetDynamics();
                     character.Body.ApplyLinearImpulse(new Vector2(0, -0.2f));
@@ -485,7 +473,7 @@ namespace Platformer
         {
             WaddleDee w = (WaddleDee)fixtureA.Body.UserData;
             if (fixtureB.Body.UserData == "player" &&
-                ((isStone && character.Body.LinearVelocity.Y > 0) || character.isInvincible) && !cheatIsOn)
+                ((character.IsStone && character.Body.LinearVelocity.Y > 0) || character.IsInvincible) && !cheatIsOn)
             {
                 w.Die();
                 enemyDie.Play();
@@ -505,7 +493,7 @@ namespace Platformer
         {
             Burt b = (Burt)fixtureA.Body.UserData;
             if (fixtureB.Body.UserData == "player" &&
-                ((isStone && character.Body.LinearVelocity.Y > 0) || character.isInvincible) && !cheatIsOn)
+                ((character.IsStone && character.Body.LinearVelocity.Y > 0) || character.IsInvincible) && !cheatIsOn)
             {
                 enemyDie.Play();
                 b.Die();
@@ -745,10 +733,10 @@ namespace Platformer
                     {
                         texture = Content.Load<Texture2D>(@"images\kirby");
                         location = new Vector2((float)k / 2, (float)i / 2);
-                        character = new Character(world, texture, location);
+                        Texture2D invincible = Content.Load<Texture2D>(@"images/kirbyInvincible");
+                        Texture2D stone = Content.Load<Texture2D>(@"images/kirbyStone");
+                        character = new Character(world, texture, invincible, stone, location);
                         character.characterInitPos = location;
-                        //invincible
-                        character.invincibleTexture = Content.Load<Texture2D>(@"images/kirbyInvincible");
                     }
                 }
             }
@@ -767,7 +755,7 @@ namespace Platformer
 
             //press enter
             if (state.IsKeyDown(Keys.Enter) && (titleScreenIsPlaying || levelIsCleared 
-                || gameOver || (character.losesLife && lives != 0) || gameWon))
+                || gameOver || (character.LosesLife && lives != 0) || gameWon))
             {
                 if (titleScreenIsPlaying)
                 {
@@ -791,14 +779,14 @@ namespace Platformer
             }
 
             if (!titleScreenIsPlaying && !levelIsCleared && !gameOver 
-                && !character.losesLife && !gameWon)
+                && !character.LosesLife && !gameWon)
             {
                 //move left
-                if (state.IsKeyDown(Keys.Left) && !isStone)
+                if (state.IsKeyDown(Keys.Left) && !character.IsStone)
                 {
                     if (state.IsKeyDown(Keys.LeftShift))
                     {
-                        if (character.isInvincible)
+                        if (character.IsInvincible)
                         {
                             character.Body.Position -= new Vector2(0.08f, 0f);
                         }
@@ -809,7 +797,7 @@ namespace Platformer
                     }
                     else
                     {
-                        if (character.isInvincible)
+                        if (character.IsInvincible)
                         {
                             character.Body.Position -= new Vector2(0.06f, 0f);
                         }
@@ -821,11 +809,11 @@ namespace Platformer
                 }
 
                 //move right
-                if (state.IsKeyDown(Keys.Right) && !isStone)
+                if (state.IsKeyDown(Keys.Right) && !character.IsStone)
                 {
                     if (state.IsKeyDown(Keys.LeftShift))
                     {
-                        if (character.isInvincible)
+                        if (character.IsInvincible)
                         {
                             character.Body.Position += new Vector2(0.08f, 0f);
                         }
@@ -836,7 +824,7 @@ namespace Platformer
                     }
                     else
                     {
-                        if (character.isInvincible)
+                        if (character.IsInvincible)
                         {
                             character.Body.Position += new Vector2(0.06f, 0f);
                         }
@@ -848,11 +836,11 @@ namespace Platformer
                 }
 
                 //jump
-                if (!isStone && (state.IsKeyDown(Keys.Up) && oldKeyState.IsKeyUp(Keys.Up))
+                if (!character.IsStone && (state.IsKeyDown(Keys.Up) && oldKeyState.IsKeyUp(Keys.Up))
                      && character.jumpNum < 6)
                 {
                     character.jumpNum++;
-                    if (character.isInvincible)
+                    if (character.IsInvincible)
                     {
                         character.Jump(new Vector2(0, -0.3f));
                     }
@@ -865,7 +853,7 @@ namespace Platformer
                 }
 
                 //enter goal
-                if (!isStone && character.onGoal && (state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space)))
+                if (!character.IsStone && character.OnGoal && (state.IsKeyDown(Keys.Space) && oldKeyState.IsKeyUp(Keys.Space)))
                 {
                     if (currentLevel <= 2)
                     {
@@ -913,13 +901,13 @@ namespace Platformer
                 }
 
                 //stone
-                if (state.IsKeyDown(Keys.Down) && oldKeyState.IsKeyUp(Keys.Down) && !character.isInvincible)
+                if (state.IsKeyDown(Keys.Down) && oldKeyState.IsKeyUp(Keys.Down) && !character.IsInvincible)
                 {
-                    if (!isStone)
+                    if (!character.IsStone)
                     {
                         attack.Play();
                     }
-                    isStone = true;
+                    character.IsStone = true;
                     character.Body.ResetDynamics();
                     character.Body.Rotation = 0;
                     character.Body.ApplyForce(new Vector2(0, 30f));
@@ -928,7 +916,7 @@ namespace Platformer
                 //is not stone
                 if (state.IsKeyUp(Keys.Down))
                 {
-                    isStone = false;
+                    character.IsStone = false;
                 }
 
                 //change levels
@@ -1010,7 +998,7 @@ namespace Platformer
             particleEngine.Update();
 
             //lose a life
-            if (character.losesLife)
+            if (character.LosesLife)
             {
                 StopMusic();
 
@@ -1029,13 +1017,13 @@ namespace Platformer
             }
 
             //adjust time
-            if (character.losesLife || levelIsCleared || gameWon)
+            if (character.LosesLife || levelIsCleared || gameWon)
             {
                 timeAdjustment += gameTime.ElapsedGameTime.TotalSeconds;
             }
 
             #region invincible
-            if (character.isInvincible)
+            if (character.IsInvincible)
             {
                 level1Instance.Pause();
                 level2Instance.Pause();
@@ -1052,7 +1040,7 @@ namespace Platformer
                 else
                 {
                     invincibleInstance.Stop();
-                    character.isInvincible = false;
+                    character.IsInvincible = false;
                     invincibleNumberOfTimesPlayed = 0;
 
                     switch (currentLevel)
@@ -1143,7 +1131,7 @@ namespace Platformer
                 null, Camera.Current.GetViewMatrix(Vector2.Zero));
                 drawText.DrawLivesTimeScore(spriteBatch);
                 
-                if (character.losesLife && lives != 0)
+                if (character.LosesLife && lives != 0)
                 {
                     Rectangle screen = new Rectangle(0, 0, screenWidth, screenHeight);
                     drawText.DrawLoseLife(spriteBatch, GraphicsDevice);
@@ -1237,28 +1225,14 @@ namespace Platformer
             }
 
             //draw particles
-            if (character.isInvincible)
+            if (character.IsInvincible)
             {
                 particleEngine.Draw(spriteBatch);
             }
 
-            //draw character
-            if (isStone)
-            {
-                spriteBatch.Draw(stoneSprite,
-                    ConvertUnits.ToDisplayUnits(character.Body.Position - stoneOrigin),
-                    null, Color.White, 0,
-                    stoneOrigin,
-                    1f, SpriteEffects.None, 0f);
-            }
-            else if (character.isInvincible)
-            {
-                character.DrawInvincible(spriteBatch);
-            }
-            else
-            {
-                character.Draw(spriteBatch);
-            }
+            //draw character           
+            character.Draw(spriteBatch);
+            
         }
         #endregion
 

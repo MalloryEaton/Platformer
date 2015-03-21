@@ -12,7 +12,11 @@ namespace Platformer
         public Body Body { get; private set; }
 
         private Texture2D characterTexture;
-        public Texture2D invincibleTexture;
+        private Texture2D invincibleTexture;
+
+        //stone
+        private Texture2D stoneTexture;
+        private Vector2 stoneOrigin;
 
         public Vector2 characterInitPos;
 
@@ -20,16 +24,26 @@ namespace Platformer
 
         public Vector2 jumpForce = new Vector2(0, -0.25f); // applied force when jumping
 
-        public bool losesLife = false;
-        public bool isInvincible = false;
-        public bool onGoal = false;
+        public bool IsStone { get; set; }
+        public bool LosesLife { get; set; }
+        public bool IsInvincible { get; set; }
+        public bool OnGoal { get; set; }
 
         public int jumpNum = 0;
 
-        public Character(World world, Texture2D texture, Vector2 position)
+        public Character(World world, Texture2D texture, Texture2D invincible, Texture2D stone, Vector2 position)
         {
+            LosesLife = false;
+            IsInvincible = false;
+            OnGoal = false;
+            IsStone = false;
             this.characterTexture = texture;
-            
+
+            invincibleTexture = invincible;
+            stoneTexture = stone;
+            stoneOrigin = new Vector2(ConvertUnits.ToSimUnits(stoneTexture.Width / 2),
+                ConvertUnits.ToSimUnits(stoneTexture.Height / 2));
+
             //create a body for the character
             Body = BodyFactory.CreateCircle(world,
                 ConvertUnits.ToSimUnits(characterTexture.Width / 2),
@@ -68,19 +82,9 @@ namespace Platformer
 
         public void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(characterTexture,
-                ConvertUnits.ToDisplayUnits(Body.Position),
-                null,
-                Color.White,
-                Body.Rotation,
-                new Vector2(characterTexture.Width / 2, characterTexture.Height / 2),
-                1f,
-                SpriteEffects.None,
-                0f);
-        }
-        public void DrawInvincible(SpriteBatch spriteBatch)
-        {
-            spriteBatch.Draw(invincibleTexture,
+            if (IsInvincible)
+            {
+                spriteBatch.Draw(invincibleTexture,
                 ConvertUnits.ToDisplayUnits(Body.Position),
                 null,
                 Color.White,
@@ -89,6 +93,27 @@ namespace Platformer
                 1f,
                 SpriteEffects.None,
                 0f);
+            }
+            else if (IsStone)
+            {
+                spriteBatch.Draw(stoneTexture,
+                    ConvertUnits.ToDisplayUnits(Body.Position - stoneOrigin),
+                    null, Color.White, 0,
+                    stoneOrigin,
+                    1f, SpriteEffects.None, 0f);
+            }
+            else
+            {
+                spriteBatch.Draw(characterTexture,
+                ConvertUnits.ToDisplayUnits(Body.Position),
+                null,
+                Color.White,
+                Body.Rotation,
+                new Vector2(characterTexture.Width / 2, characterTexture.Height / 2),
+                1f,
+                SpriteEffects.None,
+                0f);
+            }
         }
     }
 }
