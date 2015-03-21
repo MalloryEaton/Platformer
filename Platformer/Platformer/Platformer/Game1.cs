@@ -1135,7 +1135,7 @@ namespace Platformer
                 spriteBatch.End();
 
                 //no parallax for this layer
-                spriteBatch.Begin(SpriteSortMode.Deferred, null, null, null, null,
+                spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.PointClamp, null, null,
                 null, Camera.Current.GetViewMatrix(Vector2.One));
                 DrawWorld();
                 spriteBatch.End();
