@@ -17,16 +17,40 @@ namespace Platformer
         {
             int score = Game1.score;
             double timerSec = Game1.timerSec;
+            int level = Game1.currentLevel;
             
-            string timeString = "Time: " + timerSec.ToString("0.#");
-            spriteBatch.DrawString(Game1.smallFont, timeString,
-                new Vector2(10, 25), Color.Black);
-            string scoreString = "Score: " + score;
-            spriteBatch.DrawString(Game1.smallFont, scoreString,
-                new Vector2(10, 50), Color.Black);
-            string lives = "Lives: " + Game1.lives;
-            spriteBatch.DrawString(Game1.smallFont, lives,
-                new Vector2(10, 75), Color.Black);
+            if(level == 2)
+            {
+                string timeString = "Time: " + timerSec.ToString("0.#");
+                spriteBatch.DrawString(Game1.smallFont, timeString,
+                    new Vector2(10, 25), Color.Red);
+                string scoreString = "Score: " + score;
+                spriteBatch.DrawString(Game1.smallFont, scoreString,
+                    new Vector2(10, 50), Color.Red);
+                string lives = "Lives: " + Game1.lives;
+                spriteBatch.DrawString(Game1.smallFont, lives,
+                    new Vector2(10, 75), Color.Red);
+                string levelString = "Level: " + level;
+                spriteBatch.DrawString(Game1.font, levelString,
+                    new Vector2(Game1.HalfScreenWidth -
+                        (Game1.font.MeasureString(levelString).Length() / 2), 1), Color.Red);
+            }
+            else
+            {
+                string timeString = "Time: " + timerSec.ToString("0.#");
+                spriteBatch.DrawString(Game1.smallFont, timeString,
+                    new Vector2(10, 25), Color.Black);
+                string scoreString = "Score: " + score;
+                spriteBatch.DrawString(Game1.smallFont, scoreString,
+                    new Vector2(10, 50), Color.Black);
+                string lives = "Lives: " + Game1.lives;
+                spriteBatch.DrawString(Game1.smallFont, lives,
+                    new Vector2(10, 75), Color.Black);
+                string levelString = "Level: " + level;
+                spriteBatch.DrawString(Game1.font, levelString,
+                    new Vector2(Game1.HalfScreenWidth -
+                        (Game1.font.MeasureString(levelString).Length() / 2), 1), Color.Black);
+            }
         }
         #endregion
 
