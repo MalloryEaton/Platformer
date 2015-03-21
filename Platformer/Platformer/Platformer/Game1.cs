@@ -466,11 +466,11 @@ namespace Platformer
                 }
                 else if (character.IsStone && fixtureB.Body.Position.X > character.Body.Position.X)
                 {
-                    character.Body.ApplyLinearImpulse(new Vector2(-0.1f, -0.2f));
+                    character.Body.ApplyLinearImpulse(new Vector2(-0.1f, -0.05f));
                 }
                 else if (character.IsStone && fixtureB.Body.Position.X < character.Body.Position.X)
                 {
-                    character.Body.ApplyLinearImpulse(new Vector2(0.1f, -0.2f));
+                    character.Body.ApplyLinearImpulse(new Vector2(0.1f, -0.05f));
                 }
                 
             }
