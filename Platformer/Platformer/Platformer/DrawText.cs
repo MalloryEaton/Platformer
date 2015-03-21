@@ -48,33 +48,16 @@ namespace Platformer
         #region DrawLoseLife
         public void DrawLoseLife(SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
         {
-            if (Game1.currentLevel == 2)
-            {
-                string lostLifeString = "You Lost a Life...";
+            string lostLifeString = "You Lost a Life...";
             spriteBatch.DrawString(Game1.font, lostLifeString,
-                new Vector2((graphicsDevice.Viewport.Width / 2) - 
-                    (Game1.font.MeasureString(lostLifeString).Length() / 2), 
-                    (graphicsDevice.Viewport.Height / 2) - 25), Color.Red);
+                new Vector2((graphicsDevice.Viewport.Width / 2) -
+                    (Game1.font.MeasureString(lostLifeString).Length() / 2),
+                    (graphicsDevice.Viewport.Height / 2) - 25), Color.Black);
             string keepPlaying = "Press ENTER to Continue.";
             spriteBatch.DrawString(Game1.font, keepPlaying,
-                new Vector2((graphicsDevice.Viewport.Width / 2) - 
-                    (Game1.font.MeasureString(keepPlaying).Length() / 2), 
-                    (graphicsDevice.Viewport.Height / 2) + 25), Color.Red);
-            }
-            else
-            {
-                string lostLifeString = "You Lost a Life...";
-                spriteBatch.DrawString(Game1.font, lostLifeString,
-                    new Vector2((graphicsDevice.Viewport.Width / 2) -
-                        (Game1.font.MeasureString(lostLifeString).Length() / 2),
-                        (graphicsDevice.Viewport.Height / 2) - 25), Color.Black);
-                string keepPlaying = "Press ENTER to Continue.";
-                spriteBatch.DrawString(Game1.font, keepPlaying,
-                    new Vector2((graphicsDevice.Viewport.Width / 2) -
-                        (Game1.font.MeasureString(keepPlaying).Length() / 2),
-                        (graphicsDevice.Viewport.Height / 2) + 25), Color.Black);
-            }
-            
+                new Vector2((graphicsDevice.Viewport.Width / 2) -
+                    (Game1.font.MeasureString(keepPlaying).Length() / 2),
+                    (graphicsDevice.Viewport.Height / 2) + 25), Color.Black);
         }
         #endregion
 
