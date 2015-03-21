@@ -69,6 +69,7 @@ namespace Platformer
         {
             int score = Game1.score;
             double timerSec = Game1.timerSec;
+            int coinNum = Game1.coinNum;
 
             string levelClearedString = "You Cleared the Level!";
             spriteBatch.DrawString(Game1.font, levelClearedString,
