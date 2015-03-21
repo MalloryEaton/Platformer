@@ -902,7 +902,8 @@ namespace Platformer
                     {
                         gameWon = true;
                         currentLevel = 3;
-                    
+                        enemyNum = 23;
+                        coinNum = 47;
                         CreateGameComponents();
                         character.Body.CollisionCategories = Category.Cat5;
                     }

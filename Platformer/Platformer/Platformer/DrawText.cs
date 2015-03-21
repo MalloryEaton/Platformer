@@ -134,7 +134,7 @@ namespace Platformer
                 string enemy = "You killed all of the enemies! +1000";
                 spriteBatch.DrawString(Game1.font, enemy,
                     new Vector2((Game1.HalfScreenWidth)
-                        - (Game1.font.MeasureString(enemy).Length() - 390), 400), Color.Black);
+                        - (Game1.font.MeasureString(enemy).Length() - 395), 410), Color.Black);
             }
             if (Game1.coinNum == 47)
             {
@@ -142,7 +142,7 @@ namespace Platformer
                 string coin = "You collected all of the coins! +1000";
                 spriteBatch.DrawString(Game1.font, coin,
                     new Vector2((Game1.HalfScreenWidth)
-                        - (Game1.font.MeasureString(coin).Length() - 390), 450), Color.Black);
+                        - (Game1.font.MeasureString(coin).Length() - 395), 450), Color.Black);
             }
             string levelClearedString = "You Win!";
             spriteBatch.DrawString(Game1.font, levelClearedString,
@@ -159,11 +159,11 @@ namespace Platformer
             string finalScore = "Final Score: " + score;
             spriteBatch.DrawString(Game1.font, finalScore,
                 new Vector2((Game1.HalfScreenWidth)
-                    - (Game1.font.MeasureString(finalScore).Length() - 390), 300), Color.Black);
+                    - (Game1.font.MeasureString(finalScore).Length() - 395), 330), Color.Black);
             string time = "Final Time: " + timerSec.ToString("0.#") + " seconds +" + timeBonus;
             spriteBatch.DrawString(Game1.font, time,
                 new Vector2((Game1.HalfScreenWidth)
-                    - (Game1.font.MeasureString(time).Length() - 390), 350), Color.Black);
+                    - (Game1.font.MeasureString(time).Length() - 395), 370), Color.Black);
         }
         #endregion
     }
